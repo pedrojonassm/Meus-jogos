@@ -1,0 +1,51 @@
+Seriam vários minigames dentro do mesmo jogo
+# Ideia geral
+	O jogo em si é um mapa aberto, onde você controla uma nave dentro do computador, e o fundo do mapa deve
+	mostrar... tipo uns fios da memória, ou mesmo o caminho sei lá o nome, mostrar o caminho que um dado vai
+	até a memória, algo assim.
+	
+# Ideia 1
+	Um quadrado maior seguido de mais dois quadrados pequenos, dentro desses quadrados um número e uma letra
+	a letra pode ser, por exemplo, h que representa hexadecimal, logo o jogador deve traduzir para o correto
+	Sendo que, o jogador também devera traduzir para binário, ou hexadecimal, ou octal
+
+# Ideia 2 - Bit de entrada invertido através de um "bixo"
+
+
+	Podem ocorrer eventos aleatórios no mapa, um exemplo disso é onde os dados vai até a memória.
+	Será mostrado um aviso dizendo que ouve um erro, algo esta atrapalhando a conexão com a memória, nisso o
+	Jogador devera ir até ela e recebera os bits de entrada, 0110110 por exemplo, e devera encontrar o erro
+	Os cabos ficam verdes ao serem ativos, caso desativados são pretos, digamos que os bits de entrada sejam
+	o do exemplo, o jogador devera perceber que o erro está ali e corrigir. Ao invés da primeira linha estar
+	preta, ela esta verde, o jogador vai até ela e pode encontrar um bixinho preso no cabo, devendo então
+	removê-lo.
+
+# Ideia 3 - Função Mips
+	(Página 45 ch4_patterson) 2 unidade
+
+	O jogador recebe essa função junto com os valores de cada um e o resultado, por exemplo:
+	add $s1, $t0, $t0
+	$s1 = 4 $t0 = 3
+	Logicamente, isso está errado, já que  3 + 3 = 6 e não 4, portanto o jogador deve encontrar o erro
+	traduzindo a função seria:
+	000000 01000 01000 10001 00000 100000
+	A partir disso, no mapa, o player devera encontrar o erro e corrigí-lo
+	Podendo ser um fio cortado, um bixo preso alterando o valor, etc.
+	
+# Ideia 4 - Memória
+	Para salvar na memória, primeiro é colocado os bits desejados, então um terceiro bit, como uma espécie de
+	ativador, ativa e salva esses bits na memória. A ideia é representar isso usando alavancas e botões.
+	Tem uma porta e o player precisa passar por ela, naquela sala existem 1 botão e x alavancas, as alavancas
+	são os bits e o botão o ativador, para modificar na memória é necessario que se ative o botão.
+	Uma certa sequencia, de alavancas abre a porta após o pressionar o botão, mas na segunda sala tem apenas
+	um botão e mais uma porta para passar, o botão faz o mesmo que o da outra sala, para isso o player deverá
+	deixar as alavancas da outra sala preparada para a segunda porta, então ir a segunda sala e ativar o botão
+	podendo passar por aquela porta.
+
+# Ideia 5 - Cache - Página 15 ch-Patterson
+	Talvez de pra fazer aquele joginho de memória, onde a cache ira brilhar em algum canto e você terá que
+	selecionar uma ordem correta na memoria principal para que a cache brilhe na mesma ordem.
+	Talvez apareca uma sequencia de quadrados, e alguns deles brilhe em uma sequencia, então é visto umas opções
+	com sequencias onde apenas uma delas seria possível
+	
+	
