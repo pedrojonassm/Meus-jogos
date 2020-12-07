@@ -1,0 +1,15 @@
+Fazer os ataques dos Bosses
+    O tanque mirar e atirar
+    O Alien saltar pra cima de você
+
+Pontuação e ranking
+    Fazer uma ListView para ver os top Ranking
+
+Sistema de troca de arma
+
+Tela inicial (MENU)
+
+Opção de retornar jogo ao fechá-lo:
+    Usar o banco de dados para salvar o players, os bichos, etc.
+    Aí perguntar se o player deseja retornar a partida ao iniciar o jogo novamente (onPause e OnResume)
+
