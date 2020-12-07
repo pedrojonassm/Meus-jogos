@@ -24,3 +24,17 @@ hs_err_pid*
 
 #Build Files
 build/
+
+# Metadata
+.metadata/
+
+#Pastas que não quero pôr no git
+Criando_Pong/
+Criando_Programa_Leitura/
+Entendendo_a_Logica_da_Programacao_de_Games/
+Graficos_com_Java/
+Orientacao_a_objetos_com_java/
+PokeAdventureBHAgua/
+PokeAdventureBrotherHoodHelper/
+aprendendo_programacao_e_logica/
+java/
