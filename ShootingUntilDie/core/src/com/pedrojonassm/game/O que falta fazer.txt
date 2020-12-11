@@ -1,6 +1,19 @@
+Permitir o Player morrer
+
 Fazer os ataques dos Bosses
-    O tanque mirar e atirar
-    O Alien saltar pra cima de você
+    O Alien:
+        Feito! - saltar pra cima de você
+        Feito! - ao te acertar no salto fazer o player ser jogado
+        Feito! - fazer ele spawnar monstros
+        Feito! - Acertar a vida e o dano do bicho
+        
+    O tanque:
+        mirar e atirar
+        balas diferentes?
+            Super bala gigante que explode em várias outras balas
+            Bala que segue?
+        disparo maluco
+            fazer ele girar feito doido e atirar
 
 Pontuação e ranking
     Fazer uma ListView para ver os top Ranking

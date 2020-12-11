@@ -10,9 +10,10 @@ import java.util.Random;
 
 public class Spawner {
     // Essa é a classe que irá spawnar os monstros
-    private int difficult = 2;
+    private int difficult = 0;
     public static Random rand;
     private long lastspawn, lastheal;
+    private boolean Alien = false, Tank = false;
     public Spawner(){
         rand = new Random();
         lastspawn = System.currentTimeMillis();

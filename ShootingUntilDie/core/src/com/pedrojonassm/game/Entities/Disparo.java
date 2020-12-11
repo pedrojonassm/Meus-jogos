@@ -24,14 +24,17 @@ public class Disparo extends Entity{
     public void tick() {
         for (Entity e : Game.entities){
             if (e.position.overlaps(position) && e.state != e.morte){
-                Game.disparos.removeValue(this, true);
-                e.life-=((maxLife-life)/5)*power;
-                return;
+
+                if (!(e instanceof AlienBoss && ((AlienBoss) e).isJumping())){
+                    Game.disparos.removeValue(this, true);
+                    e.life-=((maxLife-life)/5)*power;
+                    return;
+                }
             }
         }
         life++;
         if (life>=maxLife){
-            Game.entities.removeValue(this, true);
+            Game.disparos.removeValue(this, true);
         }
         position.x += (400* MathUtils.cos(rotation*MathUtils.degreesToRadians)) * Gdx.graphics.getDeltaTime();
         position.y += (400* MathUtils.sin(rotation*MathUtils.degreesToRadians)) * Gdx.graphics.getDeltaTime();

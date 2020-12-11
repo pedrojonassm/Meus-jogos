@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
+import com.pedrojonassm.game.Entities.AlienBoss;
 import com.pedrojonassm.game.Entities.Disparo;
 import com.pedrojonassm.game.Entities.Entity;
 import com.pedrojonassm.game.Entities.Insect;
@@ -32,7 +33,7 @@ public class Game extends ApplicationAdapter {
 	private boolean analogic;
 	public static boolean pause;
 	public static Array<Disparo> disparos;
-	Spawner spawner;
+	private static Spawner spawner;
 	private float moveX, moveY;
 
 
@@ -57,7 +58,11 @@ public class Game extends ApplicationAdapter {
 		ui = new Ui();
 		// criando player
 		player = new Player(26, 34);
-		//entities.add(new TankBoss());
+		entities.add(new TankBoss());
+	}
+
+	public static void bossMorto(){
+		spawner.levelUp();
 	}
 
 	@Override
@@ -82,14 +87,8 @@ public class Game extends ApplicationAdapter {
 		// tell the camera to update its matrices.
 		camera.update();
 
+		// Spawner para spawnar monstros
 		spawner.tick();
-
-		if (Gdx.input.isKeyJustPressed(Input.Keys.S)){
-			entities.add(new Insect());
-		}else if (Gdx.input.isKeyJustPressed(Input.Keys.R)){
-			player.reload = true;
-		}
-
 
 		if(Gdx.input.isTouched()) {
 			float mx = Gdx.input.getX(), my = camera.viewportHeight-Gdx.input.getY();
@@ -101,24 +100,26 @@ public class Game extends ApplicationAdapter {
 				ui.aY = (int) my - ui.posY;
 				moveX = mx;
 				moveY = my;
-			}else if (player.gun == 1){
-				if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
+			}if (!player.atordoado){
+				if (player.gun == 1){
+					if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
 					/*
 					verifica se é o dedo que estava no analogico e saiu dele
 					isso evita o gasto de munições com a metralhadora
 					 */
-					moveY = my;
-					moveX = mx;
-				}else{
-					player.rotate(mx, my);
-					player.atirar();
-				}
-			}else if (Gdx.input.justTouched()){
-				if (ui.reload.contains(mx, my)) {
-					player.reload = true;
-				}else {
-					player.rotate(mx, my);
-					player.atirar();
+						moveY = my;
+						moveX = mx;
+					}else{
+						player.rotate(mx, my);
+						player.atirar();
+					}
+				}else if (Gdx.input.justTouched()){
+					if (ui.reload.contains(mx, my)) {
+						player.reload = true;
+					}else {
+						player.rotate(mx, my);
+						player.atirar();
+					}
 				}
 			}
 			if (analogic){

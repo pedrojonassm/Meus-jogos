@@ -11,6 +11,7 @@ import com.pedrojonassm.game.control.Game;
 public class Entity {
     protected Array<TextureRegion[]> sprites;
     protected int index, pivoX, pivoY, state, fr = 0, maxFr = 0, speed, tamanhoX, tamanhoY, Z = 0, morte = -1;
+    protected float escalaX, escalaY;
     public int life = 0, maxLife;
     public int ferido = 0;
     protected Array<Integer> maxIndex;
@@ -19,6 +20,7 @@ public class Entity {
     protected boolean atacar = false;
 
     public Entity(int pX, int pY, int tX, int tY){
+        escalaX = escalaY = 1;
         tamanhoX = tX;
         tamanhoY = tY;
         position = new Rectangle(0, 0, tamanhoX, tamanhoY);
@@ -62,10 +64,7 @@ public class Entity {
     }
 
     public void tick(){
-        /*if (life <= 0){
-            Game.entities.removeValue(this, true);
-            return;
-        }*/
+
         fr++;
         if (fr >= maxFr){
             fr = 0;
@@ -81,24 +80,19 @@ public class Entity {
 
     public void render(SpriteBatch batch){
         // Exemplo de renderização dos sprites
-
-
         //batch.draw(sprites.get(index), position.x, position.y);
 
         if (toRender()) {
             if (state < sprites.size){
-                batch.draw(sprites.get(state)[index], position.x, position.y, pivoX, pivoY, tamanhoX, tamanhoY, 1, 1, rotation);
+                batch.draw(sprites.get(state)[index], position.x, position.y, pivoX, pivoY, tamanhoX, tamanhoY, escalaX, escalaY, rotation);
             }
         }
     }
 
     public boolean toRender(){
-        float py = position.y-(Game.jogo.camera.position.y-Game.jogo.camera.viewportHeight/2) + Z;
-        float px = position.x-(Game.jogo.camera.position.x-Game.jogo.camera.viewportWidth/2);
-        if (py > -tamanhoY && py < Game.jogo.camera.viewportHeight && px > -tamanhoX && px < Game.jogo.camera.viewportWidth){
-            return true;
-        }
-        return false;
+        float py = position.y-(Game.camera.position.y- Game.camera.viewportHeight/2) + Z;
+        float px = position.x-(Game.camera.position.x- Game.camera.viewportWidth/2);
+        return py > -tamanhoY && py < Game.camera.viewportHeight && px > -tamanhoX && px < Game.camera.viewportWidth;
     }
 
     public void lookAt(Entity toLook){

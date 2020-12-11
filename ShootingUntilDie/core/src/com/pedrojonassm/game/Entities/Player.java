@@ -26,10 +26,10 @@ public class Player extends Entity {
     11 --> atirando com a espingarda
     state = (0-3) + gun*4
      */
-    public int gun = 0, totalGuns = 3;
+    public int gun = 0, totalGuns = 3, angulo = 0, tempoJogado = 0;
     private int[] ammo, maxAmmo, totalAmmo;
     private double lastDisparo = 0;
-    public boolean moving = false, reload = false;
+    public boolean moving = false, reload = false, atordoado = false;
     public Player(int pX, int pY) {
         super(pX, pY, Game.sprites.getTamanho(), Game.sprites.getTamanho());
         life = maxLife = 100;
@@ -72,16 +72,27 @@ public class Player extends Entity {
     }
 
     public void tick(){
-        if (Game.getUi().aX != 0 || Game.getUi().aY != 0){
+        if ((Game.getUi().aX != 0 || Game.getUi().aY != 0) && !atordoado){
             moving = true;
         }else{
             moving = false;
         }
-        float moveX = (200*Game.getUi().aX/(Game.getUi().maior.radius/2)) * Gdx.graphics.getDeltaTime(), moveY = (200*Game.getUi().aY/(Game.getUi().maior.radius/2)) * Gdx.graphics.getDeltaTime();
-        if (position.x + moveX > 0 && position.x + moveX +position.width< Game.background.getWidth()) {
+        float moveX = 0, moveY = 0;
+        if (moving) {
+            moveX = (200 * Game.getUi().aX / (Game.getUi().maior.radius / 2)) * Gdx.graphics.getDeltaTime();
+            moveY = (200 * Game.getUi().aY / (Game.getUi().maior.radius / 2)) * Gdx.graphics.getDeltaTime();
+        }else if (atordoado){
+            tempoJogado--;
+            if (tempoJogado <= 0){
+                atordoado = false;
+            }
+            moveX = MathUtils.cos(angulo) * Gdx.graphics.getDeltaTime() * 600;
+            moveY = MathUtils.sin(angulo) * Gdx.graphics.getDeltaTime() * 600;
+        }
+        if (position.x + moveX > 0 && position.x + moveX + position.width < Game.background.getWidth()) {
             position.x += moveX;
         }
-        if (position.y + moveY > 0 && position.y + moveY+position.height < Game.background.getHeight()) {
+        if (position.y + moveY > 0 && position.y + moveY + position.height < Game.background.getHeight()) {
             position.y += moveY;
         }
         if (moving && !reload){
@@ -94,7 +105,7 @@ public class Player extends Entity {
         super.tick();
     }
     public void rotate(float lookX, float lookY){
-        rotation = MathUtils.atan2(lookY - (position.y-(Game.jogo.camera.position.y-Game.jogo.camera.viewportHeight/2)), lookX - (position.x-(Game.jogo.camera.position.x-Game.jogo.camera.viewportWidth/2)))*MathUtils.radiansToDegrees;
+        rotation = MathUtils.atan2(lookY - (position.y-(Game.camera.position.y- Game.camera.viewportHeight/2)), lookX - (position.x-(Game.camera.position.x- Game.camera.viewportWidth/2)))*MathUtils.radiansToDegrees;
     }
 
     public boolean colidindo(){
@@ -120,22 +131,36 @@ public class Player extends Entity {
             totalAmmo[gun] -= aux;
             reload = false;
         }
+    }
 
+    public void jogar_para_longe(float AlienX, float AlienY){
+        // quando o Alien acertar o salto no player, o jogador será jogado para longe.
+        angulo = (int) (MathUtils.atan2(AlienY-position.y, AlienX-position.x)*MathUtils.radiansToDegrees);
+        while (angulo< 0){
+            angulo += 360;
+        }
+        while (angulo >= 360){
+            angulo-=360;
+        }
+        atordoado = true;
+        tempoJogado = 50;
     }
 
     public void atirar(){
-        if (lastDisparo - System.currentTimeMillis() <= -20 && !Game.pause && ammo[gun] > 0){
-            ammo[gun]--;
-            lastDisparo = System.currentTimeMillis();
-            if (gun != 2) { // 2 é a espingarda
-                Game.disparos.add(new Disparo(rotation, gun));
-            }else{
-                for (int i = -15; i <= 15; i+=6){
-                    Game.disparos.add(new Disparo(rotation+i, gun));
+        if (!atordoado){
+            if (lastDisparo - System.currentTimeMillis() <= -20 ){// && !Game.pause && ammo[gun] > 0){
+                ammo[gun]--;
+                lastDisparo = System.currentTimeMillis();
+                if (gun != 2) { // 2 é a espingarda
+                    Game.disparos.add(new Disparo(rotation, gun));
+                }else{
+                    for (int i = -15; i <= 15; i+=6){
+                        Game.disparos.add(new Disparo(rotation+i, gun));
+                    }
                 }
+            }else if (ammo[gun] == 0 && !reload){
+                reload = true;
             }
-        }else if (ammo[gun] == 0 && !reload){
-            reload = true;
         }
     }
 
