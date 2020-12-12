@@ -72,11 +72,17 @@ public class Ui {
         //*/
 
         //Trocar armas
+        /*
         shape.setColor(Color.BLUE);
         shape.rect(trocar_armas.x, trocar_armas.y, trocar_armas.width, trocar_armas.height);
         shape.end();
-
+        //*/
         batch.begin();
+        // armas (clicar para trocar)
+        for (int i = 0; i < 3; i++){
+            // trocar_armas.y é 0, logo não é preciso colocar aqui
+            batch.draw(armas[i], trocar_armas.x, Game.sprites.getTamanho()*(2-i));
+        }
 
         // Recarregar arma
         if (Game.getPlayer().reload){

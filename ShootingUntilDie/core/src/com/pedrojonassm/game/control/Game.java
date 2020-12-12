@@ -75,13 +75,6 @@ public class Game extends ApplicationAdapter {
 		/*Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);*/
 
-		// testando a alteração das armas
-		if (Gdx.input.isKeyJustPressed(Input.Keys.P)){
-			player.gun++;
-			if (player.gun == player.totalGuns){
-				player.gun = 0;
-			}
-		}
 		if (player.position.y > camera.viewportHeight/2 && player.position.y + camera.viewportHeight/2 < background.getHeight()){
 			camera.position.y = player.position.y;
 		}
@@ -106,7 +99,7 @@ public class Game extends ApplicationAdapter {
 				moveX = mx;
 				moveY = my;
 			}else if (!player.atordoado){
-				if (player.gun == 1){
+				if (player.gun == 1 && !ui.trocar_armas.contains(mx, my)){
 					if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
 					/*
 					verifica se é o dedo que estava no analogico e saiu dele
@@ -122,7 +115,13 @@ public class Game extends ApplicationAdapter {
 					if (ui.reload.contains(mx, my)) {
 						player.reload = true;
 					}else if (ui.trocar_armas.contains(mx, my)){
-
+						if (my >= ui.trocar_armas.height*2/3){
+							player.gun = 0; // pistola
+						}else if (my < ui.trocar_armas.height/3){
+							player.gun = 2; // espingarda
+						}else{
+							player.gun = 1; // Metralhadora
+						}
 					}else {
 						player.rotate(mx, my);
 						player.atirar();
