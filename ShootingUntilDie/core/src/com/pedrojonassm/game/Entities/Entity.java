@@ -10,7 +10,7 @@ import com.pedrojonassm.game.control.Game;
 
 public class Entity {
     protected Array<TextureRegion[]> sprites;
-    protected int index, pivoX, pivoY, state, fr = 0, maxFr = 0, speed, tamanhoX, tamanhoY, Z = 0, morte = -1;
+    protected int index, pivoX, pivoY, state, fr = 0, maxFr = 0, speed, tamanhoX, tamanhoY, Z = 0, morte = -1, valor_em_pontos;
     protected float escalaX, escalaY;
     public int life = 0, maxLife;
     public int ferido = 0;
@@ -109,4 +109,7 @@ public class Entity {
     }
 
 
+    protected void pontuar() {
+        Game.pontos += valor_em_pontos;
+    }
 }

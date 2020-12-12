@@ -18,6 +18,7 @@ public class Troll extends Entity{
     public Troll() {
         super(32, 32, Game.sprites.getTamanho(), Game.sprites.getTamanho());
         life = maxLife = 400;
+        valor_em_pontos = 15;
         speed = 150;
         maxFr = 5;
         addSprites(8,24,4); // 0

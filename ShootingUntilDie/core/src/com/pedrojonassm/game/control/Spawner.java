@@ -32,6 +32,9 @@ public class Spawner {
     }
     public void levelUp(){
         difficult++;
+        if (difficult > 3){
+            difficult = 3;
+        }
     }
     public void tick(){
         if (System.currentTimeMillis()-lastheal >= 3000){

@@ -13,12 +13,12 @@ Fazer os ataques dos Bosses
             Feito! - disparo maluco
                 Feito! - fazer ele girar feito doido e atirar
 
-Sistema de troca de arma
+Feito! - Sistema de troca de arma
+
+Tela inicial (MENU)
 
 Pontuação e ranking
     Fazer uma ListView para ver os top Ranking
-
-Tela inicial (MENU)
 
 Permitir o Player morrer
 

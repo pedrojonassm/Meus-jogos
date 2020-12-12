@@ -25,6 +25,9 @@ public class Disparo extends Entity{
             if (e.position.overlaps(position) && e.state != e.morte) {
 
                 if (!(e instanceof AlienBoss && ((AlienBoss) e).isJumping())) {
+                    if (e.life <= 0){
+                        e.pontuar();
+                    }
                     Game.disparos.removeValue(this, true);
                     e.life -= ((maxLife - life) / 5) * power;
                     return;

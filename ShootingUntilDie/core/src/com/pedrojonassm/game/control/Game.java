@@ -39,6 +39,10 @@ public class Game extends ApplicationAdapter {
 	public static Array<SuperDisparo> superdisparostanque;
 	private static Spawner spawner;
 	private float moveX, moveY;
+	public static int pontos = 0;
+	private int ultimo_boss;
+	private long tempo_boss;
+	private static boolean boss_spawnado = false;
 
 
 
@@ -48,6 +52,7 @@ public class Game extends ApplicationAdapter {
 	 */
 	@Override
 	public void create () {
+		tempo_boss = System.currentTimeMillis() + 1000*60*5; // 5 min no max para spawnar um boss
 		spawner = new Spawner();
 		disparos = new Array<>();
 		disparostanque = new Array<>();
@@ -67,11 +72,13 @@ public class Game extends ApplicationAdapter {
 	}
 
 	public static void bossMorto(){
+		boss_spawnado = false;
 		spawner.levelUp();
 	}
 
 	@Override
 	public void render () {
+		spawnarBoss();
 		/*Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);*/
 
@@ -173,6 +180,19 @@ public class Game extends ApplicationAdapter {
 		ui.tick();
 		ui.render(batch);
 		batch.end();
+	}
+
+	private void spawnarBoss() {
+		if ((tempo_boss < System.currentTimeMillis() || (pontos%1500 == 0 && pontos > 0)) && !boss_spawnado){
+			boss_spawnado = true;
+			if (ultimo_boss == 0){
+				ultimo_boss++;
+				Game.entities.add(new AlienBoss());
+			}else{
+				ultimo_boss--;
+				Game.entities.add(new TankBoss());
+			}
+		}
 	}
 
 	public static Ui getUi() {

@@ -13,11 +13,13 @@ public class TankBoss extends Entity {
     public TankBoss() {
         super(126, 105, 252, 209);
         life = maxLife = 3000;
+        valor_em_pontos = 6000;
         gunY = 50;
         gunX = 50;
         position.x = alvoX = 400;
         position.y = alvoY = 400;
         addSprites2("Tank\\Body_", ".png", 2, 1, 0, 0, tamanhoX, tamanhoY);
+        spawnar();
     }
 
     @Override

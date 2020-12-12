@@ -17,6 +17,7 @@ public class Scorpion extends Entity{
      */
     public Scorpion() {
         super(32, 32, Game.sprites.getTamanho(), Game.sprites.getTamanho());
+        valor_em_pontos = 3;
         life = maxLife = 200;
         addSprites(4, 13, 6);
         addSprites(8, 17, 6);

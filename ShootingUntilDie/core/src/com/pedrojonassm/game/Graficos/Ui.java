@@ -75,13 +75,14 @@ public class Ui {
         /*
         shape.setColor(Color.BLUE);
         shape.rect(trocar_armas.x, trocar_armas.y, trocar_armas.width, trocar_armas.height);
+        //*/
         shape.end();
         //*/
         batch.begin();
         // armas (clicar para trocar)
         for (int i = 0; i < 3; i++){
             // trocar_armas.y é 0, logo não é preciso colocar aqui
-            batch.draw(armas[i], trocar_armas.x, Game.sprites.getTamanho()*(2-i));
+            batch.draw(armas[2-i], px+Game.getTelaWidth()-posX/2 + 12 - trocar_armas.width, py-posY - Game.getTelaHeight() - Game.sprites.getTamanho()*(2-i) + trocar_armas.height);
         }
 
         // Recarregar arma

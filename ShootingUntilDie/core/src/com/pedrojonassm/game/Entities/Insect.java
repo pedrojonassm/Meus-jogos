@@ -13,6 +13,7 @@ public class Insect extends Entity {
     public Insect() {
         super(32, 32, Game.sprites.getTamanho(), Game.sprites.getTamanho());
         life = maxLife = 300;
+        valor_em_pontos = 6;
         addSprites(8, 13, 7);// andando
         addSprites(8, 21, 7); // atacando
         addSprites(8, 29, 7); // morrendo
