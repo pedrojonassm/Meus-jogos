@@ -1,6 +1,5 @@
 package com.pedrojonassm.game.control;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.pedrojonassm.game.Entities.Heals;
 import com.pedrojonassm.game.Entities.Insect;
 import com.pedrojonassm.game.Entities.Scorpion;
@@ -41,7 +40,7 @@ public class Spawner {
             lastheal = System.currentTimeMillis();
             Game.entities.add(new Heals());
         }
-        if (System.currentTimeMillis()-lastspawn >= 6000){
+        if (System.currentTimeMillis()-lastspawn >= 6000 && !Game.boss_spawnado){
             lastspawn = System.currentTimeMillis();
             spawnarMonstro();
         }

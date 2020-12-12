@@ -2,8 +2,6 @@ package com.pedrojonassm.game.control;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,7 +10,6 @@ import com.pedrojonassm.game.Entities.AlienBoss;
 import com.pedrojonassm.game.Entities.Disparo;
 import com.pedrojonassm.game.Entities.DisparoTanque;
 import com.pedrojonassm.game.Entities.Entity;
-import com.pedrojonassm.game.Entities.Insect;
 import com.pedrojonassm.game.Entities.Player;
 import com.pedrojonassm.game.Entities.SuperDisparo;
 import com.pedrojonassm.game.Entities.TankBoss;
@@ -40,19 +37,13 @@ public class Game extends ApplicationAdapter {
 	private static Spawner spawner;
 	private float moveX, moveY;
 	public static int pontos = 0;
-	private int ultimo_boss;
-	private long tempo_boss;
-	private static boolean boss_spawnado = false;
+	private static int ultimo_boss;
+	private static long tempo_boss;
+	public static boolean boss_spawnado = false;
 
-
-
-	/*
-	Ao usar a metraladora, se mover o dedo para fora ele se move
-	moveX e moveY vai guardar a posição ao clicar para evitar que isso aconteça
-	 */
 	@Override
 	public void create () {
-		tempo_boss = System.currentTimeMillis() + 1000*60*5; // 5 min no max para spawnar um boss
+		tempo_para_spawnar_boss();
 		spawner = new Spawner();
 		disparos = new Array<>();
 		disparostanque = new Array<>();
@@ -71,9 +62,14 @@ public class Game extends ApplicationAdapter {
 		player = new Player(26, 34);
 	}
 
+	private static void tempo_para_spawnar_boss() {
+		tempo_boss = System.currentTimeMillis() + 1000*60*2; // 2 min no max para spawnar um boss
+	}
+
 	public static void bossMorto(){
 		boss_spawnado = false;
 		spawner.levelUp();
+		tempo_para_spawnar_boss();
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class Ui {
 
         posX = (int) (Game.getTelaWidth()/6);
         posY = (int) (Game.getTelaHeight()/6);
-        trocar_armas = new Rectangle(px+Game.getTelaWidth()-posX, 0, Game.sprites.getTamanho(), Game.sprites.getTamanho()*armas.length);
+        trocar_armas = new Rectangle(px+Game.getTelaWidth()-posX, 0, Game.getTelaWidth()/10, Game.getTelaHeight()/3);
         maior = new Circle(posX, posY, (int) ((posX+posY)/6));
         reload = new Circle(px-posX-recarregarArma.getRegionWidth() + Game.getTelaWidth(), py+posY- Game.getTelaHeight(), (int) ((posX+posY)/6));
         // acrescentar botão para troca das armase
@@ -41,7 +41,7 @@ public class Ui {
     public void tick(){
     }
     public void render(SpriteBatch batch){
-        float px = Game.camera.position.x - Game.camera.viewportWidth/2, py = Game.camera.position.y + Game.camera.viewportHeight/2;
+        float px = Game.camera.position.x - Game.getTelaWidth()/2, py = Game.camera.position.y + Game.getTelaHeight()/2;
 
         // munição
         String str = "Ammo: "+Game.getPlayer().getAmmo()+"/"+Game.getPlayer().getTotalAmmo();
@@ -82,7 +82,7 @@ public class Ui {
         // armas (clicar para trocar)
         for (int i = 0; i < 3; i++){
             // trocar_armas.y é 0, logo não é preciso colocar aqui
-            batch.draw(armas[2-i], px+Game.getTelaWidth()-posX/2 + 12 - trocar_armas.width, py-posY - Game.getTelaHeight() - Game.sprites.getTamanho()*(2-i) + trocar_armas.height);
+            batch.draw(armas[2-i], px+trocar_armas.x, py - Game.getTelaHeight() - (trocar_armas.height/3)*(3-i) + trocar_armas.height, 32, 32, armas[2-i].getRegionWidth(), armas[2-i].getRegionHeight(), Game.getTelaWidth()/800, Game.getTelaHeight()/480, 0);
         }
 
         // Recarregar arma
