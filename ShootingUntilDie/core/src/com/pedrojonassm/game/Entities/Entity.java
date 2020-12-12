@@ -17,9 +17,12 @@ public class Entity {
     protected Array<Integer> maxIndex;
     protected float rotation;
     public Rectangle position;
-    protected boolean atacar = false;
+    protected boolean atacar = false, invulneravel;
+    private long nascimento;
 
     public Entity(int pX, int pY, int tX, int tY){
+        invulneravel = true;
+        nascimento = System.currentTimeMillis() + 1000;
         escalaX = escalaY = 1;
         tamanhoX = tX;
         tamanhoY = tY;
@@ -64,7 +67,9 @@ public class Entity {
     }
 
     public void tick(){
-
+        if (nascimento < System.currentTimeMillis()){
+            invulneravel = false;
+        }
         fr++;
         if (fr >= maxFr){
             fr = 0;

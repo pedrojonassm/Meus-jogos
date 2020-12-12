@@ -15,7 +15,8 @@ public class Ui {
     TextureRegion[] armas, analogico;
     TextureRegion recarregarArma;
     public int aX, aY, posX, posY, recarregar = 0;
-    public Circle maior, troca, reload;
+    public Circle maior, reload;
+    public Rectangle trocar_armas;
     public Ui(){
         float px = Game.camera.position.x - Game.camera.viewportWidth/2, py = Game.camera.position.y + Game.camera.viewportHeight/2;
         recarregarArma = Game.sprites.getAsset(37, 7);
@@ -32,6 +33,7 @@ public class Ui {
 
         posX = (int) (Game.getTelaWidth()/6);
         posY = (int) (Game.getTelaHeight()/6);
+        trocar_armas = new Rectangle(px+Game.getTelaWidth()-posX, 0, Game.sprites.getTamanho(), Game.sprites.getTamanho()*armas.length);
         maior = new Circle(posX, posY, (int) ((posX+posY)/6));
         reload = new Circle(px-posX-recarregarArma.getRegionWidth() + Game.getTelaWidth(), py+posY- Game.getTelaHeight(), (int) ((posX+posY)/6));
         // acrescentar botão para troca das armase
@@ -63,11 +65,15 @@ public class Ui {
         shape.setColor(Color.RED);
         shape.circle(px+posX+aX, py+posY - Game.getTelaHeight()+aY, maior.radius/2);
 
-        // troca:
+        // Recarga:
         /*
-        shape.setColor(Color.GRAY);
+        shape.setColor(Color.BLUE);
         shape.circle(reload.x, reload.y, maior.radius);
         //*/
+
+        //Trocar armas
+        shape.setColor(Color.BLUE);
+        shape.rect(trocar_armas.x, trocar_armas.y, trocar_armas.width, trocar_armas.height);
         shape.end();
 
         batch.begin();

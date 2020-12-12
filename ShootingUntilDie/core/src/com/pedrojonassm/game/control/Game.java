@@ -10,9 +10,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 import com.pedrojonassm.game.Entities.AlienBoss;
 import com.pedrojonassm.game.Entities.Disparo;
+import com.pedrojonassm.game.Entities.DisparoTanque;
 import com.pedrojonassm.game.Entities.Entity;
 import com.pedrojonassm.game.Entities.Insect;
 import com.pedrojonassm.game.Entities.Player;
+import com.pedrojonassm.game.Entities.SuperDisparo;
 import com.pedrojonassm.game.Entities.TankBoss;
 import com.pedrojonassm.game.Graficos.spritesSheet;
 import com.pedrojonassm.game.Graficos.Ui;
@@ -33,6 +35,8 @@ public class Game extends ApplicationAdapter {
 	private boolean analogic;
 	public static boolean pause;
 	public static Array<Disparo> disparos;
+	public static Array<DisparoTanque> disparostanque;
+	public static Array<SuperDisparo> superdisparostanque;
 	private static Spawner spawner;
 	private float moveX, moveY;
 
@@ -46,6 +50,8 @@ public class Game extends ApplicationAdapter {
 	public void create () {
 		spawner = new Spawner();
 		disparos = new Array<>();
+		disparostanque = new Array<>();
+		superdisparostanque = new Array<>();
 		pause = false;
 		entities = new Array<Entity>();
 		jogo = this;
@@ -58,7 +64,6 @@ public class Game extends ApplicationAdapter {
 		ui = new Ui();
 		// criando player
 		player = new Player(26, 34);
-		entities.add(new TankBoss());
 	}
 
 	public static void bossMorto(){
@@ -100,7 +105,7 @@ public class Game extends ApplicationAdapter {
 				ui.aY = (int) my - ui.posY;
 				moveX = mx;
 				moveY = my;
-			}if (!player.atordoado){
+			}else if (!player.atordoado){
 				if (player.gun == 1){
 					if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
 					/*
@@ -116,6 +121,8 @@ public class Game extends ApplicationAdapter {
 				}else if (Gdx.input.justTouched()){
 					if (ui.reload.contains(mx, my)) {
 						player.reload = true;
+					}else if (ui.trocar_armas.contains(mx, my)){
+
 					}else {
 						player.rotate(mx, my);
 						player.atirar();
@@ -149,9 +156,17 @@ public class Game extends ApplicationAdapter {
 			e.render(batch);
 		}
 		if (!pause){
-			for (Disparo e : disparos){
-				e.tick();
-				e.render(batch);
+			for (Disparo d : disparos){
+				d.tick();
+				d.render(batch);
+			}
+			for (DisparoTanque d : disparostanque){
+				d.tick();
+				d.render(batch);
+			}
+			for (SuperDisparo d : superdisparostanque){
+				d.tick();
+				d.render(batch);
 			}
 			player.tick();
 		}

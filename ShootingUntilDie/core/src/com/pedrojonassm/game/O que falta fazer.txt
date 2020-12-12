@@ -1,5 +1,3 @@
-Permitir o Player morrer
-
 Fazer os ataques dos Bosses
     O Alien:
         Feito! - saltar pra cima de você
@@ -8,19 +6,21 @@ Fazer os ataques dos Bosses
         Feito! - Acertar a vida e o dano do bicho
         
     O tanque:
-        mirar e atirar
-        balas diferentes?
-            Super bala gigante que explode em várias outras balas
-            Bala que segue?
-        disparo maluco
-            fazer ele girar feito doido e atirar
+        Feito! - mirar e atirar
+        Feito! - balas diferentes?
+            Feito! - Super bala:
+                Feito! - Bala gigante que explode em várias outras balas e spawna insetos
+            Feito! - disparo maluco
+                Feito! - fazer ele girar feito doido e atirar
+
+Sistema de troca de arma
 
 Pontuação e ranking
     Fazer uma ListView para ver os top Ranking
 
-Sistema de troca de arma
-
 Tela inicial (MENU)
+
+Permitir o Player morrer
 
 Opção de retornar jogo ao fechá-lo:
     Usar o banco de dados para salvar o players, os bichos, etc.
