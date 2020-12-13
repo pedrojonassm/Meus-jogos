@@ -2,6 +2,7 @@ package com.pedrojonassm.game.control;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -46,7 +47,7 @@ public class Game extends ApplicationAdapter {
 	private static int ultimo_boss;
 	private static long tempo_boss;
 	public static boolean boss_spawnado = false;
-	private File dir;
+	private static File dir;
 
 	public Game(File dir){
 		this.dir = dir;
@@ -68,7 +69,7 @@ public class Game extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		background = new Texture("background.png");
 		sprites = new spritesSheet(new Texture("Assets.png"), 64);
-		ui = new Ui();
+		ui = new Ui(tem_ultimo_jogo());
 		// criando player
 		player = new Player(26, 34);
 		ler_no_txt();
@@ -103,9 +104,6 @@ public class Game extends ApplicationAdapter {
 
 		// tell the camera to update its matrices.
 		camera.update();
-
-		// Spawner para spawnar monstros
-		spawner.tick();
 
 		if(Gdx.input.isTouched()) {
 			float mx = Gdx.input.getX(), my = camera.viewportHeight-Gdx.input.getY();
@@ -174,6 +172,9 @@ public class Game extends ApplicationAdapter {
 			e.render(batch);
 		}
 		if (!pause){
+			// Spawner para spawnar monstros
+			spawner.tick();
+
 			for (Disparo d : disparos){
 				d.tick();
 				d.render(batch);
@@ -187,6 +188,11 @@ public class Game extends ApplicationAdapter {
 				d.render(batch);
 			}
 			player.tick();
+		}else{
+			// Atualiza o tempo quando o jogo pausa para não fazer o boss aparecer rapido demais
+			long t = tempo_boss;
+			tempo_para_spawnar_boss();
+			tempo_boss -= (t-tempo());
 		}
 		player.render(batch);
 		ui.tick();
@@ -223,19 +229,19 @@ public class Game extends ApplicationAdapter {
 		escrever_no_txt();
 	}
 
-	private int tem_ultimo_jogo(){
+	public static boolean tem_ultimo_jogo(){
 		File file = new File(dir,"salvamento_rapido.txt");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			if (reader.readLine() != null){
 				reader.close();
-				return 1;
+				return true;
 			}else{
 				reader.close();
-				return 0;
+				return false;
 			}
 		} catch (Exception e) {
-			return 0;
+			return false;
 		}
 	}
 
@@ -253,10 +259,19 @@ public class Game extends ApplicationAdapter {
 					player.position.x = Float.parseFloat(str[1]);
 					player.position.y = Float.parseFloat(str[2]);
 					player.state = Integer.parseInt(str[4]);
-					System.out.println(tempo()-Long.parseLong(str[5]));
 					tempo_boss -= tempo()-Long.parseLong(str[5]);
 					player.index =  Integer.parseInt(str[6]);
 					player.life =  Integer.parseInt(str[7]);
+					for (int i = 0; i < 3; i++){
+						/*
+						i = 0 --> 8 e 9
+						i = 1 --> 10 e 11
+						i = 2 --> 12 e 13
+						 */
+						System.out.println(str[i*2+8]+":"+str[i*2+9]);
+						player.setarMunicao(i, Integer.parseInt(str[i*2+8]));
+						player.setarMunicaoTotal(i, Integer.parseInt(str[i*2+9]));
+					}
 					pontos = Integer.parseInt(str[8]); // Player não tem ferido
 				}else{
 					Entity e = null;
@@ -314,6 +329,8 @@ public class Game extends ApplicationAdapter {
 			str += (tempo_boss-System.currentTimeMillis()) + ":"; // Salva o tempo que já passou para spawnar o boss, deve-se subtrair isso do tempo_boss ao recarregar
 			str += player.index + ":";
 			str +=  player.life + ":";
+			// Adicionando as munições e o total de munições
+			str += player.salvarMunicao();
 			str += pontos+"\n";
 			bufferedWriter.write(str);
 			for (Entity e : entities) {

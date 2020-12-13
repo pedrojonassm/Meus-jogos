@@ -22,7 +22,7 @@ Pontuação e ranking
 
 Permitir o Player morrer
 
-Opção de retornar jogo ao fechá-lo:
-    Usar o banco de dados para salvar o players, os bichos, etc.
+Feito! - Opção de retornar jogo ao fechá-lo:
+    Nãoo Consegui - Usar o banco de dados para salvar o players, os bichos, etc.
     Aí perguntar se o player deseja retornar a partida ao iniciar o jogo novamente (onPause e OnResume)
 

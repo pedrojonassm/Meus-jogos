@@ -56,6 +56,23 @@ public class Player extends Entity {
         totalAmmo[tipo] += total;
     }
 
+    public String salvarMunicao(){
+        String str = "";
+        for (int i = 0; i < 3; i++){
+            str += ammo[i]+":";
+            str += totalAmmo[i]+":";
+        }
+        System.out.println(str);
+        return str;
+    }
+
+    public void setarMunicao(int tipo, int total){
+        ammo[tipo] = total;
+    }
+    public void setarMunicaoTotal(int tipo, int total){
+        totalAmmo[tipo] = total;
+    }
+
     private void adicionarsprites() {
         addSprites(20, 0, 0); // 0
         addSprites(20, 20, 0); // 1
@@ -106,15 +123,6 @@ public class Player extends Entity {
     }
     public void rotate(float lookX, float lookY){
         rotation = MathUtils.atan2(lookY - (position.y-(Game.camera.position.y- Game.camera.viewportHeight/2)), lookX - (position.x-(Game.camera.position.x- Game.camera.viewportWidth/2)))*MathUtils.radiansToDegrees;
-    }
-
-    public boolean colidindo(){
-        for (Entity e : Game.entities){
-            if (e.position.overlaps(position)){
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
