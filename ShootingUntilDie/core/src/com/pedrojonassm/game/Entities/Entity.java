@@ -10,9 +10,9 @@ import com.pedrojonassm.game.control.Game;
 
 public class Entity {
     protected Array<TextureRegion[]> sprites;
-    protected int index, pivoX, pivoY, state, fr = 0, maxFr = 0, speed, tamanhoX, tamanhoY, Z = 0, morte = -1, valor_em_pontos;
+    protected int pivoX, pivoY, maxFr = 0, tamanhoX, tamanhoY, Z = 0, morte = -1, valor_em_pontos;
     protected float escalaX, escalaY;
-    public int life = 0, maxLife;
+    public int index, life = 0, maxLife, speed, state, fr = 0;
     public int ferido = 0;
     protected Array<Integer> maxIndex;
     protected float rotation;

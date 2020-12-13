@@ -10,15 +10,21 @@ import com.pedrojonassm.game.Entities.AlienBoss;
 import com.pedrojonassm.game.Entities.Disparo;
 import com.pedrojonassm.game.Entities.DisparoTanque;
 import com.pedrojonassm.game.Entities.Entity;
+import com.pedrojonassm.game.Entities.Heals;
+import com.pedrojonassm.game.Entities.Insect;
 import com.pedrojonassm.game.Entities.Player;
+import com.pedrojonassm.game.Entities.Scorpion;
 import com.pedrojonassm.game.Entities.SuperDisparo;
 import com.pedrojonassm.game.Entities.TankBoss;
+import com.pedrojonassm.game.Entities.Troll;
 import com.pedrojonassm.game.Graficos.spritesSheet;
 import com.pedrojonassm.game.Graficos.Ui;
-
-import java.awt.DisplayMode;
-
-import javax.security.auth.login.Configuration;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class Game extends ApplicationAdapter {
 	public static OrthographicCamera camera;
@@ -40,6 +46,11 @@ public class Game extends ApplicationAdapter {
 	private static int ultimo_boss;
 	private static long tempo_boss;
 	public static boolean boss_spawnado = false;
+	private File dir;
+
+	public Game(File dir){
+		this.dir = dir;
+	}
 
 	@Override
 	public void create () {
@@ -60,6 +71,7 @@ public class Game extends ApplicationAdapter {
 		ui = new Ui();
 		// criando player
 		player = new Player(26, 34);
+		ler_no_txt();
 	}
 
 	private static void tempo_para_spawnar_boss() {
@@ -201,8 +213,134 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
+		// Chamado quando o jogo é fechado
 		batch.dispose();
 		background.dispose();
+		escrever_no_txt();
+	}
+
+	private int tem_ultimo_jogo(){
+		File file = new File(dir,"salvamento_rapido.txt");
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			if (reader.readLine() != null){
+				reader.close();
+				return 1;
+			}else{
+				reader.close();
+				return 0;
+			}
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+
+	private void ler_no_txt(){
+		File file = new File(dir,"salvamento_rapido.txt");
+		if (!file.exists()){
+			return;
+		}
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String linha = null;
+			while ((linha = reader.readLine()) != null){
+				String[] str = linha.split(":");
+				if (Integer.parseInt(str[0]) == 0){
+					player.position.x = Integer.parseInt(str[1]);
+					player.position.y = Integer.parseInt(str[2]);
+					player.state = Integer.parseInt(str[4]);
+					player.fr =  Integer.parseInt(str[5]);
+					player.index =  Integer.parseInt(str[6]);
+					player.life =  Integer.parseInt(str[7]);
+					pontos = Integer.parseInt(str[8]); // Player não tem ferido
+				}else{
+					Entity e = null;
+					switch (Integer.parseInt(str[0])){
+						case 1:
+							e = new Scorpion();
+							break;
+						case 2:
+							e = new Insect();
+							break;
+						case 3:
+							e = new Troll();
+							break;
+						case 4:
+							e = new Heals();
+							break;
+						case 5:
+							e = new AlienBoss();
+							break;
+						case 6:
+							e = new TankBoss();
+							break;
+					}
+					e.position.x = Integer.parseInt(str[1]);
+					e.position.y = Integer.parseInt(str[2]);
+					e.speed = Integer.parseInt(str[3]);
+					e.state = Integer.parseInt(str[4]);
+					e.fr = Integer.parseInt(str[5]);
+					e.index = Integer.parseInt(str[6]);
+					e.life = Integer.parseInt(str[7]);
+					e.ferido = Integer.parseInt(str[8]);
+					Game.entities.add(e);
+				}
+			}
+			reader.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void escrever_no_txt() {
+		// Salva os dados no arquivo txt, então é carregado para o banco de dados
+		File file = new File(dir,"salvamento_rapido.txt");
+		BufferedWriter bufferedWriter;
+		try {
+			file.createNewFile();
+			bufferedWriter = new BufferedWriter(new FileWriter(file));
+			String str = "";
+			str += "0:";
+			str += (int) player.position.x + ":";
+			str += (int) player.position.y + ":";
+			str += (int) player.speed + ":";
+			str += (int) player.state + ":";
+			str += (int) player.fr + ":";
+			str += (int) player.index + ":";
+			str += (int) player.life + ":";
+			str += pontos+"\n";
+			bufferedWriter.write(str);
+			for (Entity e : entities) {
+				str = "";
+				if (e instanceof Scorpion) {
+					str += "1:";
+				} else if (e instanceof Insect) {
+					str += "2:";
+				} else if (e instanceof Troll) {
+					str += "3:";
+				} else if (e instanceof Heals) {
+					str += "4:";
+				} else if (e instanceof AlienBoss) {
+					str += "5:";
+				} else if (e instanceof TankBoss) {
+					str += "6:";
+				}
+				str += (int) e.position.x + ":";
+				str += (int) e.position.y + ":";
+				str += (int) e.speed + ":";
+				str += (int) e.state + ":";
+				str += (int) e.fr + ":";
+				str += (int) e.index + ":";
+				str += (int) e.life + ":";
+				str += e.ferido + "\n";
+				bufferedWriter.write(str);
+			}
+			bufferedWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	public static float getTelaHeight() {
@@ -212,4 +350,5 @@ public class Game extends ApplicationAdapter {
 	public static float getTelaWidth() {
 		return camera.viewportWidth;
 	}
+
 }
