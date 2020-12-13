@@ -16,8 +16,8 @@ public class Ui {
     TextureRegion recarregarArma;
     public int aX, aY, posX, posY, recarregar = 0;
     public Circle maior, reload;
-    public Rectangle trocar_armas;
-    private boolean ultimo_jogo = false;
+    public Rectangle trocar_armas, continuar, novo_jogo;
+    public boolean ultimo_jogo = false;
     public Ui(boolean tem_ultimo_jogo){
         ultimo_jogo = tem_ultimo_jogo;
         float px = Game.camera.position.x - Game.camera.viewportWidth/2, py = Game.camera.position.y + Game.camera.viewportHeight/2;
@@ -36,20 +36,20 @@ public class Ui {
         posX = (int) (Game.getTelaWidth()/6);
         posY = (int) (Game.getTelaHeight()/6);
         trocar_armas = new Rectangle(px+Game.getTelaWidth()-posX, 0, Game.getTelaWidth()/10, Game.getTelaHeight()/3);
+        novo_jogo = new Rectangle(posX, Game.getTelaHeight()/2, Game.getTelaWidth()/7, Game.getTelaHeight()/10);
+        continuar = new Rectangle(posX, Game.getTelaHeight()/2-Game.getTelaHeight()/8, Game.getTelaWidth()/7, Game.getTelaHeight()/10);
         maior = new Circle(posX, posY, (int) ((posX+posY)/6));
         reload = new Circle(px-posX-recarregarArma.getRegionWidth() + Game.getTelaWidth(), py+posY- Game.getTelaHeight(), (int) ((posX+posY)/6));
         // acrescentar botão para troca das armase
     }
-    public void tick(){
-    }
     public void render(SpriteBatch batch){
         float px = Game.camera.position.x - Game.getTelaWidth()/2, py = Game.camera.position.y + Game.getTelaHeight()/2;
-
+        GlyphLayout glyphLayout = new GlyphLayout();
         if (!Game.pause) {
 
             // munição
             String str = "Ammo: " + Game.getPlayer().getAmmo() + "/" + Game.getPlayer().getTotalAmmo();
-            GlyphLayout glyphLayout = new GlyphLayout(font, str); // Isso serve apenas para pegar o tamanho da String
+            glyphLayout.setText(font, str);
             font.draw(batch, str, px + Game.camera.viewportWidth - glyphLayout.width, py);
 
             // vida
@@ -101,7 +101,38 @@ public class Ui {
                 batch.draw(recarregarArma, px - posX - recarregarArma.getRegionWidth() + Game.getTelaWidth() - maior.radius, py + posY - Game.getTelaHeight() - maior.radius, 32, 32, recarregarArma.getRegionWidth(), recarregarArma.getRegionHeight(), Game.getTelaWidth() / 800, Game.getTelaHeight() / 480, 0);
             }
         }else{
+            batch.end();
+            ShapeRenderer shape = new ShapeRenderer();
+            shape.setProjectionMatrix(batch.getProjectionMatrix());
+            shape.setAutoShapeType(true);
+            shape.begin(ShapeRenderer.ShapeType.Filled);
+            if (ultimo_jogo){
+                // Desenhando "botão" de continuar
+                shape.setColor(Color.BLUE);
+                shape.rect(px+continuar.x, py+continuar.y-Game.getTelaHeight(), continuar.width, continuar.height);
+            }
 
+            // Desenhando "botão" de novo jogo
+            shape.setColor(Color.RED);
+            shape.rect(px+novo_jogo.x, py+novo_jogo.y-Game.getTelaHeight(), novo_jogo.width, novo_jogo.height);
+            shape.end();
+
+            batch.begin();
+            String str;
+            if (ultimo_jogo){
+                str = "Continuar";
+                font.setColor(Color.BLUE);
+                font.draw(batch, str, px + continuar.x, py+continuar.y - Game.getTelaHeight()+continuar.height/2);
+            }
+            str = "Novo Jogo";
+            font.setColor(Color.RED);
+            font.draw(batch, str, px + novo_jogo.x, py+novo_jogo.y - Game.getTelaHeight()+novo_jogo.height/2);
+            font.getData().setScale(4f);
+            str = "Shooting Until Die";
+            glyphLayout.setText(font, str);
+            font.setColor(Color.RED);
+            font.draw(batch, str, px + Game.getTelaWidth()/2 - glyphLayout.width/2, py-glyphLayout.height);
+            font.getData().setScale(1.5f);
         }
 
     }

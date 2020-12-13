@@ -60,7 +60,7 @@ public class Game extends ApplicationAdapter {
 		disparos = new Array<>();
 		disparostanque = new Array<>();
 		superdisparostanque = new Array<>();
-		pause = false;
+		pause = true;
 		entities = new Array<Entity>();
 		jogo = this;
 
@@ -72,7 +72,6 @@ public class Game extends ApplicationAdapter {
 		ui = new Ui(tem_ultimo_jogo());
 		// criando player
 		player = new Player(26, 34);
-		ler_no_txt();
 	}
 
 	public static long tempo(){
@@ -91,7 +90,6 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		spawnarBoss();
 		/*Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);*/
 
@@ -108,49 +106,62 @@ public class Game extends ApplicationAdapter {
 		if(Gdx.input.isTouched()) {
 			float mx = Gdx.input.getX(), my = camera.viewportHeight-Gdx.input.getY();
 
-			if (ui.maior.contains(mx, my)){
-				// está tocando no analógico?
-				analogic = true;
-				ui.aX = (int) mx - ui.posX;
-				ui.aY = (int) my - ui.posY;
-				moveX = mx;
-				moveY = my;
-			}else if (!player.atordoado){
-				if (player.gun == 1 && !ui.trocar_armas.contains(mx, my)){
-					if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
+			if (!pause) {
+
+				if (ui.maior.contains(mx, my)) {
+					// está tocando no analógico?
+					analogic = true;
+					ui.aX = (int) mx - ui.posX;
+					ui.aY = (int) my - ui.posY;
+					moveX = mx;
+					moveY = my;
+				} else if (!player.atordoado) {
+					if (player.gun == 1 && !ui.trocar_armas.contains(mx, my)) {
+						if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
 					/*
 					verifica se é o dedo que estava no analogico e saiu dele
 					isso evita o gasto de munições com a metralhadora
 					 */
-						moveY = my;
-						moveX = mx;
-					}else{
-						player.rotate(mx, my);
-						player.atirar();
-					}
-				}else if (Gdx.input.justTouched()){
-					if (ui.reload.contains(mx, my)) {
-						player.reload = true;
-					}else if (ui.trocar_armas.contains(mx, my)){
-						if (my >= ui.trocar_armas.height*2/3){
-							player.gun = 0; // pistola
-						}else if (my < ui.trocar_armas.height/3){
-							player.gun = 2; // espingarda
-						}else{
-							player.gun = 1; // Metralhadora
+							moveY = my;
+							moveX = mx;
+						} else {
+							player.rotate(mx, my);
+							player.atirar();
 						}
-					}else {
-						player.rotate(mx, my);
-						player.atirar();
+					} else if (Gdx.input.justTouched()) {
+						if (ui.reload.contains(mx, my)) {
+							player.reload = true;
+						} else if (ui.trocar_armas.contains(mx, my)) {
+							if (my >= ui.trocar_armas.height * 2 / 3) {
+								player.gun = 0; // pistola
+							} else if (my < ui.trocar_armas.height / 3) {
+								player.gun = 2; // espingarda
+							} else {
+								player.gun = 1; // Metralhadora
+							}
+						} else {
+							player.rotate(mx, my);
+							player.atirar();
+						}
 					}
 				}
-			}
-			if (analogic){
-				if (ui.maior.contains(ui.maior.x, my)){
-					ui.aY = (int) my - ui.posY;
+				if (analogic) {
+					if (ui.maior.contains(ui.maior.x, my)) {
+						ui.aY = (int) my - ui.posY;
+					}
+					if (ui.maior.contains(mx, ui.maior.y)) {
+						ui.aX = (int) mx - ui.posX;
+					}
 				}
-				if (ui.maior.contains(mx, ui.maior.y)){
-					ui.aX = (int) mx - ui.posX;
+			}else{
+				if (Gdx.input.justTouched()) {
+					if (ui.novo_jogo.contains(mx, my)) {
+						tempo_para_spawnar_boss();
+						pause = false;
+					} else if (ui.ultimo_jogo && ui.continuar.contains(mx, my)) {
+						ler_no_txt();
+						pause = false;
+					}
 				}
 			}
 		}else if (analogic){
@@ -172,6 +183,8 @@ public class Game extends ApplicationAdapter {
 			e.render(batch);
 		}
 		if (!pause){
+			// Verifica se é para spawnar um Boss
+			spawnarBoss();
 			// Spawner para spawnar monstros
 			spawner.tick();
 
@@ -188,14 +201,13 @@ public class Game extends ApplicationAdapter {
 				d.render(batch);
 			}
 			player.tick();
+			player.render(batch);
 		}else{
 			// Atualiza o tempo quando o jogo pausa para não fazer o boss aparecer rapido demais
 			long t = tempo_boss;
 			tempo_para_spawnar_boss();
 			tempo_boss -= (t-tempo());
 		}
-		player.render(batch);
-		ui.tick();
 		ui.render(batch);
 		batch.end();
 	}
@@ -245,7 +257,7 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
-	private void ler_no_txt(){
+	private static void ler_no_txt(){
 		File file = new File(dir,"salvamento_rapido.txt");
 		if (!file.exists()){
 			return;
@@ -263,11 +275,6 @@ public class Game extends ApplicationAdapter {
 					player.index =  Integer.parseInt(str[6]);
 					player.life =  Integer.parseInt(str[7]);
 					for (int i = 0; i < 3; i++){
-						/*
-						i = 0 --> 8 e 9
-						i = 1 --> 10 e 11
-						i = 2 --> 12 e 13
-						 */
 						System.out.println(str[i*2+8]+":"+str[i*2+9]);
 						player.setarMunicao(i, Integer.parseInt(str[i*2+8]));
 						player.setarMunicaoTotal(i, Integer.parseInt(str[i*2+9]));
