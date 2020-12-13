@@ -16,7 +16,7 @@ public class Ui {
     TextureRegion recarregarArma;
     public int aX, aY, posX, posY, recarregar = 0;
     public Circle maior, reload;
-    public Rectangle trocar_armas, continuar, novo_jogo;
+    public Rectangle trocar_armas, continuar, novo_jogo, vida;
     public boolean ultimo_jogo = false;
     public Ui(boolean tem_ultimo_jogo){
         ultimo_jogo = tem_ultimo_jogo;
@@ -36,6 +36,7 @@ public class Ui {
         posX = (int) (Game.getTelaWidth()/6);
         posY = (int) (Game.getTelaHeight()/6);
         trocar_armas = new Rectangle(px+Game.getTelaWidth()-posX, 0, Game.getTelaWidth()/10, Game.getTelaHeight()/3);
+        vida = new Rectangle(posX, Game.getTelaHeight()/2, 120*Game.getTelaWidth()/500, 20*Game.getTelaHeight()/500);
         novo_jogo = new Rectangle(posX, Game.getTelaHeight()/2, Game.getTelaWidth()/7, Game.getTelaHeight()/10);
         continuar = new Rectangle(posX, Game.getTelaHeight()/2-Game.getTelaHeight()/8, Game.getTelaWidth()/7, Game.getTelaHeight()/10);
         maior = new Circle(posX, posY, (int) ((posX+posY)/6));
@@ -59,9 +60,9 @@ public class Ui {
             shape.setAutoShapeType(true);
             shape.begin(ShapeRenderer.ShapeType.Filled);
             shape.setColor(Color.RED);
-            shape.rect(px, py - 20, 120, 20);
+            shape.rect(px, py - vida.height, vida.width, vida.height);
             shape.setColor(Color.GREEN);
-            shape.rect(px, py - 20, (int) ((Game.getPlayer().life * 120) / Game.getPlayer().maxLife), 20);
+            shape.rect(px, py - vida.height, (int) (((Game.getPlayer().life * 120) / Game.getPlayer().maxLife)*Game.getTelaWidth()/500), vida.height);
 
             // Analógico:
             shape.setColor(Color.GRAY);
@@ -127,12 +128,12 @@ public class Ui {
             str = "Novo Jogo";
             font.setColor(Color.RED);
             font.draw(batch, str, px + novo_jogo.x, py+novo_jogo.y - Game.getTelaHeight()+novo_jogo.height/2);
-            font.getData().setScale(4f);
+            font.getData().setScale(4f*Game.getTelaWidth()/1000);
             str = "Shooting Until Die";
             glyphLayout.setText(font, str);
             font.setColor(Color.RED);
             font.draw(batch, str, px + Game.getTelaWidth()/2 - glyphLayout.width/2, py-glyphLayout.height);
-            font.getData().setScale(1.5f);
+            font.getData().setScale(1.5f*Game.getTelaWidth()/900);
         }
 
     }

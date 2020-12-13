@@ -23,7 +23,7 @@ public class DisparoTanque extends Entity{
     @Override
     public void tick() {
         for (Entity e : Game.entities){
-            if (e.position.overlaps(position) && e.state != e.morte && !(e instanceof TankBoss) && !e.invulneravel){
+            if (e.position.overlaps(position) && e.state != e.morte && !(e instanceof TankBoss) && !e.invulneravel && !(e instanceof Heals)){
                 Game.disparostanque.removeValue(this, true);
                 e.life-=((maxLife-life)/5);
                 return;

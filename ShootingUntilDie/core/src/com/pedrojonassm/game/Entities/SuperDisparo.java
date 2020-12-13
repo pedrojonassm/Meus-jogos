@@ -36,7 +36,7 @@ public class SuperDisparo extends Entity{
             }
         }
         for (Entity e : Game.entities){
-            if (e.position.overlaps(position) && e.state != e.morte && !(e instanceof TankBoss) && !e.invulneravel){
+            if (e.position.overlaps(position) && e.state != e.morte && !(e instanceof TankBoss) && !e.invulneravel && !(e instanceof Heals)){
                 Game.superdisparostanque.removeValue(this, true);
                 Game.entities.removeValue(e, true);
                 explodir();
