@@ -74,8 +74,12 @@ public class Game extends ApplicationAdapter {
 		ler_no_txt();
 	}
 
+	public static long tempo(){
+		return 1000*60*2;
+	}
+
 	private static void tempo_para_spawnar_boss() {
-		tempo_boss = System.currentTimeMillis() + 1000*60*2; // 2 min no max para spawnar um boss
+		tempo_boss = System.currentTimeMillis() + tempo(); // 2 min no max para spawnar um boss
 	}
 
 	public static void bossMorto(){
@@ -246,10 +250,11 @@ public class Game extends ApplicationAdapter {
 			while ((linha = reader.readLine()) != null){
 				String[] str = linha.split(":");
 				if (Integer.parseInt(str[0]) == 0){
-					player.position.x = Integer.parseInt(str[1]);
-					player.position.y = Integer.parseInt(str[2]);
+					player.position.x = Float.parseFloat(str[1]);
+					player.position.y = Float.parseFloat(str[2]);
 					player.state = Integer.parseInt(str[4]);
-					player.fr =  Integer.parseInt(str[5]);
+					System.out.println(tempo()-Long.parseLong(str[5]));
+					tempo_boss -= tempo()-Long.parseLong(str[5]);
 					player.index =  Integer.parseInt(str[6]);
 					player.life =  Integer.parseInt(str[7]);
 					pontos = Integer.parseInt(str[8]); // Player não tem ferido
@@ -275,8 +280,8 @@ public class Game extends ApplicationAdapter {
 							e = new TankBoss();
 							break;
 					}
-					e.position.x = Integer.parseInt(str[1]);
-					e.position.y = Integer.parseInt(str[2]);
+					e.position.x = Float.parseFloat(str[1]);
+					e.position.y = Float.parseFloat(str[2]);
 					e.speed = Integer.parseInt(str[3]);
 					e.state = Integer.parseInt(str[4]);
 					e.fr = Integer.parseInt(str[5]);
@@ -302,13 +307,13 @@ public class Game extends ApplicationAdapter {
 			bufferedWriter = new BufferedWriter(new FileWriter(file));
 			String str = "";
 			str += "0:";
-			str += (int) player.position.x + ":";
-			str += (int) player.position.y + ":";
-			str += (int) player.speed + ":";
-			str += (int) player.state + ":";
-			str += (int) player.fr + ":";
-			str += (int) player.index + ":";
-			str += (int) player.life + ":";
+			str += player.position.x + ":";
+			str += player.position.y + ":";
+			str += player.speed + ":";
+			str += player.state + ":";
+			str += (tempo_boss-System.currentTimeMillis()) + ":"; // Salva o tempo que já passou para spawnar o boss, deve-se subtrair isso do tempo_boss ao recarregar
+			str += player.index + ":";
+			str +=  player.life + ":";
 			str += pontos+"\n";
 			bufferedWriter.write(str);
 			for (Entity e : entities) {
@@ -326,13 +331,13 @@ public class Game extends ApplicationAdapter {
 				} else if (e instanceof TankBoss) {
 					str += "6:";
 				}
-				str += (int) e.position.x + ":";
-				str += (int) e.position.y + ":";
-				str += (int) e.speed + ":";
-				str += (int) e.state + ":";
-				str += (int) e.fr + ":";
-				str += (int) e.index + ":";
-				str += (int) e.life + ":";
+				str += e.position.x + ":";
+				str += e.position.y + ":";
+				str += e.speed + ":";
+				str += e.state + ":";
+				str += e.fr + ":";
+				str += e.index + ":";
+				str += e.life + ":";
 				str += e.ferido + "\n";
 				bufferedWriter.write(str);
 			}

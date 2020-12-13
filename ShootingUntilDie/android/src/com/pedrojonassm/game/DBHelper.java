@@ -101,6 +101,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 str += c.getColumnIndex("life")+":";
                 str += c.getColumnIndex("ferido")+"\n";
                 bufferedWriter.write(str);
+                System.out.println(str);
             }
             bufferedWriter.close();
             dbinstancia.execSQL("delete from "+nome_banco);
