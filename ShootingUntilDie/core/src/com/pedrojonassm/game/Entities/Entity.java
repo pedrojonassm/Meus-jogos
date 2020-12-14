@@ -110,7 +110,6 @@ public class Entity {
 
 
     protected void pontuar() {
-        System.out.println(valor_em_pontos);
         Game.pontos += valor_em_pontos;
     }
 }

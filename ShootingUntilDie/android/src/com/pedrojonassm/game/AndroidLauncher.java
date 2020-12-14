@@ -8,16 +8,15 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 //import com.google.firebase.database.FirebaseDatabase;
 import com.pedrojonassm.game.control.Game;
 
+//import io.hasura.sdk.Hasura;
+//import io.hasura.sdk.ProjectConfig;
+
 public class AndroidLauncher extends AndroidApplication {
-	//FirebaseDatabase database = FirebaseDatabase.getInstance();
-	//DatabaseReference myRef = database.getReference("message");
-	//DBHelper dbHelper;
+	//ProjectConfig config = new ProjectConfig.Builder().setProjectName("ShootingUntilDie").build();
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
-		//myRef.setValue("Hello World!");
+		//Hasura.setProjectConfig(config).enableLogs().initialise(this);
 		super.onCreate(savedInstanceState);
-		//dbHelper = new DBHelper(this, getFilesDir());
-		//dbHelper.ler();
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		initialize(new Game(getFilesDir()), config);
 	}

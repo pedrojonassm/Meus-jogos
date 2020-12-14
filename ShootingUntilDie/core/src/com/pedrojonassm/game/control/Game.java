@@ -219,6 +219,7 @@ public class Game extends ApplicationAdapter {
 			ultima_contagem = System.currentTimeMillis()+1000;
 			tempo_boss--;
 			if (tempo_boss <= 0){
+				boss_spawnado = true;
 				if (ultimo_boss == 0){
 					ultimo_boss++;
 					Game.entities.add(new AlienBoss());
@@ -248,7 +249,6 @@ public class Game extends ApplicationAdapter {
 
 	public static void Game_Over(){
 		pause = true;
-		System.out.println("p: "+pontos+" pMax: "+pontuacaoMaxima);
 		if (pontos >= pontuacaoMaxima){
 			pontuacaoMaxima = pontos;
 		}
@@ -308,7 +308,6 @@ public class Game extends ApplicationAdapter {
 					player.index =  Integer.parseInt(str[6]);
 					player.life =  Integer.parseInt(str[7]);
 					for (int i = 0; i < 3; i++){
-						System.out.println(str[i*2+8]+":"+str[i*2+9]);
 						player.setarMunicao(i, Integer.parseInt(str[i*2+8]));
 						player.setarMunicaoTotal(i, Integer.parseInt(str[i*2+9]));
 					}

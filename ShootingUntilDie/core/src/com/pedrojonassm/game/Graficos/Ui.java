@@ -110,6 +110,8 @@ public class Ui {
                 batch.draw(recarregarArma, px - posX - recarregarArma.getRegionWidth() + Game.getTelaWidth() - maior.radius, py + posY - Game.getTelaHeight() - maior.radius, 32, 32, recarregarArma.getRegionWidth(), recarregarArma.getRegionHeight(), Game.getTelaWidth() / 800, Game.getTelaHeight() / 480, 0);
             }
         }else{
+            /*
+            //Vendo os quadrados dos botões
             batch.end();
             ShapeRenderer shape = new ShapeRenderer();
             shape.setProjectionMatrix(batch.getProjectionMatrix());
@@ -125,8 +127,8 @@ public class Ui {
             shape.setColor(Color.RED);
             shape.rect(px+novo_jogo.x, py+novo_jogo.y-Game.getTelaHeight(), novo_jogo.width, novo_jogo.height);
             shape.end();
-
             batch.begin();
+            //*/
             String str;
             if (ultimo_jogo){
                 str = "Continuar";

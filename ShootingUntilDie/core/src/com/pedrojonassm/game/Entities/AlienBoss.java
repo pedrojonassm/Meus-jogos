@@ -40,13 +40,13 @@ public class AlienBoss extends Entity {
             Game.bossMorto();
             return;
         }
-        if (pulos == 0 && Spawner.rand.nextInt(100) <= 5){
+        if (pulos == 0 && Spawner.rand.nextInt(100) <= 20){
             pulos = Spawner.rand.nextInt(maxLife/life) + 1;
             if (pulos > 8){
                 pulos = 8;
             }
         }
-        if (pulos > 0 && ultimoSalto+3000 < System.currentTimeMillis() && Spawner.rand.nextInt(100) <= 60){
+        if (pulos > 0 && ultimoSalto+3000 < System.currentTimeMillis() && Spawner.rand.nextInt(100) <= 5){
             tempoSalto = 100;
             jump = true;
             ultimoSalto = System.currentTimeMillis();
@@ -63,7 +63,7 @@ public class AlienBoss extends Entity {
             }
         }
         if (jump){
-            if (tempoSalto%30 == 0){
+            if (tempoSalto%50 == 0){
                 sumonarBicho();
             }
             tempoSalto--;

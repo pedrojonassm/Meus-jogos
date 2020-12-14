@@ -91,6 +91,11 @@ task run(type: Exec) {
 
 eclipse.project.name = appName + "-android"
 
+/* Tentando Hasura
+dependencies {
+    implementation ('com.github.hasura.android-sdk:sdk:v0.0.9')
+}//*/
+
 /*
 // Conectando com o FireBase
 apply plugin: 'com.android.application'
