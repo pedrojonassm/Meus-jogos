@@ -17,7 +17,7 @@ public class Ui {
     public int aX, aY, posX, posY, recarregar = 0;
     public Circle maior, reload;
     public Rectangle trocar_armas, continuar, novo_jogo, vida;
-    public boolean ultimo_jogo = false;
+    public boolean ultimo_jogo = false, recorde = false;
     public Ui(boolean tem_ultimo_jogo){
         ultimo_jogo = tem_ultimo_jogo;
         float px = Game.camera.position.x - Game.camera.viewportWidth/2, py = Game.camera.position.y + Game.camera.viewportHeight/2;
@@ -84,6 +84,14 @@ public class Ui {
             shape.end();
             //*/
             batch.begin();
+
+            //Mostrar tempo para spawnar o Boss
+
+            str = "" + Game.tempo_boss;
+            glyphLayout.setText(font, str);
+            font.setColor(Color.YELLOW);
+            font.draw(batch, str, px + Game.getTelaWidth()/2 - glyphLayout.width/2, py - Game.getTelaHeight()+glyphLayout.height);
+
             // armas (clicar para trocar)
             for (int i = 0; i < 3; i++) {
                 // trocar_armas.y é 0, logo não é preciso colocar aqui
@@ -125,9 +133,16 @@ public class Ui {
                 font.setColor(Color.BLUE);
                 font.draw(batch, str, px + continuar.x, py+continuar.y - Game.getTelaHeight()+continuar.height/2);
             }
+
+            str = "Pontuação Máxima: " + Game.pontuacaoMaxima;
+            glyphLayout.setText(font, str);
+            font.setColor(Color.GREEN);
+            font.draw(batch, str, px + Game.getTelaWidth() - novo_jogo.x - glyphLayout.width, py+novo_jogo.y - Game.getTelaHeight()+novo_jogo.height/2);
+
             str = "Novo Jogo";
             font.setColor(Color.RED);
             font.draw(batch, str, px + novo_jogo.x, py+novo_jogo.y - Game.getTelaHeight()+novo_jogo.height/2);
+
             font.getData().setScale(4f*Game.getTelaWidth()/1000);
             str = "Shooting Until Die";
             glyphLayout.setText(font, str);

@@ -62,7 +62,6 @@ public class Player extends Entity {
             str += ammo[i]+":";
             str += totalAmmo[i]+":";
         }
-        System.out.println(str);
         return str;
     }
 
@@ -89,6 +88,9 @@ public class Player extends Entity {
     }
 
     public void tick(){
+        if (life <= 0){
+            Game.Game_Over();
+        }
         if ((Game.getUi().aX != 0 || Game.getUi().aY != 0) && !atordoado){
             moving = true;
         }else{

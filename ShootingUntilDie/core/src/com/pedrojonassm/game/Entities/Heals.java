@@ -27,7 +27,11 @@ public class Heals extends Entity {
         sprites.add(curas);
         sprites.add(ammo);
         index = Spawner.rand.nextInt(3);
-        state = Spawner.rand.nextInt(2);
+        state = 1;
+        if (Game.getPlayer().life < Game.getPlayer().maxLife){
+            // Caso a vida do player não esteja cheia, pode spawnar + vida
+            state = Spawner.rand.nextInt(2);
+        }
         if (state == 0){
             life = (index+1)*30;
             if (index == 0){
@@ -48,11 +52,6 @@ public class Heals extends Entity {
             }
         }else{
             life = 24/(index+1);
-            /*
-            1 -- 10
-            2 -- 15
-            3 -- 8
-             */
             if (index == 0){
                 pivoX = 4;
                 pivoY = 12;
@@ -85,9 +84,7 @@ public class Heals extends Entity {
                 }
             }else{
                 // munição
-                System.out.println(life);
                 Game.getPlayer().coletarMunicao(index, life);
-                Game.entities.removeValue(this, true);
             }
             Game.entities.removeValue(this, true);
         }else if (System.currentTimeMillis()-spawn >= 20000){ // depois de 20 segundos, ele some

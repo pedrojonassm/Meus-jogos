@@ -43,10 +43,11 @@ public class Game extends ApplicationAdapter {
 	public static Array<SuperDisparo> superdisparostanque;
 	private static Spawner spawner;
 	private float moveX, moveY;
-	public static int pontos = 0;
+	public static int pontos, pontuacaoMaxima;
 	private static int ultimo_boss;
-	private static long tempo_boss;
-	public static boolean boss_spawnado = false;
+	public static int tempo_boss;
+	private static long ultima_contagem;
+	public static boolean boss_spawnado;
 	private static File dir;
 
 	public Game(File dir){
@@ -55,6 +56,18 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		jogo = this;
+		camera= new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		batch = new SpriteBatch();
+		background = new Texture("background.png");
+		sprites = new spritesSheet(new Texture("Assets.png"), 64);
+		iniciar_variaveis();
+		ui = new Ui(tem_ultimo_jogo());
+	}
+	private void iniciar_variaveis(){
+		boss_spawnado = false;
+		ultima_contagem = 0;
 		tempo_para_spawnar_boss();
 		spawner = new Spawner();
 		disparos = new Array<>();
@@ -62,24 +75,13 @@ public class Game extends ApplicationAdapter {
 		superdisparostanque = new Array<>();
 		pause = true;
 		entities = new Array<Entity>();
-		jogo = this;
-
-		camera= new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		batch = new SpriteBatch();
-		background = new Texture("background.png");
-		sprites = new spritesSheet(new Texture("Assets.png"), 64);
-		ui = new Ui(tem_ultimo_jogo());
-		// criando player
 		player = new Player(26, 34);
+		pontos = 0;
+		ajustar_camera();
 	}
 
-	public static long tempo(){
-		return 1000*60*2;
-	}
-
-	private static void tempo_para_spawnar_boss() {
-		tempo_boss = System.currentTimeMillis() + tempo(); // 2 min no max para spawnar um boss
+	private static void tempo_para_spawnar_boss(){
+		tempo_boss = 60*2;
 	}
 
 	public static void bossMorto(){
@@ -90,15 +92,11 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+		//System.out.println("p: "+pontos+" pMax: "+pontuacaoMaxima);
 		/*Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);*/
 
-		if (player.position.y > camera.viewportHeight/2 && player.position.y + camera.viewportHeight/2 < background.getHeight()){
-			camera.position.y = player.position.y;
-		}
-		if (player.position.x > camera.viewportWidth/2 && player.position.x + camera.viewportWidth/2 < background.getWidth()){
-			camera.position.x = player.position.x;
-		}
+		ajustar_camera();
 
 		// tell the camera to update its matrices.
 		camera.update();
@@ -116,19 +114,19 @@ public class Game extends ApplicationAdapter {
 					moveX = mx;
 					moveY = my;
 				} else if (!player.atordoado) {
-					if (player.gun == 1 && !ui.trocar_armas.contains(mx, my)) {
-						if (Entity.distancia(mx, my, moveX, moveY) <= 20) {
-					/*
-					verifica se é o dedo que estava no analogico e saiu dele
-					isso evita o gasto de munições com a metralhadora
-					 */
+					if (player.gun == 1 && !ui.trocar_armas.contains(mx, my) && !ui.trocar_armas.contains(mx, my)) {
+						if (Entity.distancia(mx, my, moveX, moveY) <= 40) {
+							/*
+							verifica se é o dedo que estava no analogico e saiu dele
+							isso evita o gasto de munições com a metralhadora
+					 		*/
 							moveY = my;
 							moveX = mx;
 						} else {
 							player.rotate(mx, my);
 							player.atirar();
 						}
-					} else if (Gdx.input.justTouched()) {
+					} if (Gdx.input.justTouched()) {
 						if (ui.reload.contains(mx, my)) {
 							player.reload = true;
 						} else if (ui.trocar_armas.contains(mx, my)) {
@@ -202,25 +200,32 @@ public class Game extends ApplicationAdapter {
 			}
 			player.tick();
 			player.render(batch);
-		}else{
-			// Atualiza o tempo quando o jogo pausa para não fazer o boss aparecer rapido demais
-			long t = tempo_boss;
-			tempo_para_spawnar_boss();
-			tempo_boss -= (t-tempo());
 		}
 		ui.render(batch);
 		batch.end();
 	}
 
+	private void ajustar_camera() {
+		if (player.position.y > camera.viewportHeight/2 && player.position.y + camera.viewportHeight/2 < background.getHeight()){
+			camera.position.y = player.position.y;
+		}
+		if (player.position.x > camera.viewportWidth/2 && player.position.x + camera.viewportWidth/2 < background.getWidth()){
+			camera.position.x = player.position.x;
+		}
+	}
+
 	private void spawnarBoss() {
-		if ((tempo_boss < System.currentTimeMillis() || (pontos%1500 == 0 && pontos > 0)) && !boss_spawnado){
-			boss_spawnado = true;
-			if (ultimo_boss == 0){
-				ultimo_boss++;
-				Game.entities.add(new AlienBoss());
-			}else{
-				ultimo_boss--;
-				Game.entities.add(new TankBoss());
+		if ((System.currentTimeMillis() > ultima_contagem && !boss_spawnado)){
+			ultima_contagem = System.currentTimeMillis()+1000;
+			tempo_boss--;
+			if (tempo_boss <= 0){
+				if (ultimo_boss == 0){
+					ultimo_boss++;
+					Game.entities.add(new AlienBoss());
+				}else{
+					ultimo_boss--;
+					Game.entities.add(new TankBoss());
+				}
 			}
 		}
 	}
@@ -241,17 +246,44 @@ public class Game extends ApplicationAdapter {
 		escrever_no_txt();
 	}
 
+	public static void Game_Over(){
+		pause = true;
+		System.out.println("p: "+pontos+" pMax: "+pontuacaoMaxima);
+		if (pontos >= pontuacaoMaxima){
+			pontuacaoMaxima = pontos;
+		}
+		File file = new File(dir,"salvamento_rapido.txt");
+		if (file.exists()){
+			try {
+				file.createNewFile();
+				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+				bufferedWriter.write(salvar_player());
+			} catch (IOException e) {
+			}
+		}
+		Game.jogo.iniciar_variaveis();
+	}
+
 	public static boolean tem_ultimo_jogo(){
 		File file = new File(dir,"salvamento_rapido.txt");
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-			if (reader.readLine() != null){
+			int k = 0;
+			String str = reader.readLine();
+			if (str != null) {
+				pontuacaoMaxima = Integer.parseInt(str.split(":")[3]);
+			}
+			while (reader.readLine() != null){
+				k++;
+			}
+			if(k > 2){
 				reader.close();
 				return true;
 			}else{
 				reader.close();
 				return false;
 			}
+
 		} catch (Exception e) {
 			return false;
 		}
@@ -270,8 +302,9 @@ public class Game extends ApplicationAdapter {
 				if (Integer.parseInt(str[0]) == 0){
 					player.position.x = Float.parseFloat(str[1]);
 					player.position.y = Float.parseFloat(str[2]);
+					pontuacaoMaxima = Integer.parseInt(str[3]);
 					player.state = Integer.parseInt(str[4]);
-					tempo_boss -= tempo()-Long.parseLong(str[5]);
+					tempo_boss = Integer.parseInt(str[5]);
 					player.index =  Integer.parseInt(str[6]);
 					player.life =  Integer.parseInt(str[7]);
 					for (int i = 0; i < 3; i++){
@@ -328,14 +361,7 @@ public class Game extends ApplicationAdapter {
 			file.createNewFile();
 			bufferedWriter = new BufferedWriter(new FileWriter(file));
 			String str = "";
-			str += "0:";
-			str += player.position.x + ":";
-			str += player.position.y + ":";
-			str += player.speed + ":";
-			str += player.state + ":";
-			str += (tempo_boss-System.currentTimeMillis()) + ":"; // Salva o tempo que já passou para spawnar o boss, deve-se subtrair isso do tempo_boss ao recarregar
-			str += player.index + ":";
-			str +=  player.life + ":";
+			str += salvar_player();
 			// Adicionando as munições e o total de munições
 			str += player.salvarMunicao();
 			str += pontos+"\n";
@@ -370,6 +396,19 @@ public class Game extends ApplicationAdapter {
 			e.printStackTrace();
 			return;
 		}
+	}
+
+	private static String salvar_player() {
+		String str = "";
+		str += "0:";
+		str += player.position.x + ":";
+		str += player.position.y + ":";
+		str += pontuacaoMaxima + ":";
+		str += player.state + ":";
+		str += tempo_boss + ":"; // Salva o tempo que já passou para spawnar o boss, deve-se subtrair isso do tempo_boss ao recarregar
+		str += player.index + ":";
+		str +=  player.life + ":";
+		return str;
 	}
 
 	public static float getTelaHeight() {
