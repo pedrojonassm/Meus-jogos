@@ -88,7 +88,7 @@ public class Player extends Entity {
     }
 
     public void tick(){
-        /*
+        //*
         if (life <= 0){
             Game.Game_Over();
         }//*/
