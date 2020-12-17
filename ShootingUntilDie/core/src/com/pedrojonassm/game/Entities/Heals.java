@@ -87,7 +87,7 @@ public class Heals extends Entity {
                 Game.getPlayer().coletarMunicao(index, life);
             }
             Game.entities.removeValue(this, true);
-        }else if (System.currentTimeMillis()-spawn >= 20000){ // depois de 20 segundos, ele some
+        }else if (System.currentTimeMillis()-spawn >= 30000){ // depois de 20 segundos, ele some
             Game.entities.removeValue(this, true);
         }
     }

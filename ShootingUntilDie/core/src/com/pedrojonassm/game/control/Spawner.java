@@ -20,7 +20,7 @@ public class Spawner {
     }
     public void spawnarMonstro(){
         // scorpion, insect, troll
-        int k = rand.nextInt(difficult+1);
+        int k = rand.nextInt(difficult+1); //
         if (k == 0){
             Game.entities.add(new Scorpion());
         }else if (k == 1){

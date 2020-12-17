@@ -6,7 +6,7 @@ import com.pedrojonassm.game.control.Game;
 import com.pedrojonassm.game.control.Spawner;
 
 public class TankBoss extends Entity {
-    private int gunX, gunY, px2 = 40, acao = 0, giros = 0, super_disparos = 0, inicio_maluquice;
+    private int gunX, gunY, px2 = 40, acao, giros = 0, super_disparos = 0, inicio_maluquice;
     private float alvoX, alvoY;
     private int rotateBase = 0, rotateGun = 0;
     private long ultimo_Tiro = 0, ultimo_movimento = 0;
@@ -16,8 +16,9 @@ public class TankBoss extends Entity {
         valor_em_pontos = 6000;
         gunY = 50;
         gunX = 50;
-        position.x = alvoX = 400;
-        position.y = alvoY = 400;
+        position.x = 400;
+        position.y = 400;
+        acao = 1;
         addSprites2("Tank\\Body_", ".png", 2, 1, 0, 0, tamanhoX, tamanhoY);
         spawnar();
     }
@@ -26,7 +27,7 @@ public class TankBoss extends Entity {
     public void tick() {
         lookAt(Game.getPlayer());
         rotation = (int) rotation;
-        if  (acao == 0 && alvoX == position.x && alvoY == position.y && System.currentTimeMillis() > ultimo_movimento){
+        if  (acao == 0 && System.currentTimeMillis() > ultimo_movimento){
             int sorteado = Spawner.rand.nextInt(100);
             if (sorteado < 40){ // 40
 

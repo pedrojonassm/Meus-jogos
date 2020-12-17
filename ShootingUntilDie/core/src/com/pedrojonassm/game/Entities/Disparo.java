@@ -37,6 +37,7 @@ public class Disparo extends Entity{
         life++;
         if (life >= maxLife) {
             Game.disparos.removeValue(this, true);
+            return;
         }
         position.x += (400 * MathUtils.cos(rotation * MathUtils.degreesToRadians)) * Gdx.graphics.getDeltaTime();
         position.y += (400 * MathUtils.sin(rotation * MathUtils.degreesToRadians)) * Gdx.graphics.getDeltaTime();

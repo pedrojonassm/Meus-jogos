@@ -57,6 +57,7 @@ public class AlienBoss extends Entity {
             tempoSalto--;
             jump = false;
             if (position.contains(Game.getPlayer().position)){
+                pulos = 0;
                 Game.getPlayer().life -= 30;
                 Game.getPlayer().jogar_para_longe(position.x, position.y);
                 ultimoSalto = System.currentTimeMillis()+5000;

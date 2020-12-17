@@ -2,7 +2,6 @@ package com.pedrojonassm.game.control;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -81,7 +80,7 @@ public class Game extends ApplicationAdapter {
 	}
 
 	private static void tempo_para_spawnar_boss(){
-		tempo_boss = 60*2;
+		tempo_boss = 2*60;
 	}
 
 	public static void bossMorto(){
@@ -114,7 +113,7 @@ public class Game extends ApplicationAdapter {
 					moveX = mx;
 					moveY = my;
 				} else if (!player.atordoado) {
-					if (player.gun == 1 && !ui.trocar_armas.contains(mx, my) && !ui.trocar_armas.contains(mx, my)) {
+					if (player.gun == 1 && !ui.trocar_armas.contains(mx, my)) {
 						if (Entity.distancia(mx, my, moveX, moveY) <= 40) {
 							/*
 							verifica se é o dedo que estava no analogico e saiu dele
