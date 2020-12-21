@@ -159,7 +159,7 @@ public class Player extends Entity {
 
     public void atirar(){
         if (!atordoado){
-            if (lastDisparo - System.currentTimeMillis() <= -20 && !Game.pause){// && ammo[gun] > 0){
+            if (lastDisparo - System.currentTimeMillis() <= -20 && !Game.pause && ammo[gun] > 0){
                 ammo[gun]--;
                 lastDisparo = System.currentTimeMillis();
                 if (gun != 2) { // 2 é a espingarda

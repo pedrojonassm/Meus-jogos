@@ -82,7 +82,7 @@ public class Game extends ApplicationAdapter {
 	}
 
 	private static void tempo_para_spawnar_boss(){
-		tempo_boss = 3;
+		tempo_boss = 2*60;
 	}
 
 	public static void bossMorto(){
@@ -96,7 +96,7 @@ public class Game extends ApplicationAdapter {
 
 		if (System.currentTimeMillis() > test){
 			test = System.currentTimeMillis()+1000;
-			System.out.println(fps);
+			ui.fps = fps;
 			fps = 0;
 		}
 		fps++;

@@ -17,7 +17,8 @@ public class Ui {
     public int aX, aY, posX, posY, recarregar = 0;
     public Circle maior, reload;
     public Rectangle trocar_armas, continuar, novo_jogo, vida;
-    public boolean ultimo_jogo = false, recorde = false;
+    public boolean ultimo_jogo;
+    public int fps;
     public Ui(boolean tem_ultimo_jogo){
         ultimo_jogo = tem_ultimo_jogo;
         float px = Game.camera.position.x - Game.camera.viewportWidth/2, py = Game.camera.position.y + Game.camera.viewportHeight/2;
@@ -91,6 +92,12 @@ public class Ui {
             glyphLayout.setText(font, str);
             font.setColor(Color.YELLOW);
             font.draw(batch, str, px + Game.getTelaWidth()/2 - glyphLayout.width/2, py - Game.getTelaHeight()+glyphLayout.height);
+
+            // Mostrar fps
+            str = "FPS: "+fps;
+            glyphLayout.setText(font, str);
+            font.setColor(Color.YELLOW);
+            font.draw(batch, str, px + Game.getTelaWidth()/2 - glyphLayout.width/2, py);
 
             // armas (clicar para trocar)
             for (int i = 0; i < 3; i++) {
