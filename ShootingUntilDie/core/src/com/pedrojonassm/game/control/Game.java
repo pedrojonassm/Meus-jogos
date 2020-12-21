@@ -48,6 +48,8 @@ public class Game extends ApplicationAdapter {
 	private static long ultima_contagem;
 	public static boolean boss_spawnado;
 	private static File dir;
+	private long test = 0;
+	private int fps = 0;
 
 	public Game(File dir){
 		this.dir = dir;
@@ -80,7 +82,7 @@ public class Game extends ApplicationAdapter {
 	}
 
 	private static void tempo_para_spawnar_boss(){
-		tempo_boss = 2*60;
+		tempo_boss = 3;
 	}
 
 	public static void bossMorto(){
@@ -91,6 +93,13 @@ public class Game extends ApplicationAdapter {
 
 	@Override
 	public void render () {
+
+		if (System.currentTimeMillis() > test){
+			test = System.currentTimeMillis()+1000;
+			System.out.println(fps);
+			fps = 0;
+		}
+		fps++;
 		//System.out.println("p: "+pontos+" pMax: "+pontuacaoMaxima);
 		/*Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);*/

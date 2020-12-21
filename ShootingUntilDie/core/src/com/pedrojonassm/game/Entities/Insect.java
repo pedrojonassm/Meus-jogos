@@ -3,6 +3,7 @@ package com.pedrojonassm.game.Entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.pedrojonassm.game.control.Game;
+import com.pedrojonassm.game.control.Spawner;
 
 public class Insect extends Entity {
     /*
@@ -12,13 +13,13 @@ public class Insect extends Entity {
      */
     public Insect() {
         super(32, 32, Game.sprites.getTamanho(), Game.sprites.getTamanho());
-        life = maxLife = 300;
+        life = maxLife = 300* Spawner.difficult;
         valor_em_pontos = 6;
         addSprites(8, 13, 7);// andando
         addSprites(8, 21, 7); // atacando
         addSprites(8, 29, 7); // morrendo
         morte = 2;
-        speed = 100;
+        speed = 100*Spawner.difficult;
         maxFr = 3;
         state = ferido * 2;
         spawnar();

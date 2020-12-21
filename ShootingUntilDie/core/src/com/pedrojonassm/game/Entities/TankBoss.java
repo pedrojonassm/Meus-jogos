@@ -12,7 +12,7 @@ public class TankBoss extends Entity {
     private long ultimo_Tiro = 0, ultimo_movimento = 0;
     public TankBoss() {
         super(126, 105, 252, 209);
-        life = maxLife = 3000;
+        life = maxLife = 1500*Spawner.difficult;
         valor_em_pontos = 6000;
         gunY = 50;
         gunX = 50;

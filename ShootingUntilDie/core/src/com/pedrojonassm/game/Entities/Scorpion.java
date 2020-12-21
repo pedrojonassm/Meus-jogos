@@ -3,6 +3,7 @@ package com.pedrojonassm.game.Entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.pedrojonassm.game.control.Game;
+import com.pedrojonassm.game.control.Spawner;
 
 public class Scorpion extends Entity{
     /*
@@ -18,14 +19,14 @@ public class Scorpion extends Entity{
     public Scorpion() {
         super(32, 32, Game.sprites.getTamanho(), Game.sprites.getTamanho());
         valor_em_pontos = 3;
-        life = maxLife = 200;
+        life = maxLife = 200* Spawner.difficult;
         addSprites(4, 13, 6);
         addSprites(8, 17, 6);
         addSprites(4, 25, 6);
         addSprites(8, 29, 6);
         addSprites(16, 37, 6);
         morte = 4;
-        speed = 300;
+        speed = 300*Spawner.difficult;
         maxFr = 3;
         state = ferido * 2;
         spawnar();

@@ -9,10 +9,11 @@ import java.util.Random;
 
 public class Spawner {
     // Essa é a classe que irá spawnar os monstros
-    private int difficult = 0;
+    private int spawn = 1;
+    public static int difficult = 1;
     public static Random rand;
     private long lastspawn, lastheal;
-    private boolean Alien = false, Tank = false;
+
     public Spawner(){
         rand = new Random();
         lastspawn = System.currentTimeMillis();
@@ -20,7 +21,8 @@ public class Spawner {
     }
     public void spawnarMonstro(){
         // scorpion, insect, troll
-        int k = rand.nextInt(difficult+1); //
+
+        int k = rand.nextInt(spawn); //
         if (k == 0){
             Game.entities.add(new Scorpion());
         }else if (k == 1){
@@ -31,8 +33,8 @@ public class Spawner {
     }
     public void levelUp(){
         difficult++;
-        if (difficult > 3){
-            difficult = 3;
+        if (spawn < 4){
+            spawn++;
         }
     }
     public void tick(){

@@ -13,7 +13,7 @@ public class AlienBoss extends Entity {
     public AlienBoss() {
         super(120, 90, 240, 180);
         valor_em_pontos = 2000;
-        life = maxLife = 1500;
+        life = maxLife = 1500*Spawner.difficult;
         position.x = 256;
         position.y = 256;
         maxFr = 4;

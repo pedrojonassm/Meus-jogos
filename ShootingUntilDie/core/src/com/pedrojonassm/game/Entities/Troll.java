@@ -3,6 +3,7 @@ package com.pedrojonassm.game.Entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.pedrojonassm.game.control.Game;
+import com.pedrojonassm.game.control.Spawner;
 
 public class Troll extends Entity{
     /*
@@ -17,9 +18,9 @@ public class Troll extends Entity{
      */
     public Troll() {
         super(32, 32, Game.sprites.getTamanho(), Game.sprites.getTamanho());
-        life = maxLife = 400;
+        life = maxLife = 400*Spawner.difficult;
         valor_em_pontos = 15;
-        speed = 150;
+        speed = 150*Spawner.difficult;
         maxFr = 5;
         addSprites(8,24,4); // 0
         addSprites(8, 32, 4);// 1

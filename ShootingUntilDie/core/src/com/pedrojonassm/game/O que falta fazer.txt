@@ -26,3 +26,6 @@ Feito! - Opção de retornar jogo ao fechá-lo:
     Não Consegui - Usar o banco de dados para salvar o players, os bichos, etc.
     Feito!? - Aí perguntar se o player deseja retornar a partida ao iniciar o jogo novamente (onPause e OnResume)
 
+Linhas:
+    Android Launcher: 30
+    Core: 421+49+90+46+45+116+95+66+186+78+74+188+76+32+158 = 1720
