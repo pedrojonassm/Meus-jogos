@@ -1,0 +1,17 @@
+Feito por Pedrojonassm
+com a ajuda de:
+	por enquanto ninguém ^^
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Instruções para o banco de dados:
+	criação database:
+		1 - Entre no pgadmin ou no cmd com um superusuario
+		2 - crie um novo usuario, o mesmo nome deve ser colocado na variável user em database/SinglePostgresqlConnection
+		3 - coloque uma senha se desejar, note que tem uma variável para a senha no mesmo lugar
+		4 - permita que esse usuário logue unicamente
+		5 - crie um banco de dados com esse novo usuário ou permitindo que esse usuário o acesse completamente
+		6 - o nome do banco deve ser colocado em banco no mesmo arquivo java citado anteriormente
+		7 - Existe um arquivo sql com o nome de "create-tables.sql" execute-o no banco para criar as tabelas
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------

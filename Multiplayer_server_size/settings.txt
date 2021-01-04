@@ -1,0 +1,2 @@
+porta: 7777
+total de jogadores: 10
