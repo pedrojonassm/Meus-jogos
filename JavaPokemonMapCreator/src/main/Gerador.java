@@ -44,6 +44,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	private int horizontal, vertical;
 	
 	private Rectangle quadrado;
+	Tile escolhido;
 	
 	public Gerador(){
 		addKeyListener(this);
@@ -118,8 +119,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		
 		//g.drawRect(((int) (quadrado.x>>6))<<6, ((int) (quadrado.y>>6))<<6, quadrado.width, quadrado.height);
 		//*
-		Tile t = Mundo.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
-		g.drawRect(t.getX()-Camera.x, t.getY()-Camera.y, quadrado.width, quadrado.height);
+		escolhido = Mundo.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
+		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
 		//*/
 		g.dispose();
 		g = bs.getDrawGraphics();
