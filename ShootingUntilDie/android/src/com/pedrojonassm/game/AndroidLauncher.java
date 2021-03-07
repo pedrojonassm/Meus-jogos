@@ -1,5 +1,6 @@
 package com.pedrojonassm.game;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
@@ -25,5 +26,10 @@ public class AndroidLauncher extends AndroidApplication {
 	protected void onStop() {
 		//dbHelper.escrever();
 		super.onStop();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
 	}
 }

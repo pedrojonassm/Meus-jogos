@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:914980154213:android:69707c8c70cb403d0dcf8c",
+        "mobilesdk_app_id": "1:914980154213:android:b10e7ed63ba2a97f0dcf8c",
         "android_client_info": {
-          "package_name": "com.pedrojonassm.ShootingUntilDie"
+          "package_name": "com.pedrojonassm.game"
         }
       },
       "oauth_client": [

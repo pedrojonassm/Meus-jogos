@@ -276,7 +276,7 @@ public class Game extends Canvas implements Runnable, KeyListener, MouseListener
 			player.updateCamera();
 			menu.render(g);
 		}
-		mundo.renderMinimap();
+		Mundo.renderMinimap();
 		g.drawImage(minimapa, WIDTH*SCALE - Mundo.WIDTH*3, 0, Mundo.WIDTH*3, Mundo.HEIGHT*3, null);
 		//girando objetos
 		/*Graphics2D g2 = (Graphics2D) g;

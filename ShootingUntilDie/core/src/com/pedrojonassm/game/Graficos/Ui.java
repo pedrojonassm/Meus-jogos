@@ -143,7 +143,7 @@ public class Ui {
                 font.draw(batch, str, px + continuar.x, py+continuar.y - Game.getTelaHeight()+continuar.height/2);
             }
 
-            str = "Pontuação Máxima: " + Game.pontuacaoMaxima;
+            str = "Sua Pontuação Máxima,"+Game.nickname+": " + Game.pontuacaoMaxima;
             glyphLayout.setText(font, str);
             font.setColor(Color.GREEN);
             font.draw(batch, str, px + Game.getTelaWidth() - novo_jogo.x - glyphLayout.width, py+novo_jogo.y - Game.getTelaHeight()+novo_jogo.height/2);

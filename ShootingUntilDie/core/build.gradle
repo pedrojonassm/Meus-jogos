@@ -6,3 +6,8 @@ sourceCompatibility = 1.7
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 eclipse.project.name = appName + "-core"
+
+dependencies{
+    implementation "pl.mk5.gdx-fireapp:gdx-fireapp-core:3.0.1"
+}
+

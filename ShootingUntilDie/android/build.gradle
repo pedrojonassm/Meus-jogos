@@ -18,7 +18,7 @@ android {
     }
     defaultConfig {
         applicationId "com.pedrojonassm.game"
-        minSdkVersion 14
+        minSdkVersion 20
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -96,21 +96,22 @@ dependencies {
     implementation ('com.github.hasura.android-sdk:sdk:v0.0.9')
 }//*/
 
-/*
+
 // Conectando com o FireBase
-apply plugin: 'com.android.application'
-// Add this line
-apply plugin: 'com.google.gms.google-services'
+// dependencies
+dependencies{
+    implementation "pl.mk5.gdx-fireapp:gdx-fireapp-android:3.0.1" // the version you are using
 
-dependencies {
-    // Import the Firebase BoM
-    implementation platform ('com.google.firebase:firebase-bom:26.1.1')
-
-    // Add the dependency for the Firebase SDK for Google Analytics
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation 'com.google.firebase:firebase-analytics'
+    implementation platform("com.google.firebase:firebase-bom:25.12.0")
+    implementation 'com.google.firebase:firebase-core'
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-database'
-    // Add the dependencies for any other desired Firebase products
-    // https://firebase.google.com/docs/android/setup#available-libraries
+    implementation 'com.google.firebase:firebase-analytics'
+
+    // Add this if you need google authorization
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
 }
-//*/
+
+// put following line at bottom of the file
+apply plugin: 'com.google.gms.google-services'

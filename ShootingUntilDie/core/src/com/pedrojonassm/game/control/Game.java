@@ -19,12 +19,18 @@ import com.pedrojonassm.game.Entities.TankBoss;
 import com.pedrojonassm.game.Entities.Troll;
 import com.pedrojonassm.game.Graficos.spritesSheet;
 import com.pedrojonassm.game.Graficos.Ui;
+import com.pedrojonassm.game.database.*;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import pl.mk5.gdx.fireapp.GdxFIRApp;
+import pl.mk5.gdx.fireapp.GdxFIRAuth;
+import pl.mk5.gdx.fireapp.GdxFIRDatabase;
+import pl.mk5.gdx.fireapp.auth.GdxFirebaseUser;
 
 public class Game extends ApplicationAdapter {
 	public static OrthographicCamera camera;
@@ -51,12 +57,17 @@ public class Game extends ApplicationAdapter {
 	private long test = 0;
 	private int fps = 0;
 
+	private static GdxFirebaseUser user = null;
+	public static String nickname = "", uuid = "";
+
 	public Game(File dir){
 		this.dir = dir;
 	}
 
 	@Override
 	public void create () {
+		GdxFIRApp.inst().configure();
+		autenticar();
 		jogo = this;
 		camera= new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -65,7 +76,30 @@ public class Game extends ApplicationAdapter {
 		sprites = new spritesSheet(new Texture("Assets.png"), 64);
 		iniciar_variaveis();
 		ui = new Ui(tem_ultimo_jogo());
+		if (!pegaNickname()){
+			new InputUsername().ler_no_banco();
+		}
 	}
+
+	void autenticar() {
+		// Remember to call GdxFIRApp.inst().configure(); first
+		/*
+		GdxFIRAuth.inst().signInAnonymously().then(new Consumer<GdxFirebaseUser>() {
+			@Override
+			public void accept(GdxFirebaseUser gdxFirebaseUser) {
+				user = gdxFirebaseUser;
+			}
+		}).fail(new BiConsumer<String, Throwable>() {
+			@Override
+			public void accept(String s, Throwable throwable) {
+				Gdx.app.error("LOG_TAG", s, throwable);
+			}
+		});
+		//*/
+		GdxFIRAuth.inst().google().signIn();
+		uuid = "a";
+	}
+
 	private void iniciar_variaveis(){
 		boss_spawnado = false;
 		ultima_contagem = 0;
@@ -90,9 +124,11 @@ public class Game extends ApplicationAdapter {
 		spawner.levelUp();
 		tempo_para_spawnar_boss();
 	}
-
 	@Override
 	public void render () {
+
+		//System.out.println(nickname);
+
 
 		if (System.currentTimeMillis() > test){
 			test = System.currentTimeMillis()+1000;
@@ -259,17 +295,48 @@ public class Game extends ApplicationAdapter {
 		pause = true;
 		if (pontos >= pontuacaoMaxima){
 			pontuacaoMaxima = pontos;
+			salva_no_banco_de_dados();
 		}
 		File file = new File(dir,"salvamento_rapido.txt");
-		if (file.exists()){
-			try {
-				file.createNewFile();
-				BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
-				bufferedWriter.write(salvar_player());
-			} catch (IOException e) {
-			}
-		}
+		try {
+			file.createNewFile();
+			BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+			bufferedWriter.write(salvar_player());
+		} catch (IOException e) { }
 		Game.jogo.iniciar_variaveis();
+	}
+
+	private static void salva_no_banco_de_dados() {
+		/*
+		GdxFIRAuth.inst().signInAnonymously()
+				.then(
+						GdxFIRDatabase.inst()
+								.inReference("/bob-and-john-max-salary")
+								.setValue(10000L)
+				)
+				.then(
+						GdxFIRDatabase.inst()
+								.inReference("/bob-and-john").push()
+								.setValue("bob")
+				)
+				.then(
+						GdxFIRDatabase.inst()
+								.inReference("/bob-and-john").push()
+								.setValue("john")
+				);
+		//*/
+		//*
+		GdxFIRAuth.inst().google().signIn()
+				.then(
+						GdxFIRDatabase.inst()
+								.inReference("/"+uuid)
+								.push()
+								.inReference("/"+nickname)
+								.push()
+								.setValue(pontuacaoMaxima)
+				);
+		 //*/
+
 	}
 
 	public static boolean tem_ultimo_jogo(){
@@ -297,6 +364,36 @@ public class Game extends ApplicationAdapter {
 		}
 	}
 
+	private static boolean pegaNickname(){
+		File file = new File(dir, "nickname.txt");
+		if (!file.exists()){
+			return false;
+		}else{
+			try{
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				if ((nickname = reader.readLine()) == null){
+					return false;
+				}
+
+			}catch (Exception e){}
+		}
+		return true;
+	}
+
+	public static void salva_nickname(String s) {
+		System.out.println(s);
+		File file = new File(dir, "nickname.txt");
+		BufferedWriter bufferedWriter;
+		try {
+			file.createNewFile();
+			bufferedWriter = new BufferedWriter(new FileWriter(file));
+			bufferedWriter.write(s);
+			nickname = s;
+			bufferedWriter.close();
+			salva_no_banco_de_dados();
+		}catch (Exception e){}
+	}
+
 	private static void ler_no_txt(){
 		File file = new File(dir,"salvamento_rapido.txt");
 		if (!file.exists()){
@@ -311,7 +408,7 @@ public class Game extends ApplicationAdapter {
 					player.position.x = Float.parseFloat(str[1]);
 					player.position.y = Float.parseFloat(str[2]);
 					pontuacaoMaxima = Integer.parseInt(str[3]);
-					player.state = Integer.parseInt(str[4]);
+					Spawner.difficult = Integer.parseInt(str[4]);
 					tempo_boss = Integer.parseInt(str[5]);
 					player.index =  Integer.parseInt(str[6]);
 					player.life =  Integer.parseInt(str[7]);
@@ -411,7 +508,7 @@ public class Game extends ApplicationAdapter {
 		str += player.position.x + ":";
 		str += player.position.y + ":";
 		str += pontuacaoMaxima + ":";
-		str += player.state + ":";
+		str += Spawner.difficult + ":";
 		str += tempo_boss + ":"; // Salva o tempo que já passou para spawnar o boss, deve-se subtrair isso do tempo_boss ao recarregar
 		str += player.index + ":";
 		str +=  player.life + ":";
