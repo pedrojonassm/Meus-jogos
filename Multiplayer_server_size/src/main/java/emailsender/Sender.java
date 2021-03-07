@@ -20,7 +20,7 @@ public class Sender {
         mj.setSmtpPortMail("587");
         mj.setSmtpAuth("true");
         mj.setSmtpStarttls("true");
-        mj.setUserMail("@gmail.com");// seu e-mail
+        mj.setUserMail("");// seu e-mail
         mj.setFromNameMail(""); // seu nome
         mj.setPassMail(""); // sua senha do e-mail
         mj.setCharsetMail("ISO-8859-1");
