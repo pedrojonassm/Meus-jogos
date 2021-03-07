@@ -20,9 +20,9 @@ public class Sender {
         mj.setSmtpPortMail("587");
         mj.setSmtpAuth("true");
         mj.setSmtpStarttls("true");
-        mj.setUserMail("pedrojonasdsm@gmail.com");// seu e-mail
-        mj.setFromNameMail("Pedrojonasdsm"); // seu nome
-        mj.setPassMail("pedrojonas13"); // sua senha do e-mail
+        mj.setUserMail("@gmail.com");// seu e-mail
+        mj.setFromNameMail(""); // seu nome
+        mj.setPassMail(""); // sua senha do e-mail
         mj.setCharsetMail("ISO-8859-1");
         mj.setTypeTextMail(MailJava.TYPE_TEXT_PLAIN);
         
