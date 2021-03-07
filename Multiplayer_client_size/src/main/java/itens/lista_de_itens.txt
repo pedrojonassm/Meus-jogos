@@ -1,0 +1,15 @@
+Lista de itens de acordo com o tipo pra eu não esquecer
+
+ao criar um item, é passado o parâmetro tipo, isso é o que determina o que o item é
+
+|| Tipo | Item | frames | totalFrames ||
+|| | | | ||
+
+|| -1 | inventario | - | - ||
+
+|| 1 | Moedas | 0 ao 7 | 8 ||
+|| 2 | dollarNote | 8 ao 14 | 7 ||
+|| 3 | hundredDollarNote | 15 ao 21 | 7 ||
+|| 4 | tenThousandDollarNote | 22 ao 28 | 7 ||
+|| 5 | millionDollarNote | 29 ao 35 | 7 ||
+|| 6 | simpleBag | 42 | 1 ||
