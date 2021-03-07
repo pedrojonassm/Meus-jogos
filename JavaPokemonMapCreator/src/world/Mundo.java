@@ -27,17 +27,18 @@ public class Mundo {
 			for(int xx = 0; xx < map.getWidth(); xx++){
 				for(int yy = 0; yy < map.getHeight(); yy++){
 					int pixelAtual = pixels[xx + (yy * map.getWidth())];
-					tiles[xx + (yy * WIDTH)] = new FloorTile(xx*Gerador.TS,yy*Gerador.TS,Tile.TILE_Vazio);
-					if(pixelAtual == 0xFF000000){//preto
-						//Fundo
-						tiles[xx + (yy * WIDTH)] = new FloorTile(xx*Gerador.TS,yy*Gerador.TS,Tile.TILE_Vazio);
-					}
+					tiles[xx + (yy * WIDTH)] = new FloorTile(xx*Gerador.TS,yy*Gerador.TS);
+					tiles[xx + (yy * WIDTH)].adicionarsprite(Tile.TILE_Vazio);
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		//*/
+	}
+	
+	public static Tile pegar_chao(int mx, int my) {
+		return tiles[(mx >> 6) + (my>>6)*WIDTH]; // 6 pq o tamanho que estamos usando é 64 (2^6 = 64)
 	}
 	
 	public void tick() {

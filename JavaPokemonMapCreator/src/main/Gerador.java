@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -23,6 +24,7 @@ import javax.swing.JFrame;
 import graficos.*;
 import world.Camera;
 import world.Mundo;
+import world.Tile;
 
 public class Gerador extends Canvas implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener{
 
@@ -35,24 +37,33 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	private BufferedImage image;
 	
 	public static int nivel;
-	public static Spritesheet chaos, paredes, itens;
+	public static Spritesheet chaos, chaos128, paredes, paredes128, itens, itens128, escadas, escadas128;
 	public static Mundo world;
 	public static double amountOfTicks = 60.0;
 	
 	private int horizontal, vertical;
+	
+	private Rectangle quadrado;
 	
 	public Gerador(){
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
+		quadrado = new Rectangle(64, 64);
 		setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		initFrame();
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 		//Inicializando objetos.
-		chaos = new Spritesheet("/chaos.png");
-		paredes = new Spritesheet("/paredes.png");
-		itens = new Spritesheet("/itens.png");
+		chaos = new Spritesheet("/chaos64.png", 64);
+		chaos128 = new Spritesheet("/chaos128.png", 128);
+		paredes = new Spritesheet("/paredes64.png", 64);
+		paredes128 = new Spritesheet("/paredes128.png", 128);
+		itens = new Spritesheet("/itens64.png", 64);
+		itens128 = new Spritesheet("/itens128.png", 128);
+		escadas = new Spritesheet("/escadas64.png", 64);
+		escadas = new Spritesheet("/escadas128.png", 128);
+		
 		world = new Mundo("/padrao.png");
 	}
 	
@@ -103,6 +114,13 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		g.fillRect(0, 0,WIDTH,HEIGHT);
 		world.render(g);
 		
+		g.setColor(Color.red);
+		
+		//g.drawRect(((int) (quadrado.x>>6))<<6, ((int) (quadrado.y>>6))<<6, quadrado.width, quadrado.height);
+		//*
+		Tile t = Mundo.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
+		g.drawRect(t.getX()-Camera.x, t.getY()-Camera.y, quadrado.width, quadrado.height);
+		//*/
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0,WIDTH,HEIGHT,null);
@@ -180,11 +198,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		quadrado.x = e.getX();
+		quadrado.y = e.getY();
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-	
+		quadrado.x = e.getX();
+		quadrado.y = e.getY();
 	}
 
 	@Override

@@ -19,6 +19,9 @@ public class Spritesheet {
 		}
 	}
 	
+	public BufferedImage getAsset(int x, int y){
+        return getAsset(x + y*tamanho);
+    }
 	public BufferedImage getAsset(int position){
         return spritesheet.getSubimage((position%tamanho)*tamanho, (position/tamanho)*tamanho, tamanho, tamanho);
     }
