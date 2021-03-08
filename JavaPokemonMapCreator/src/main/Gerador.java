@@ -45,10 +45,12 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	private Rectangle quadrado;
 	public Tile escolhido;
+	private boolean control, shift, trocar_solid, solido;
 	public static Random random;
 	
 	
 	public Gerador(){
+		control = shift = trocar_solid = false;
 		random = new Random();
 		addKeyListener(this);
 		addMouseListener(this);
@@ -89,14 +91,20 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	}
 	public static void main(String args[]){
 		//*
-		Gerador game = new Gerador();
-		game.start();
+		Gerador gerador = new Gerador();
+		gerador.start();
 		//*/
 	}
 	
 	public void tick(){
 		if (Camera.x + horizontal > 0 && Camera.x + horizontal < World.WIDTH*Gerador.TS - Gerador.WIDTH) Camera.x += horizontal;
 		if (Camera.y + vertical > 0 && Camera.y + vertical < World.HEIGHT*Gerador.TS - Gerador.HEIGHT) Camera.y += vertical;
+		if (trocar_solid) {
+			if (!control) {
+				trocar_solid = false;
+			}
+			escolhido.setSolid(solido);
+		}
 		world.tick();
 	}
 	
@@ -158,12 +166,16 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		else if (e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = -1;
 		if (e.getKeyCode() == KeyEvent.VK_UP) vertical = -1;
 		else if (e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 1;
+		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
+		if (e.getKeyCode() == KeyEvent.VK_CONTROL) shift = true;
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = 0;
 		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 0;
+		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
+		if (e.getKeyCode() == KeyEvent.VK_CONTROL) shift = false;
 	}
 
 	@Override
@@ -173,7 +185,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
-		
 	}
 
 	@Override
@@ -188,10 +199,17 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			trocar_solid = true;
+			solido = !escolhido.getSolid();
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
+		if (arg0.getButton() == MouseEvent.BUTTON1) {
+			trocar_solid = false;
+		}
 	}
 
 	@Override

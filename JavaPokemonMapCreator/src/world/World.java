@@ -17,9 +17,11 @@ public class World {
 	public static int maxDistance = (Gerador.WIDTH/Gerador.TS + 10)/2, posX, posY;
 	
 	public static Spritesheet chaos, chaos128, paredes, paredes128, itens, itens128, escadas, escadas128;
+	public static boolean ver_paredes_chaos_itens; // se for verdadeira, será possivel ver quadrados vermelhos onde for parede
 	
 	public World(String path){
 		//*
+		ver_paredes_chaos_itens = true;
 		carregar_sprites();
 		 try {
 			BufferedImage map = ImageIO.read(getClass().getResource(path));
@@ -29,39 +31,10 @@ public class World {
 			tiles = new Tile[map.getWidth() * map.getHeight()];
 			map.getRGB(0, 0, map.getWidth(), map.getHeight(),pixels, 0, map.getWidth());
 			
-			Spritesheet teste = chaos;
-			
 			for(int xx = 0; xx < map.getWidth(); xx++){
 				for(int yy = 0; yy < map.getHeight(); yy++){
 					int pixelAtual = pixels[xx + (yy * map.getWidth())];
-					tiles[xx + (yy * WIDTH)] = new FloorTile(xx*Gerador.TS,yy*Gerador.TS);
-					switch (Gerador.random.nextInt(8)) {
-					case 0:
-						teste = chaos;
-						break;
-					case 1:
-						teste = chaos128;
-						break;
-					case 2:
-						teste = paredes;
-						break;
-					case 3:
-						teste = paredes128;
-						break;
-					case 4:
-						teste = itens;
-						break;
-					case 5:
-						teste = itens128;
-						break;
-					case 6:
-						teste = escadas;
-						break;
-					case 7:
-						teste = escadas128;
-						break;
-					}
-					tiles[xx + (yy * WIDTH)].adicionarsprite(teste.getAsset(Gerador.random.nextInt(teste.getQuadradosX()*teste.getQuadradosY())));
+					tiles[xx + (yy * WIDTH)] = new Tile(xx*Gerador.TS,yy*Gerador.TS);
 				}
 			}
 		} catch (IOException e) {
@@ -71,14 +44,14 @@ public class World {
 	}
 	
 	private void carregar_sprites() {
-		chaos = new Spritesheet("/chaos64.png", 64);
-		chaos128 = new Spritesheet("/chaos128.png", 128);
-		paredes = new Spritesheet("/paredes64.png", 64);
-		paredes128 = new Spritesheet("/paredes128.png", 128);
-		itens = new Spritesheet("/itens64.png", 64);
-		itens128 = new Spritesheet("/itens128.png", 128);
-		escadas = new Spritesheet("/escadas64.png", 64);
-		escadas128 = new Spritesheet("/escadas128.png", 128);
+		chaos = new Spritesheet("/chaos64.png", 64); // total de sprites: 36*40 + 16
+		chaos128 = new Spritesheet("/chaos128.png", 128); // total de sprites: 9
+		paredes = new Spritesheet("/paredes64.png", 64); // total de sprites: 27*20 - 3
+		paredes128 = new Spritesheet("/paredes128.png", 128); // total de sprites: 40*32 - 11
+		itens = new Spritesheet("/itens64.png", 64); // total de sprites: 40*23 - 16
+		itens128 = new Spritesheet("/itens128.png", 128); // total de sprites: 20*16 + 2
+		escadas = new Spritesheet("/escadas64.png", 64); // total de sprites: 35
+		escadas128 = new Spritesheet("/escadas128.png", 128); // total de sprites: 40
 	}
 	
 	public static Tile pegar_chao(int mx, int my) {
@@ -102,10 +75,10 @@ public class World {
 		int x4 = (xnext+TILE_SIZE-1) / TILE_SIZE;
 		int y4 = (ynext+TILE_SIZE-1) / TILE_SIZE;
 		
-		return !((tiles[x1 + (y1*World.WIDTH)] instanceof WallTile) ||
-				(tiles[x2 + (y2*World.WIDTH)] instanceof WallTile) ||
-				(tiles[x3 + (y3*World.WIDTH)] instanceof WallTile) ||
-				(tiles[x4 + (y4*World.WIDTH)] instanceof WallTile));
+		return !((tiles[x1 + (y1*World.WIDTH)].getSolid()) ||
+				(tiles[x2 + (y2*World.WIDTH)].getSolid()) ||
+				(tiles[x3 + (y3*World.WIDTH)].getSolid()) ||
+				(tiles[x4 + (y4*World.WIDTH)].getSolid()));
 	}
 	
 	private int log2(int n) {
