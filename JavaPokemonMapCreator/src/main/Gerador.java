@@ -18,12 +18,13 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
 import graficos.*;
 import world.Camera;
-import world.Mundo;
+import world.World;
 import world.Tile;
 
 public class Gerador extends Canvas implements Runnable, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener{
@@ -37,16 +38,18 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	private BufferedImage image;
 	
 	public static int nivel;
-	public static Spritesheet chaos, chaos128, paredes, paredes128, itens, itens128, escadas, escadas128;
-	public static Mundo world;
+	public static World world;
 	public static double amountOfTicks = 60.0;
 	
 	private int horizontal, vertical;
 	
 	private Rectangle quadrado;
-	Tile escolhido;
+	public Tile escolhido;
+	public static Random random;
+	
 	
 	public Gerador(){
+		random = new Random();
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -56,16 +59,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		initFrame();
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 		//Inicializando objetos.
-		chaos = new Spritesheet("/chaos64.png", 64);
-		chaos128 = new Spritesheet("/chaos128.png", 128);
-		paredes = new Spritesheet("/paredes64.png", 64);
-		paredes128 = new Spritesheet("/paredes128.png", 128);
-		itens = new Spritesheet("/itens64.png", 64);
-		itens128 = new Spritesheet("/itens128.png", 128);
-		escadas = new Spritesheet("/escadas64.png", 64);
-		escadas = new Spritesheet("/escadas128.png", 128);
 		
-		world = new Mundo("/padrao.png");
+		world = new World("/padrao.png");
 	}
 	
 	public void initFrame(){
@@ -93,13 +88,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}
 	}
 	public static void main(String args[]){
+		//*
 		Gerador game = new Gerador();
 		game.start();
+		//*/
 	}
 	
 	public void tick(){
-		if (Camera.x + horizontal > 0 && Camera.x + horizontal < Mundo.WIDTH*Gerador.TS - Gerador.WIDTH) Camera.x += horizontal;
-		if (Camera.y + vertical > 0 && Camera.y + vertical < Mundo.HEIGHT*Gerador.TS - Gerador.HEIGHT) Camera.y += vertical;
+		if (Camera.x + horizontal > 0 && Camera.x + horizontal < World.WIDTH*Gerador.TS - Gerador.WIDTH) Camera.x += horizontal;
+		if (Camera.y + vertical > 0 && Camera.y + vertical < World.HEIGHT*Gerador.TS - Gerador.HEIGHT) Camera.y += vertical;
 		world.tick();
 	}
 	
@@ -119,7 +116,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		
 		//g.drawRect(((int) (quadrado.x>>6))<<6, ((int) (quadrado.y>>6))<<6, quadrado.width, quadrado.height);
 		//*
-		escolhido = Mundo.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
+		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
 		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
 		//*/
 		g.dispose();

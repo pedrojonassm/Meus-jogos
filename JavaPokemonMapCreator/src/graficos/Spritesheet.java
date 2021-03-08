@@ -8,12 +8,15 @@ import javax.imageio.ImageIO;
 public class Spritesheet {
 
 	private BufferedImage spritesheet;
-	private int tamanho, quadrados, spritesPorSkin;
+	private int tamanho, quadradosX, quadradosY, spritesPorSkin;
+	String p;
 	public Spritesheet(String path, int t) {
 		tamanho = t;
+		p = path;
 		try {
 			spritesheet = ImageIO.read(getClass().getResource(path));
-			quadrados = spritesheet.getWidth()/tamanho;
+			quadradosX = spritesheet.getWidth()/tamanho;
+			quadradosY = spritesheet.getHeight()/tamanho;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -23,11 +26,15 @@ public class Spritesheet {
         return getAsset(x + y*tamanho);
     }
 	public BufferedImage getAsset(int position){
-        return spritesheet.getSubimage((position%tamanho)*tamanho, (position/tamanho)*tamanho, tamanho, tamanho);
+        return spritesheet.getSubimage((position%quadradosX)*tamanho, (position/quadradosX)*tamanho, tamanho, tamanho);
     }
 	
-    public int getQuadrados() {
-        return quadrados;
+	
+	public int getQuadradosX() {
+        return quadradosX;
+    }
+	public int getQuadradosY() {
+        return quadradosY;
     }
 
     public int getTamanho() {

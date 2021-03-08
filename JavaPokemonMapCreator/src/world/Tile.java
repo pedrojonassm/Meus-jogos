@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import main.Gerador;
 
 public class Tile {
-	public static BufferedImage TILE_Vazio = Gerador.chaos.getAsset(0);
-
 	private ArrayList<BufferedImage> sprites;
 	private int x, y;
 	public boolean solid = false;
