@@ -47,9 +47,11 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public Tile escolhido;
 	private boolean control, shift, trocar_solid, solido;
 	public static Random random;
+	public Ui ui;
 	
 	
 	public Gerador(){
+		ui = new Ui();
 		control = shift = trocar_solid = false;
 		random = new Random();
 		addKeyListener(this);
@@ -106,6 +108,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			escolhido.setSolid(solido);
 		}
 		world.tick();
+		ui.tick();
 	}
 	
 	public void render(){
@@ -127,6 +130,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
 		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
 		//*/
+		
+		ui.render(g);
 		g.dispose();
 		g = bs.getDrawGraphics();
 		g.drawImage(image, 0, 0,WIDTH,HEIGHT,null);
@@ -168,6 +173,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		else if (e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 1;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) shift = true;
+		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
 	}
 
 	@Override
@@ -176,6 +182,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 0;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) shift = false;
+		
 	}
 
 	@Override
@@ -200,8 +207,18 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			trocar_solid = true;
-			solido = !escolhido.getSolid();
+			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
+				if (Ui.colocar_parede) {
+					trocar_solid = true;
+					solido = !escolhido.getSolid();
+				}else {
+					// colocar um sprite?
+				}
+			}
+		}else if (e.getButton() == MouseEvent.BUTTON2) {
+			//*
+			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
+			//*/
 		}
 	}
 
