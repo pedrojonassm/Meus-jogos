@@ -43,14 +43,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	private int horizontal, vertical;
 	
-	private Rectangle quadrado;
+	public static Rectangle quadrado;
 	public Tile escolhido;
 	private boolean control, shift, trocar_solid, solido;
 	public static Random random;
-	public Ui ui;
+	public static Ui ui;
 	
 	
 	public Gerador(){
+		quadrado = new Rectangle(64, 64);
 		ui = new Ui();
 		control = shift = trocar_solid = false;
 		random = new Random();
@@ -58,7 +59,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		addMouseListener(this);
 		addMouseMotionListener(this);
 		addMouseWheelListener(this);
-		quadrado = new Rectangle(64, 64);
 		setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		initFrame();
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
@@ -211,6 +211,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				if (Ui.colocar_parede) {
 					trocar_solid = true;
 					solido = !escolhido.getSolid();
+					return;
 				}else {
 					// colocar um sprite?
 				}
@@ -218,6 +219,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}else if (e.getButton() == MouseEvent.BUTTON2) {
 			//*
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
+			return;
 			//*/
 		}
 	}
@@ -243,7 +245,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		
+		if (ui.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation())) return;
 	}
 
 	

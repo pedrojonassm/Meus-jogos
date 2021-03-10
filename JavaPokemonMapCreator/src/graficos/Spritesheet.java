@@ -29,6 +29,13 @@ public class Spritesheet {
         return spritesheet.getSubimage((position%quadradosX)*tamanho, (position/quadradosX)*tamanho, tamanho, tamanho);
     }
 	
+	public BufferedImage[] get_x_sprites(int total) {
+		BufferedImage[] retorno = new BufferedImage[total];
+		for (int i = 0; i < total; i++) {
+			retorno[i] = getAsset(i);
+		}
+		return retorno;
+	}
 	
 	public int getQuadradosX() {
         return quadradosX;
