@@ -15,7 +15,8 @@ public class Ui {
 	private Rectangle colocar_paredes, caixinha_dos_sprites;
 	private String colocar_as_paredes = "setar paredes";
 	private int max_sprites_por_pagina, pagina, max_pagina, comecar_por, atual, sprites;
-	public ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
+	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
+	public static int nivel; // 0 = chaos, 1 = paredes, 2 = decorações
 	
 	public Ui() {
 		mostrar = true;
@@ -28,6 +29,7 @@ public class Ui {
 		max_sprites_por_pagina= (caixinha_dos_sprites.width/Gerador.quadrado.width)*(caixinha_dos_sprites.height/Gerador.quadrado.width);
 		pagina = 0;
 		max_pagina = 0; // quem setara o total de páginas máximas será o World
+		nivel = 0;
 	}
 	
 	public Rectangle getCaixinha_dos_sprites() {
@@ -94,7 +96,7 @@ public class Ui {
 	private void desenhar_no_quadrado(BufferedImage bufferedImage, int desenhando, Graphics g) {
 		int x = desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width), y = desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width);
 		g.drawImage(bufferedImage, x*Gerador.quadrado.width+caixinha_dos_sprites.x, y*Gerador.quadrado.width+caixinha_dos_sprites.y, Gerador.quadrado.width, Gerador.quadrado.height, null);
-		if (sprite_selecionado.contains(desenhando)) {
+		if (sprite_selecionado.contains(desenhando+max_sprites_por_pagina*pagina)) {
 			g.setColor(new Color(0, 255, 0, 50));
 			g.fillRect(x*Gerador.quadrado.width+caixinha_dos_sprites.x, y*Gerador.quadrado.width+caixinha_dos_sprites.y, Gerador.quadrado.width, Gerador.quadrado.height);
 		}
@@ -107,8 +109,8 @@ public class Ui {
 		}else if (caixinha_dos_sprites.contains(x, y)) {
 			int px = x/Gerador.quadrado.width, py = (y+caixinha_dos_sprites.y)/Gerador.quadrado.height;
 			int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width);
-			if (sprite_selecionado.contains(aux)) {
-				sprite_selecionado.remove((Integer) aux);
+			if (sprite_selecionado.contains(aux+max_sprites_por_pagina*pagina)) {
+				sprite_selecionado.remove((Integer) (aux+max_sprites_por_pagina*pagina));
 				int k = atual, spr = sprites, desenhando = 0;
 				while(spr < World.sprites_do_mundo.size()) {
 					if (desenhando == aux) {
@@ -120,7 +122,7 @@ public class Ui {
 					desenhando++;
 				}
 			}else {
-				sprite_selecionado.add(aux);
+				sprite_selecionado.add(aux+max_sprites_por_pagina*pagina);
 				int k = atual, spr = sprites, desenhando = 0;
 				while(spr < World.sprites_do_mundo.size()) {
 					if (desenhando == aux) {

@@ -45,7 +45,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	public static Rectangle quadrado;
 	public Tile escolhido;
-	private boolean control, shift, trocar_solid, solido;
+	private boolean control, shift, clique_no_mapa, solido;
 	public static Random random;
 	public static Ui ui;
 	public static int sprite_selecionado_index;
@@ -55,7 +55,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public Gerador(){
 		quadrado = new Rectangle(64, 64);
 		ui = new Ui();
-		control = shift = trocar_solid = false;
+		control = shift = clique_no_mapa = false;
 		random = new Random();
 		world = new World("/padrao.png");
 		ui.atualizar_caixinha();
@@ -106,11 +106,12 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public void tick(){
 		if (Camera.x + horizontal > 0 && Camera.x + horizontal < World.WIDTH*Gerador.TS - Gerador.WIDTH) Camera.x += horizontal;
 		if (Camera.y + vertical > 0 && Camera.y + vertical < World.HEIGHT*Gerador.TS - Gerador.HEIGHT) Camera.y += vertical;
-		if (trocar_solid) {
+		if (clique_no_mapa) {
 			if (!control) {
-				trocar_solid = false;
+				clique_no_mapa = false;
 			}
-			escolhido.setSolid(solido);
+			if (Ui.colocar_parede) escolhido.setSolid(solido);
+			else escolhido.adicionar_sprite_selecionado();
 		}
 		world.tick();
 		ui.tick();
@@ -134,14 +135,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		//*
 		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
 		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
-		if (ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !ui.mostrar)) {
+		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar) && !Ui.colocar_parede) {
 			if (++sprite_selecionado_animation_time >= max_sprite_selecionado_animation_time) {
 				sprite_selecionado_animation_time = 0;
-				if (++sprite_selecionado_index >= ui.sprite_selecionado.size()) {
+				if (++sprite_selecionado_index >= Ui.sprite_selecionado.size()) {
 					sprite_selecionado_index = 0;
 				}
 			}
-			g.drawImage(World.sprites_do_mundo.get(ui.array.get(sprite_selecionado_index))[ui.lista.get(sprite_selecionado_index)], escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, null);
+			g.drawImage(World.sprites_do_mundo.get(Ui.array.get(sprite_selecionado_index))[Ui.lista.get(sprite_selecionado_index)], escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, null);
 		}
 		//*/
 		
@@ -222,13 +223,11 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
+				clique_no_mapa = true;
 				if (Ui.colocar_parede) {
-					trocar_solid = true;
 					solido = !escolhido.getSolid();
-					return;
-				}else {
-					// colocar um sprite?
 				}
+				return;
 			}
 		}else if (e.getButton() == MouseEvent.BUTTON2) {
 			//*
@@ -241,7 +240,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
 		if (arg0.getButton() == MouseEvent.BUTTON1) {
-			trocar_solid = false;
+			clique_no_mapa = false;
 		}
 	}
 

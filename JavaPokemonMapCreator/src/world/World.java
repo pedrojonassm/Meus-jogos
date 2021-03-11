@@ -18,11 +18,13 @@ public class World {
 	public static int maxDistance = (Gerador.WIDTH/Gerador.TS + 10)/2, posX, posY;
 	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64, escadas128
 	
-	public static boolean ver_paredes_chaos_itens; // se for verdadeira, será possivel ver quadrados vermelhos onde for parede
+	
+	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
 	
 	public World(String path){
 		//*
-		ver_paredes_chaos_itens = true;
+		tiles_index = tiles_animation_time = 0;
+		max_tiles_animation_time = 10;
 		carregar_sprites();
 		 try {
 			BufferedImage map = ImageIO.read(getClass().getResource(path));
@@ -70,6 +72,12 @@ public class World {
 	}
 	
 	public void tick() {
+		if (++tiles_animation_time >= max_tiles_animation_time) {
+			tiles_animation_time = 0;
+			if (++tiles_index >= 100) {
+				tiles_index = 0;
+			}
+		}
 	}
 	
 	public static boolean isFree(int xnext,int ynext){
