@@ -48,6 +48,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	private boolean control, shift, trocar_solid, solido;
 	public static Random random;
 	public static Ui ui;
+	public static int sprite_selecionado_index;
+	private int sprite_selecionado_animation_time, max_sprite_selecionado_animation_time;
 	
 	
 	public Gerador(){
@@ -55,6 +57,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		ui = new Ui();
 		control = shift = trocar_solid = false;
 		random = new Random();
+		world = new World("/padrao.png");
+		ui.atualizar_caixinha();
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -62,9 +66,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		initFrame();
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
+		sprite_selecionado_index = sprite_selecionado_animation_time = 0;
+		max_sprite_selecionado_animation_time = 8;
 		//Inicializando objetos.
 		
-		world = new World("/padrao.png");
 	}
 	
 	public void initFrame(){
@@ -129,6 +134,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		//*
 		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
 		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
+		if (ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !ui.mostrar)) {
+			if (++sprite_selecionado_animation_time >= max_sprite_selecionado_animation_time) {
+				sprite_selecionado_animation_time = 0;
+				if (++sprite_selecionado_index >= ui.sprite_selecionado.size()) {
+					sprite_selecionado_index = 0;
+				}
+			}
+			g.drawImage(World.sprites_do_mundo.get(ui.array.get(sprite_selecionado_index))[ui.lista.get(sprite_selecionado_index)], escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, null);
+		}
 		//*/
 		
 		ui.render(g);
