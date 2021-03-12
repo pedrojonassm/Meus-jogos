@@ -18,9 +18,9 @@ public class Tile {
 		this.x = x;
 		this.y = y;
 		sprites = new ArrayList<ArrayList<int[]>>();
-		sprites.add(null);
-		sprites.add(null);
-		sprites.add(null);
+		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
+			sprites.add(null);
+		}
 	}
 	
 	public boolean getSolid(){
@@ -42,7 +42,9 @@ public class Tile {
 		for (ArrayList<int[]> imagens : sprites) {
 			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index%imagens.size());
-				g.drawImage(World.sprites_do_mundo.get(sprite[0])[sprite[1]], x - Camera.x, y - Camera.y, null);
+				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
+				if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) g.drawImage(image, x - Camera.x - Gerador.quadrado.width, y - Camera.y - Gerador.quadrado.height, null);
+				else g.drawImage(image, x - Camera.x, y - Camera.y, null);
 			}
 		}
 		if (Ui.colocar_parede && solid) {
@@ -57,7 +59,7 @@ public class Tile {
 
 	public void adicionar_sprite_selecionado() {
 		ArrayList<int[]> novo = new ArrayList<int[]>();
-		if (Ui.sprite_selecionado.size() == 0 && sprites.size() < Ui.tiles_nivel && sprites.size() > 0) {
+		if (Ui.array.size() == 0 && sprites.size() < Ui.tiles_nivel && sprites.size() > 0) {
 			sprites.set(Ui.tiles_nivel, null);
 			return;
 		}
@@ -67,6 +69,14 @@ public class Tile {
 		}
 		if (sprites.size() > Ui.tiles_nivel || (sprites.size() > Ui.tiles_nivel && sprites.get(Ui.tiles_nivel) == null))	sprites.set(Ui.tiles_nivel, novo);
 		else sprites.add(novo);
+	}
+
+	public void pegarsprites() {
+		ArrayList<int[]> sprite = sprites.get(Ui.tiles_nivel);
+		if (sprite == null || sprite.size() == 0) {
+			return;
+		}
+		Ui.pegar_tile_ja_colocado(sprite);
 	}
 
 }

@@ -45,7 +45,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	public static Rectangle quadrado;
 	public Tile escolhido;
-	private boolean control, shift, clique_no_mapa, solido;
+	private boolean clique_no_mapa, solido;
+	public static boolean control, shift;
 	public static Random random;
 	public static Ui ui;
 	public static int sprite_selecionado_index;
@@ -109,7 +110,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			if (!control) {
 				clique_no_mapa = false;
 			}
-			if (Ui.colocar_parede) escolhido.setSolid(solido);
+			if (shift) escolhido.pegarsprites();
+			else if (Ui.colocar_parede) escolhido.setSolid(solido);
 			else escolhido.adicionar_sprite_selecionado();
 		}
 		world.tick();
@@ -141,7 +143,9 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					sprite_selecionado_index = 0;
 				}
 			}
-			g.drawImage(World.sprites_do_mundo.get(Ui.array.get(sprite_selecionado_index))[Ui.lista.get(sprite_selecionado_index)], escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, null);
+			BufferedImage imagem = World.sprites_do_mundo.get(Ui.array.get(sprite_selecionado_index))[Ui.lista.get(sprite_selecionado_index)];
+			if (imagem.getWidth() > quadrado.width || imagem.getHeight() > quadrado.height) g.drawImage(imagem, escolhido.getX()-Camera.x-quadrado.width, escolhido.getY()-Camera.y-quadrado.height, null);
+			else g.drawImage(imagem, escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, null);
 		}
 		//*/
 		
@@ -186,7 +190,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getKeyCode() == KeyEvent.VK_UP) vertical = -1;
 		else if (e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 1;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
-		if (e.getKeyCode() == KeyEvent.VK_CONTROL) shift = true;
+		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
 	}
 
@@ -195,7 +199,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = 0;
 		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 0;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
-		if (e.getKeyCode() == KeyEvent.VK_CONTROL) shift = false;
+		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = false;
 		
 	}
 

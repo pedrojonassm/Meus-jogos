@@ -16,7 +16,7 @@ public class Ui {
 	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ";
 	private int max_sprites_por_pagina, pagina, max_pagina, comecar_por, atual, sprites;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
-	public static int tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
+	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	
 	public Ui() {
 		mostrar = true;
@@ -30,6 +30,7 @@ public class Ui {
 		pagina = 0;
 		max_pagina = 0; // quem setara o total de páginas máximas será o World
 		tiles_nivel = 0;
+		max_tiles_nivel = 4;
 	}
 	
 	public Rectangle getCaixinha_dos_sprites() {
@@ -113,7 +114,7 @@ public class Ui {
 		}else if (caixinha_dos_sprites.contains(x, y)) {
 			int px = x/Gerador.quadrado.width, py = (y-caixinha_dos_sprites.y)/Gerador.quadrado.height;
 			int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width);
-			if (sprite_selecionado.contains(aux+max_sprites_por_pagina*pagina)) {
+			if (!Gerador.control && sprite_selecionado.contains(aux+max_sprites_por_pagina*pagina)) {
 				sprite_selecionado.remove((Integer) (aux+max_sprites_por_pagina*pagina));
 				int k = atual, spr = sprites, desenhando = 0;
 				while(spr < World.sprites_do_mundo.size()) {
@@ -172,14 +173,34 @@ public class Ui {
 	public static void trocar_Nivel(int wheelRotation) {
 		if (wheelRotation > 0) {
 			tiles_nivel++;
-			if (tiles_nivel > 2) {
-				tiles_nivel=2;
+			if (tiles_nivel > max_tiles_nivel) {
+				tiles_nivel = 0;
 			}
 		}else if (wheelRotation < 0) {
 			tiles_nivel--;
 			if (tiles_nivel < 0) {
-				tiles_nivel=0;
+				tiles_nivel = max_tiles_nivel;
 			}
 		}
+	}
+
+	public static void pegar_tile_ja_colocado(ArrayList<int[]> sprites) {
+		sprite_selecionado.clear();
+		array.clear();
+		lista.clear();
+		for (int[] a : sprites) {
+			array.add(a[0]);
+			lista.add(a[1]);
+			adicionar_sprite_colocado_aos_selecionados(a[0], a[1]);
+		}
+	}
+	
+	private static void adicionar_sprite_colocado_aos_selecionados(int array, int lista) {
+		int k = 0;
+		for (int i = 0; i < array; i++) {
+			k += World.sprites_do_mundo.get(i).length;
+		}
+		k+=lista;
+		sprite_selecionado.add(k);
 	}
 }

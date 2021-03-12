@@ -118,8 +118,8 @@ public class World {
 		xstart--;
 		ystart--;
 		
-		for(int xx = xfinal; xx >= xstart; xx--) {
-			for(int yy = yfinal; yy >= ystart; yy--) {
+		for(int xx = xstart; xx <= xfinal; xx++) {
+			for(int yy = ystart; yy <= yfinal; yy++) {
 				if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 					continue;
 				}
