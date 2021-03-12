@@ -18,6 +18,9 @@ public class Tile {
 		this.x = x;
 		this.y = y;
 		sprites = new ArrayList<ArrayList<int[]>>();
+		sprites.add(null);
+		sprites.add(null);
+		sprites.add(null);
 	}
 	
 	public boolean getSolid(){
@@ -37,7 +40,7 @@ public class Tile {
 	
 	public void render(Graphics g){
 		for (ArrayList<int[]> imagens : sprites) {
-			if (imagens != null) {
+			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index%imagens.size());
 				g.drawImage(World.sprites_do_mundo.get(sprite[0])[sprite[1]], x - Camera.x, y - Camera.y, null);
 			}
@@ -54,7 +57,7 @@ public class Tile {
 
 	public void adicionar_sprite_selecionado() {
 		ArrayList<int[]> novo = new ArrayList<int[]>();
-		if (Ui.sprite_selecionado.size() == 0 && sprites.size() < Ui.tiles_nivel) {
+		if (Ui.sprite_selecionado.size() == 0 && sprites.size() < Ui.tiles_nivel && sprites.size() > 0) {
 			sprites.set(Ui.tiles_nivel, null);
 			return;
 		}
@@ -62,7 +65,7 @@ public class Tile {
 			int[] a = {Ui.array.get(i), Ui.lista.get(i)};
 			novo.add(a);
 		}
-		if (sprites.size() > Ui.tiles_nivel || (sprites.size() > 0 && sprites.get(Ui.tiles_nivel) == null))	sprites.set(Ui.tiles_nivel, novo);
+		if (sprites.size() > Ui.tiles_nivel || (sprites.size() > Ui.tiles_nivel && sprites.get(Ui.tiles_nivel) == null))	sprites.set(Ui.tiles_nivel, novo);
 		else sprites.add(novo);
 	}
 

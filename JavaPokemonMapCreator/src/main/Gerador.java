@@ -233,6 +233,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
 			return;
 			//*/
+		}else if (e.getButton() == MouseEvent.BUTTON3) {
+			//*
+			if (ui.getCaixinha_dos_sprites().contains(e.getX(), e.getY())) {
+				Ui.sprite_selecionado.clear();
+				Ui.array.clear();
+				Ui.lista.clear();
+			}
+			return;
+			//*/
 		}
 	}
 
@@ -258,6 +267,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (ui.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation())) return;
+		else Ui.trocar_Nivel(e.getWheelRotation());
 	}
 
 	

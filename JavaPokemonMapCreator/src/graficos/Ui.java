@@ -13,7 +13,7 @@ public class Ui {
 	
 	public static boolean mostrar, colocar_parede;
 	private Rectangle colocar_paredes, caixinha_dos_sprites;
-	private String colocar_as_paredes = "setar paredes";
+	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ";
 	private int max_sprites_por_pagina, pagina, max_pagina, comecar_por, atual, sprites;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
@@ -46,12 +46,13 @@ public class Ui {
 	}
 	
 	public void render(Graphics g) {
+		int w1;
 		if (mostrar) {
 			g.setColor(Color.white);
 			
 			if (colocar_parede) g.fillRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
 			else g.drawRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
-			int w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
+			w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
 			g.drawString(colocar_as_paredes, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
 			g.setColor(Color.black);
 			g.fillRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y, caixinha_dos_sprites.width, caixinha_dos_sprites.height);
@@ -59,6 +60,9 @@ public class Ui {
 			g.drawRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y, caixinha_dos_sprites.width, caixinha_dos_sprites.height);
 			desenhar_sprites_a_selecionar(g);
 		}
+		g.setColor(Color.white);
+		w1 = g.getFontMetrics().stringWidth(tile_nivel+tiles_nivel);
+		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, colocar_paredes.y);
 	}
 	
 	public void atualizar_caixinha() {
@@ -119,6 +123,10 @@ public class Ui {
 						break;
 					}
 					k++;
+					if (k >= World.sprites_do_mundo.get(spr).length) {
+						spr++;
+						k = 0;
+					}
 					desenhando++;
 				}
 			}else {
@@ -131,6 +139,10 @@ public class Ui {
 						break;
 					}
 					k++;
+					if (k >= World.sprites_do_mundo.get(spr).length) {
+						spr++;
+						k = 0;
+					}
 					desenhando++;
 				}
 			}
@@ -156,5 +168,18 @@ public class Ui {
 		}
 		return false;
 	}
-
+	
+	public static void trocar_Nivel(int wheelRotation) {
+		if (wheelRotation > 0) {
+			tiles_nivel++;
+			if (tiles_nivel > 2) {
+				tiles_nivel=2;
+			}
+		}else if (wheelRotation < 0) {
+			tiles_nivel--;
+			if (tiles_nivel < 0) {
+				tiles_nivel=0;
+			}
+		}
+	}
 }
