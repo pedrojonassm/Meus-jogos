@@ -16,7 +16,7 @@ public class Ui {
 	private String colocar_as_paredes = "setar paredes";
 	private int max_sprites_por_pagina, pagina, max_pagina, comecar_por, atual, sprites;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
-	public static int nivel; // 0 = chaos, 1 = paredes, 2 = decorações
+	public static int tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	
 	public Ui() {
 		mostrar = true;
@@ -29,7 +29,7 @@ public class Ui {
 		max_sprites_por_pagina= (caixinha_dos_sprites.width/Gerador.quadrado.width)*(caixinha_dos_sprites.height/Gerador.quadrado.width);
 		pagina = 0;
 		max_pagina = 0; // quem setara o total de páginas máximas será o World
-		nivel = 0;
+		tiles_nivel = 0;
 	}
 	
 	public Rectangle getCaixinha_dos_sprites() {
@@ -107,7 +107,7 @@ public class Ui {
 			colocar_parede = !colocar_parede;
 			return true;
 		}else if (caixinha_dos_sprites.contains(x, y)) {
-			int px = x/Gerador.quadrado.width, py = (y+caixinha_dos_sprites.y)/Gerador.quadrado.height;
+			int px = x/Gerador.quadrado.width, py = (y-caixinha_dos_sprites.y)/Gerador.quadrado.height;
 			int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width);
 			if (sprite_selecionado.contains(aux+max_sprites_por_pagina*pagina)) {
 				sprite_selecionado.remove((Integer) (aux+max_sprites_por_pagina*pagina));

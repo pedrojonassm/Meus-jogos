@@ -9,7 +9,7 @@ import graficos.Ui;
 import main.Gerador;
 
 public class Tile {
-	private ArrayList<BufferedImage[]> sprites;
+	private ArrayList<ArrayList<int[]>> sprites;
 	private int x, y;
 	private boolean solid;
 	
@@ -17,7 +17,7 @@ public class Tile {
 		solid = false;
 		this.x = x;
 		this.y = y;
-		sprites = new ArrayList<BufferedImage[]>();
+		sprites = new ArrayList<ArrayList<int[]>>();
 	}
 	
 	public boolean getSolid(){
@@ -36,9 +36,11 @@ public class Tile {
 	}
 	
 	public void render(Graphics g){
-		for (BufferedImage[] imagens : sprites) {
-			BufferedImage sprite = imagens[World.tiles_index%imagens.length];
-			g.drawImage(sprite, x - Camera.x, y - Camera.y, null);
+		for (ArrayList<int[]> imagens : sprites) {
+			if (imagens != null) {
+				int[] sprite = imagens.get(World.tiles_index%imagens.size());
+				g.drawImage(World.sprites_do_mundo.get(sprite[0])[sprite[1]], x - Camera.x, y - Camera.y, null);
+			}
 		}
 		if (Ui.colocar_parede && solid) {
 			g.setColor(new Color(255, 0, 0, 50));
@@ -51,15 +53,16 @@ public class Tile {
 	}
 
 	public void adicionar_sprite_selecionado() {
-		BufferedImage[] novo = new BufferedImage[Ui.sprite_selecionado.size()];
-		if (novo.length == 0) {
-			sprites.remove(Ui.nivel);
+		ArrayList<int[]> novo = new ArrayList<int[]>();
+		if (Ui.sprite_selecionado.size() == 0 && sprites.size() < Ui.tiles_nivel) {
+			sprites.set(Ui.tiles_nivel, null);
 			return;
 		}
 		for (int i = 0; i < Ui.sprite_selecionado.size(); i++) {
-			novo[i] = World.sprites_do_mundo.get(Ui.array.get(i))[Ui.lista.get(i)];
+			int[] a = {Ui.array.get(i), Ui.lista.get(i)};
+			novo.add(a);
 		}
-		if (sprites.size() > Ui.nivel)	sprites.set(Ui.nivel, novo);
+		if (sprites.size() > Ui.tiles_nivel || (sprites.size() > 0 && sprites.get(Ui.tiles_nivel) == null))	sprites.set(Ui.tiles_nivel, novo);
 		else sprites.add(novo);
 	}
 

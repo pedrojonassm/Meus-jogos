@@ -24,7 +24,7 @@ public class World {
 	public World(String path){
 		//*
 		tiles_index = tiles_animation_time = 0;
-		max_tiles_animation_time = 10;
+		max_tiles_animation_time = 15;
 		carregar_sprites();
 		 try {
 			BufferedImage map = ImageIO.read(getClass().getResource(path));
