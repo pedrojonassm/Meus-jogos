@@ -43,8 +43,6 @@ public class Ui {
 		array = new ArrayList<Integer>();
 		lista = new ArrayList<Integer>();
 		max_sprites_por_pagina= (caixinha_dos_sprites.width/Gerador.quadrado.width)*(caixinha_dos_sprites.height/Gerador.quadrado.width);
-		pagina.set(livro, 0);
-		max_pagina.set(livro, 0); // quem setara o total de páginas máximas será o World
 		tiles_nivel = 0;
 		max_tiles_nivel = 4;
 	}
@@ -55,7 +53,7 @@ public class Ui {
 	
 	public void max_pagina_por_total_de_sprites(int total_sprites) {
 		int divisao = ((caixinha_dos_sprites.width/Gerador.quadrado.width)*(caixinha_dos_sprites.height/Gerador.quadrado.width));
-		max_pagina.set(livro, (int) (total_sprites/divisao));
+		max_pagina.set(0, (int) (total_sprites/divisao));
 	}
 	
 	public void tick() {
@@ -142,23 +140,25 @@ public class Ui {
 			for (int i = 0; i < max_sprites_por_pagina && k < tiles.size(); i++) {
 				x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
 				y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
-				tiles.get(i).setX(x);
-				tiles.get(i).setY(y);
-				tiles.get(i).render(g);
-				if (i == index_tile_pego && livro == livro_tile_pego) {
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x);
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setY(y);
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).render(g);
+				if (i+(max_sprites_por_pagina*pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
 					g.fillRect(x, y, Gerador.quadrado.width, Gerador.quadrado.height);
 				}
 				k++;
 				desenhando++;
 			}
-			// desenhar o "+" para adicionar um novo sprite
-			x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
-			y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
-			g.setColor(Color.green);
-			g.drawRect(x, y, Gerador.quadrado.width, Gerador.quadrado.height);
-			g.drawLine(x+Gerador.quadrado.width/2, y+Gerador.quadrado.width/5, x+Gerador.quadrado.width/2, y+Gerador.quadrado.height-Gerador.quadrado.width/5);
-			g.drawLine(x+Gerador.quadrado.width/5, y+Gerador.quadrado.height/2, x+Gerador.quadrado.width-Gerador.quadrado.width/5, y+Gerador.quadrado.height/2);
+			if (desenhando < max_sprites_por_pagina) {
+				// desenhar o "+" para adicionar um novo sprite
+				x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
+				y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
+				g.setColor(Color.green);
+				g.drawRect(x, y, Gerador.quadrado.width, Gerador.quadrado.height);
+				g.drawLine(x+Gerador.quadrado.width/2, y+Gerador.quadrado.width/5, x+Gerador.quadrado.width/2, y+Gerador.quadrado.height-Gerador.quadrado.width/5);
+				g.drawLine(x+Gerador.quadrado.width/5, y+Gerador.quadrado.height/2, x+Gerador.quadrado.width-Gerador.quadrado.width/5, y+Gerador.quadrado.height/2);
+			}
 		}
 	}
 
@@ -237,17 +237,21 @@ public class Ui {
 				}
 			}
 		}else {
+			aux = aux+(max_sprites_por_pagina*pagina.get(livro));
+			System.out.println(aux);
 			if (aux == tiles_salvos.get(livro-1).size() && sprite_selecionado.size() > 0) {
 				// clicou no "+"
 				Tile tile = new Tile(0, 0);
 				tile.adicionar_sprite_selecionado();
 				tiles_salvos.get(livro-1).add(tile);
-			}else if (aux <= tiles_salvos.get(livro-1).size()) {
+				if (tiles_salvos.get(livro-1).size() >= max_sprites_por_pagina) {
+					max_pagina.set(livro, max_pagina.get(livro)+1);
+				}
+			}else if (aux < tiles_salvos.get(livro-1).size()) {
 				livro_tile_pego = livro;
 				index_tile_pego = aux;
 				tiles_salvos.get(livro-1).get(aux).pegarsprites();
 			}
-			System.out.println(aux);
 		}
 		Gerador.sprite_selecionado_index = 0;
 	}
@@ -265,7 +269,7 @@ public class Ui {
 				atualizar_caixinha();
 				return true;
 			}else if (caixinha_dos_livros.contains(x, y)) {
-				// fazer as páginas descerem agora né
+				// fazer os livros descerem
 				return true;
 			}
 		}
