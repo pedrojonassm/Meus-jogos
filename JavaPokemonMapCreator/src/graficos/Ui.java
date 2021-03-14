@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import files.salvarCarregar;
 import main.Gerador;
 import world.Tile;
 import world.World;
@@ -19,8 +20,8 @@ public class Ui {
 	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ";
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
-	private ArrayList<ArrayList<Tile>> tiles_salvos;
-	private ArrayList<String> nome_livros;
+	private static ArrayList<ArrayList<Tile>> tiles_salvos;
+	private static ArrayList<String> nome_livros;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	
@@ -52,6 +53,14 @@ public class Ui {
 		max_livros_por_pagina = caixinha_dos_livros.height/caixinha_dos_livros.width;
 		tiles_nivel = 0;
 		max_tiles_nivel = 4;
+	}
+	
+	public static String pegar_nome_livro(int index) {
+		return nome_livros.get(index);
+	}
+	
+	public static ArrayList<Tile> pegar_livro(int index) {
+		return tiles_salvos.get(index);
 	}
 	
 	public Rectangle getCaixinha_dos_sprites() {
@@ -283,6 +292,7 @@ public class Ui {
 				if (tiles_salvos.get(livro-1).size() >= max_sprites_por_pagina) {
 					max_pagina.set(livro, max_pagina.get(livro)+1);
 				}
+				tile.salvar();
 			}else if (aux < tiles_salvos.get(livro-1).size()) {
 				livro_tile_pego = livro;
 				index_tile_pego = aux;
@@ -363,5 +373,16 @@ public class Ui {
 			return true;
 		}
 		return false;
+	}
+
+	public static void salvar() {
+		for (int i = 0; i < tiles_salvos.size(); i++) {
+			salvarCarregar.salvar_livro(i);
+		}
+	}
+
+	public void adicionar_livro_salvo(String nome, ArrayList<Tile> tiles) {
+		adicionar_livro(nome);
+		tiles_salvos.set(tiles_salvos.size()-1, tiles);
 	}
 }

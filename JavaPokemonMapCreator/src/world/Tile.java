@@ -19,7 +19,7 @@ public class Tile {
 		this.y = y;
 		sprites = new ArrayList<ArrayList<int[]>>();
 		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
-			sprites.add(null);
+			sprites.add(new ArrayList<int[]>());
 		}
 	}
 	
@@ -36,6 +36,21 @@ public class Tile {
 	}
 	public int getY() {
 		return y;
+	}
+	
+	public void carregar_sprites(String linha) {
+		sprites.clear();
+		String[] sla = linha.split(";"), sla2 = sla[1].split("-");
+		for (int i = 0; i < Integer.parseInt(sla[0]); i++) {
+			ArrayList<int[]> sprite = new ArrayList<int[]>();
+			String[] sla3 = sla2[i].split(":");
+			for (int k = 0; k < Integer.parseInt(sla3[0]); k++) {
+				String[] s = sla3[k+1].split("a");
+				int[] a = {Integer.parseInt(s[0]), Integer.parseInt(s[1])};
+				sprite.add(a);
+			}
+			sprites.add(sprite);
+		}
 	}
 	
 	public void render(Graphics g){
@@ -84,6 +99,20 @@ public class Tile {
 	}
 	public void setY(int y) {
 		this.y = y;
+	}
+	
+	public String salvar() {
+		String retorno = "";
+		
+		retorno += sprites.size()+";";
+		for (ArrayList<int[]> sprite : sprites) {
+			retorno += sprite.size();
+			for (int[] a : sprite) {
+				retorno += ":"+a[0] + "a" + a[1];
+			}
+			retorno += "-";
+		}
+		return retorno += "\n";
 	}
 
 }

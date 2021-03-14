@@ -22,6 +22,7 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import files.salvarCarregar;
 import graficos.*;
 import world.Camera;
 import world.World;
@@ -42,6 +43,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public static double amountOfTicks = 60.0;
 	
 	private int horizontal, vertical;
+	salvarCarregar memoria;
 	
 	public static Rectangle quadrado;
 	public Tile escolhido;
@@ -54,12 +56,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	
 	public Gerador(){
+		memoria = new salvarCarregar();
 		quadrado = new Rectangle(64, 64);
 		ui = new Ui();
 		control = shift = clique_no_mapa = false;
 		random = new Random();
 		world = new World("/padrao.png");
 		ui.atualizar_caixinha();
+		memoria.carregar_livros();
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -192,6 +196,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
+		if (e.getKeyCode() == KeyEvent.VK_S && control) memoria.salvar_tudo();;
 	}
 
 	@Override
