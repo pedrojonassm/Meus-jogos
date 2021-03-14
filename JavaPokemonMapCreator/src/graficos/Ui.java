@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import main.Gerador;
 import world.Tile;
 import world.World;
@@ -15,9 +17,10 @@ public class Ui {
 	public static boolean mostrar, colocar_parede;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros;
 	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ";
-	private int max_sprites_por_pagina, livro, livro_tile_pego, index_tile_pego;
+	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
-	private ArrayList<ArrayList<Tile>> tiles_salvos; 
+	private ArrayList<ArrayList<Tile>> tiles_salvos;
+	private ArrayList<String> nome_livros;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	
@@ -34,6 +37,8 @@ public class Ui {
 		atual.add(0);
 		sprites.add(0);
 		tiles_salvos = new ArrayList<ArrayList<Tile>>();
+		nome_livros = new ArrayList<String>();
+		nome_livros.add("todos os sprites");
 		mostrar = true;
 		colocar_parede = false;
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
@@ -43,6 +48,11 @@ public class Ui {
 		array = new ArrayList<Integer>();
 		lista = new ArrayList<Integer>();
 		max_sprites_por_pagina= (caixinha_dos_sprites.width/Gerador.quadrado.width)*(caixinha_dos_sprites.height/Gerador.quadrado.width);
+		pagina_livros = 0;
+		max_livros_por_pagina = caixinha_dos_livros.height/caixinha_dos_livros.width;
+		for (int i = 0; i < max_livros_por_pagina*3; i++) {
+			adicionar_livro(""+(i+1));
+		}
 		tiles_nivel = 0;
 		max_tiles_nivel = 4;
 	}
@@ -76,16 +86,33 @@ public class Ui {
 			g.drawRect(caixinha_dos_livros.x, caixinha_dos_livros.y, caixinha_dos_livros.width, caixinha_dos_livros.height);
 			desenhar_livros(g);
 			desenhar_sprites_a_selecionar(g);
+			if (caixinha_dos_livros.contains(Gerador.quadrado.x, Gerador.quadrado.y)) mostrar_nome_livro(g);
 		}
 		g.setColor(Color.white);
 		w1 = g.getFontMetrics().stringWidth(tile_nivel+tiles_nivel);
 		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, colocar_paredes.y);
 	}
 	
+	private void mostrar_nome_livro(Graphics g) {
+		g.setColor(Color.white);
+		int py = (Gerador.quadrado.y-caixinha_dos_livros.y)/caixinha_dos_livros.width + pagina_livros*max_livros_por_pagina;
+		if (py >= max_livros_por_pagina*(pagina_livros+1)) return;
+		String nome = null;
+		if (py < nome_livros.size()) {
+			nome = nome_livros.get(py);
+		}else if (py == nome_livros.size()) {
+			nome = "Adicionar novo livro";
+		}
+		if (nome != null) {
+			g.drawString(nome, Gerador.quadrado.x + Gerador.quadrado.width, Gerador.quadrado.y+10);
+		}
+	}
+
 	private void desenhar_livros(Graphics g) {
 		int y = caixinha_dos_livros.y;
 		g.setColor(Color.blue);
-		for (int i = 0; i < pagina.size(); i++) {
+		int i;
+		for (i = max_livros_por_pagina*pagina_livros; i < max_livros_por_pagina*(pagina_livros+1) && i < nome_livros.size(); i++) {
 			if (i == livro) {
 				g.setColor(Color.red);
 				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
@@ -95,10 +122,12 @@ public class Ui {
 			}
 			y+=caixinha_dos_livros.width;
 		}
-		g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
-		g.setColor(Color.green);
-		g.drawLine(caixinha_dos_livros.x+caixinha_dos_livros.width/2, y, caixinha_dos_livros.x+caixinha_dos_livros.width/2, y+caixinha_dos_livros.width);
-		g.drawLine(caixinha_dos_livros.x, y+caixinha_dos_livros.width/2, caixinha_dos_livros.x+caixinha_dos_livros.width, y+caixinha_dos_livros.width/2);
+		if (i < max_livros_por_pagina*(pagina_livros+1)) {
+			g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
+			g.setColor(Color.green);
+			g.drawLine(caixinha_dos_livros.x+caixinha_dos_livros.width/2, y, caixinha_dos_livros.x+caixinha_dos_livros.width/2, y+caixinha_dos_livros.width);
+			g.drawLine(caixinha_dos_livros.x, y+caixinha_dos_livros.width/2, caixinha_dos_livros.x+caixinha_dos_livros.width, y+caixinha_dos_livros.width/2);
+		}
 	}
 
 	public void atualizar_caixinha() {
@@ -186,17 +215,28 @@ public class Ui {
 	}
 	
 	private void trocar_livro(int x, int y) {
-		int py = (y-caixinha_dos_livros.y)/caixinha_dos_livros.width;
+		int py = (y-caixinha_dos_livros.y)/caixinha_dos_livros.width + pagina_livros*max_livros_por_pagina;
 		if (py == pagina.size()) {
-			pagina.add(0);
-			max_pagina.add(0);
-			comecar_por.add(0);
-			atual.add(0);
-			sprites.add(0);
-			tiles_salvos.add(new ArrayList<Tile>());
+			String nome = null;
+			do {
+				nome = JOptionPane.showInputDialog("Insira um nome que já não seja um nome do livro");
+				if (nome == null || nome.isBlank()) return;
+			} while (nome_livros.contains(nome));
+			adicionar_livro(nome);
 		}else if (py < pagina.size()) {
 			livro = py;
 		}
+	}
+
+	private void adicionar_livro(String nome) {
+		pagina.add(0);
+		max_pagina.add(0);
+		comecar_por.add(0);
+		atual.add(0);
+		sprites.add(0);
+		tiles_salvos.add(new ArrayList<Tile>());
+		nome_livros.add(nome);
+		max_pagina_livros = nome_livros.size()/max_livros_por_pagina;
 	}
 
 	private void pegar_ou_retirar_sprite_selecionado(int x, int y) {
@@ -238,7 +278,6 @@ public class Ui {
 			}
 		}else {
 			aux = aux+(max_sprites_por_pagina*pagina.get(livro));
-			System.out.println(aux);
 			if (aux == tiles_salvos.get(livro-1).size() && sprite_selecionado.size() > 0) {
 				// clicou no "+"
 				Tile tile = new Tile(0, 0);
@@ -258,9 +297,11 @@ public class Ui {
 
 	public boolean trocar_pagina(int x, int y, int rodinha) {
 		if (mostrar) {
+			int k = 0;
+			if (rodinha < 0) k=-1;
+			else k=1;
 			if (caixinha_dos_sprites.contains(x, y)) {
-				if (rodinha < 0) pagina.set(livro, pagina.get(livro)-1);
-				else pagina.set(livro, pagina.get(livro)+1);
+				pagina.set(livro, pagina.get(livro)+k);
 				if (pagina.get(livro) < 0) {
 					pagina.set(livro, max_pagina.get(livro));
 				}else if (pagina.get(livro) > max_pagina.get(livro)) {
@@ -269,7 +310,12 @@ public class Ui {
 				atualizar_caixinha();
 				return true;
 			}else if (caixinha_dos_livros.contains(x, y)) {
-				// fazer os livros descerem
+				pagina_livros += k;
+				if (pagina_livros < 0) {
+					pagina_livros = max_pagina_livros;
+				}else if  (pagina_livros > max_pagina_livros) {
+					pagina_livros = 0;
+				}
 				return true;
 			}
 		}
