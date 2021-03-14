@@ -50,9 +50,6 @@ public class Ui {
 		max_sprites_por_pagina= (caixinha_dos_sprites.width/Gerador.quadrado.width)*(caixinha_dos_sprites.height/Gerador.quadrado.width);
 		pagina_livros = 0;
 		max_livros_por_pagina = caixinha_dos_livros.height/caixinha_dos_livros.width;
-		for (int i = 0; i < max_livros_por_pagina*3; i++) {
-			adicionar_livro(""+(i+1));
-		}
 		tiles_nivel = 0;
 		max_tiles_nivel = 4;
 	}
