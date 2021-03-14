@@ -19,7 +19,6 @@ public class Rank {
 		BufferedWriter write = null;
 		ArrayList<Rank> ranks = pegarRanks();
 		File file = new File("sla.txt");
-		file = new File("sla.txt");
 		file.delete();
 		try {
 			write = new BufferedWriter(new FileWriter("sla.txt"));
