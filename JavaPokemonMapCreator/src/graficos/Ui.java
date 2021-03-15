@@ -172,7 +172,7 @@ public class Ui {
 		else {
 			ArrayList<Tile> tiles = tiles_salvos.get(livro-1);
 			int x, y;
-			for (int i = 0; i < max_sprites_por_pagina && k < tiles.size(); i++) {
+			for (int i = 0; i < max_sprites_por_pagina && i+(max_sprites_por_pagina*pagina.get(livro)) < tiles.size(); i++) {
 				x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
 				y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
 				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x);
@@ -309,6 +309,7 @@ public class Ui {
 			else k=1;
 			if (caixinha_dos_sprites.contains(x, y)) {
 				pagina.set(livro, pagina.get(livro)+k);
+				System.out.println(pagina.get(livro));
 				if (pagina.get(livro) < 0) {
 					pagina.set(livro, max_pagina.get(livro));
 				}else if (pagina.get(livro) > max_pagina.get(livro)) {
@@ -352,6 +353,7 @@ public class Ui {
 			lista.add(a[1]);
 			adicionar_sprite_colocado_aos_selecionados(a[0], a[1]);
 		}
+		Gerador.sprite_selecionado_index = 0;
 	}
 	
 	private static void adicionar_sprite_colocado_aos_selecionados(int array, int lista) {
@@ -365,11 +367,20 @@ public class Ui {
 
 	public boolean cliquedireito(int x, int y) {
 		if (caixinha_dos_sprites.contains(x, y)) {
-			Ui.sprite_selecionado.clear();
-			Ui.array.clear();
-			Ui.lista.clear();
-			livro_tile_pego = -1;
-			index_tile_pego = -1;
+			if (sprite_selecionado.size() > 0) {
+				Ui.sprite_selecionado.clear();
+				Ui.array.clear();
+				Ui.lista.clear();
+				livro_tile_pego = -1;
+				index_tile_pego = -1;
+			}else if (livro > 0) {
+				int px = x/Gerador.quadrado.width, py = (y-caixinha_dos_sprites.y)/Gerador.quadrado.height;
+				int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width)+(max_sprites_por_pagina*pagina.get(livro));
+				if (tiles_salvos.get(livro-1).size() > aux) {
+					if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) tiles_salvos.get(livro-1).remove(aux);
+				}
+				
+			}
 			return true;
 		}
 		return false;
@@ -384,5 +395,6 @@ public class Ui {
 	public void adicionar_livro_salvo(String nome, ArrayList<Tile> tiles) {
 		adicionar_livro(nome);
 		tiles_salvos.set(tiles_salvos.size()-1, tiles);
+		max_pagina.set(tiles_salvos.size(), (int) (tiles_salvos.get(tiles_salvos.size()-1).size()/max_sprites_por_pagina));
 	}
 }

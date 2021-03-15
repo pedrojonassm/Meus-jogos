@@ -47,14 +47,12 @@ public class salvarCarregar {
 				String singleLine = null;
 				ArrayList<Tile> tiles = new ArrayList<Tile>();
 				while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-					System.out.println(singleLine);
 					Tile tile = new Tile(0, 0);
 					tile.carregar_sprites(singleLine);
 					tiles.add(tile);
 				}
 				caminho = caminho.split("/")[caminho.split("/").length-1];
 				caminho = caminho.substring(0, caminho.length()-end_file.length());
-				System.out.println(caminho);
 				Gerador.ui.adicionar_livro_salvo(caminho, tiles);
 			}
 		} catch (Exception e) {
