@@ -47,7 +47,7 @@ public class salvarCarregar {
 				String singleLine = null;
 				ArrayList<Tile> tiles = new ArrayList<Tile>();
 				while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
-					Tile tile = new Tile(0, 0);
+					Tile tile = new Tile(0, 0, 0);
 					tile.carregar_sprites(singleLine);
 					tiles.add(tile);
 				}

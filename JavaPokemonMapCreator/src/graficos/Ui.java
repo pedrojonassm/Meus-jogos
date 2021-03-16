@@ -23,7 +23,8 @@ public class Ui {
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
 	private static ArrayList<String> nome_livros;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
-	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
+	public static int tiles_nivel, max_tiles_nivel, // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
+	camada;
 	
 	public Ui() {
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
@@ -286,7 +287,7 @@ public class Ui {
 			aux = aux+(max_sprites_por_pagina*pagina.get(livro));
 			if (aux == tiles_salvos.get(livro-1).size() && sprite_selecionado.size() > 0) {
 				// clicou no "+"
-				Tile tile = new Tile(0, 0);
+				Tile tile = new Tile(0, 0, 0);
 				tile.adicionar_sprite_selecionado();
 				tiles_salvos.get(livro-1).add(tile);
 				if (tiles_salvos.get(livro-1).size() >= max_sprites_por_pagina) {
@@ -309,7 +310,6 @@ public class Ui {
 			else k=1;
 			if (caixinha_dos_sprites.contains(x, y)) {
 				pagina.set(livro, pagina.get(livro)+k);
-				System.out.println(pagina.get(livro));
 				if (pagina.get(livro) < 0) {
 					pagina.set(livro, max_pagina.get(livro));
 				}else if (pagina.get(livro) > max_pagina.get(livro)) {

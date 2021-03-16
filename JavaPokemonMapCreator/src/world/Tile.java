@@ -10,13 +10,14 @@ import main.Gerador;
 
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y;
+	private int x, y, z;
 	private boolean solid;
 	
-	public Tile(int x,int y){
+	public Tile(int x,int y,int z){
 		solid = false;
 		this.x = x;
 		this.y = y;
+		this.z = z;
 		sprites = new ArrayList<ArrayList<int[]>>();
 		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
 			sprites.add(new ArrayList<int[]>());
@@ -36,6 +37,9 @@ public class Tile {
 	}
 	public int getY() {
 		return y;
+	}
+	public int getZ() {
+		return z;
 	}
 	
 	public void carregar_sprites(String linha) {
@@ -58,8 +62,18 @@ public class Tile {
 			if (imagens != null && imagens.size() > 0) {
 				int[] sprite = imagens.get(World.tiles_index%imagens.size());
 				BufferedImage image = World.sprites_do_mundo.get(sprite[0])[sprite[1]];
-				if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) g.drawImage(image, x - Camera.x - Gerador.quadrado.width, y - Camera.y - Gerador.quadrado.height, null);
-				else g.drawImage(image, x - Camera.x, y - Camera.y, null);
+				int dx, dy;
+				if (image.getWidth() > Gerador.quadrado.width || image.getHeight() > Gerador.quadrado.height) {
+					dx = x - Camera.x - Gerador.quadrado.width;
+					dy = y - Camera.y - Gerador.quadrado.height;
+				}
+				else {
+					dx = x - Camera.x;
+					dy = y - Camera.y;
+				}
+				dx -= z*Gerador.quadrado.width;
+				dy -= z*Gerador.quadrado.height;
+				g.drawImage(image, dx, dy, null);
 			}
 		}
 		if (Ui.colocar_parede && solid) {
@@ -99,6 +113,9 @@ public class Tile {
 	}
 	public void setY(int y) {
 		this.y = y;
+	}
+	public void setZ(int z) {
+		this.z = z;
 	}
 	
 	public String salvar() {

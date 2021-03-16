@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import graficos.Spritesheet;
+import graficos.Ui;
 import main.Gerador;
 
 public class World {
 
 	public static Tile[] tiles;
-	public static int WIDTH,HEIGHT;
+	public static int WIDTH,HEIGHT,HIGH;
 	public static final int TILE_SIZE = Gerador.TS;
 	public static int maxDistance = (Gerador.WIDTH/Gerador.TS + 10)/2, posX, posY;
 	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64, escadas128
@@ -25,28 +26,24 @@ public class World {
 		//*
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
-		carregar_sprites();
 		 try {
-			BufferedImage map = ImageIO.read(getClass().getResource(path));
-			int[] pixels = new int[map.getWidth() * map.getHeight()];
-			WIDTH = map.getWidth();
-			HEIGHT = map.getHeight();
-			tiles = new Tile[map.getWidth() * map.getHeight()];
-			map.getRGB(0, 0, map.getWidth(), map.getHeight(),pixels, 0, map.getWidth());
-			
-			for(int xx = 0; xx < map.getWidth(); xx++){
-				for(int yy = 0; yy < map.getHeight(); yy++){
-					//int pixelAtual = pixels[xx + (yy * map.getWidth())];
-					tiles[xx + (yy * WIDTH)] = new Tile(xx*Gerador.TS,yy*Gerador.TS);
-				}
-			}
-		} catch (IOException e) {
+			 if (path == null) {
+				 WIDTH = 20; HEIGHT = 20; HIGH = 7;
+			 }else {
+				 
+			 }
+			tiles = new Tile[WIDTH * HEIGHT * HIGH];
+			for(int xx = 0; xx < WIDTH; xx++)
+				for(int yy = 0; yy < HEIGHT; yy++)
+					for (int zz = 0; zz < HIGH; zz++)
+						tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		//*/
 	}
 	
-	private static void carregar_sprites() {
+	public static void carregar_sprites() {
 		sprites_do_mundo = new ArrayList<BufferedImage[]>();
 		Spritesheet[] sprites = new Spritesheet[8];
 		int[] total_de_sprites = {36*40+16, 9, 27*20-3, 40*32-11, 40*23-16, 20*16+2, 35, 40};
@@ -67,8 +64,13 @@ public class World {
 		Gerador.ui.max_pagina_por_total_de_sprites(max_pagina);
 	}
 	
+	public static Tile pegar_chao(int pos) {
+		return tiles[pos];
+	}
+	
 	public static Tile pegar_chao(int mx, int my) {
-		return tiles[(mx >> 6) + (my>>6)*WIDTH]; // 6 pq o tamanho que estamos usando é 64 (2^6 = 64)
+		// (mx >> 6) + (my>>6)*WIDTH
+		return pegar_chao(((mx >> 6) + (my>>6)*World.WIDTH)*World.HIGH+Ui.camada); // 6 pq o tamanho que estamos usando é 64 (2^6 = 64)
 	}
 	
 	public void tick() {
@@ -118,13 +120,13 @@ public class World {
 		xstart--;
 		ystart--;
 		
-		for(int xx = xstart; xx <= xfinal; xx++) {
-			for(int yy = ystart; yy <= yfinal; yy++) {
-				if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
-					continue;
-				}
-				tiles[xx + (yy*WIDTH)].render(g);
+		for(int xx = xstart; xx <= xfinal; xx++)
+			for(int yy = ystart; yy <= yfinal; yy++)
+				for (int zz = 0; zz < HIGH; zz++){
+					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+						continue;
+					}
+					tiles[(xx + (yy * WIDTH))*HIGH+zz].render(g);
 			}
-		}
 	}
 }
