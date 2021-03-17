@@ -259,6 +259,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			//*
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
+			else if (ui.addponto(e.getX(), e.getY())) return;
 			//*/
 		}
 	}

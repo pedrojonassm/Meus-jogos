@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
 import main.Gerador;
+import world.Camera;
 import world.Tile;
 import world.World;
 
@@ -17,7 +18,7 @@ public class Ui {
 	
 	public static boolean mostrar, colocar_parede;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros;
-	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ", altura = "Altura: ";
+	private static final String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher";
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -25,6 +26,9 @@ public class Ui {
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel, // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	camada;
+	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
+	private Rectangle preencher_tudo, fazer_caixa, limpar_selecao; // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
+	private boolean substituir; //
 	
 	public Ui() {
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
@@ -46,6 +50,9 @@ public class Ui {
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
 		caixinha_dos_sprites = new Rectangle(0, 8, Gerador.quadrado.width*5, Gerador.quadrado.width*11);
 		caixinha_dos_livros = new Rectangle(caixinha_dos_sprites.x + caixinha_dos_sprites.width, caixinha_dos_sprites.y, Gerador.quadrado.width/3, caixinha_dos_sprites.height);
+		preencher_tudo = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2, 90, 20);
+		fazer_caixa = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
+		limpar_selecao = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2-preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
 		sprite_selecionado = new ArrayList<Integer>();
 		array = new ArrayList<Integer>();
 		lista = new ArrayList<Integer>();
@@ -79,9 +86,31 @@ public class Ui {
 	
 	public void render(Graphics g) {
 		int w1;
+		g.setColor(new Color(255, 255, 0, 50));
+		int dx, dy;
+		if (pontoA != null) {
+			dx = pontoA.getX() - Camera.x - (pontoA.getZ()-Ui.camada)*Gerador.quadrado.width;
+			dy = pontoA.getY() - Camera.y - (pontoA.getZ()-Ui.camada)*Gerador.quadrado.height;
+			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
+		}
+		if (pontoB != null) {
+			dx = pontoB.getX() - Camera.x - (pontoB.getZ()-Ui.camada)*Gerador.quadrado.width;
+			dy = pontoB.getY() - Camera.y - (pontoB.getZ()-Ui.camada)*Gerador.quadrado.height;
+			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
+		}
+		
 		if (mostrar) {
-			g.setColor(Color.white);
+			if (pontoA != null || pontoB != null) {
+				g.setColor(Color.green);
+				g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
+				g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
+				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+				g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
+				g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
+				g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+			}
 			
+			g.setColor(Color.white);
 			if (colocar_parede) g.fillRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
 			else g.drawRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
 			w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
@@ -218,6 +247,16 @@ public class Ui {
 			return true;
 		}else if (caixinha_dos_livros.contains(x, y)) {
 			trocar_livro(x, y);
+			return true;
+		}else if (preencher_tudo.contains(x, y)) {
+			if (pontoA != null && pontoB != null) World.fill(pontoA, pontoB);
+			return true;
+		}else if (fazer_caixa.contains(x, y)) {
+			if (pontoA != null && pontoB != null) World.empty(pontoA, pontoB);
+			return true;
+		}else if (limpar_selecao.contains(x, y)) {
+			pontoA = null;
+			pontoB = null;
 			return true;
 		}
 		return false;
@@ -381,7 +420,6 @@ public class Ui {
 				if (tiles_salvos.get(livro-1).size() > aux) {
 					if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) tiles_salvos.get(livro-1).remove(aux);
 				}
-				
 			}
 			return true;
 		}
@@ -398,5 +436,24 @@ public class Ui {
 		adicionar_livro(nome);
 		tiles_salvos.set(tiles_salvos.size()-1, tiles);
 		max_pagina.set(tiles_salvos.size(), (int) (tiles_salvos.get(tiles_salvos.size()-1).size()/max_sprites_por_pagina));
+	}
+
+	public boolean addponto(int x, int y) {
+		Tile t = World.pegar_chao(x, y);
+		if (t == pontoA) {
+			pontoA = null;
+			return true;
+		}else if (t == pontoB) {
+			pontoB = null;
+			return true;
+		}
+		if (pontoA == null) {
+			pontoA = t;
+			return true;
+		}else if (pontoB == null) {
+			pontoB = t;
+			return true;
+		}
+		return false;
 	}
 }
