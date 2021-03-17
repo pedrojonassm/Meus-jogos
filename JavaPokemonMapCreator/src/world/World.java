@@ -121,7 +121,7 @@ public class World {
 		
 		Tile t;
 		int maxZ = HIGH;
-		for (int i = 0; i < HIGH; i++) {
+		for (int i = Ui.camada; i < HIGH; i++) {
 			t = pegar_chao(((Gerador.quadrado.x >> 6) + (i+1) + (i+1)*WIDTH + (Gerador.quadrado.y>>6)*WIDTH)*HIGH+Ui.camada+1); // trocar por player.x e player.y
 			if  ( t.existe() ) {
 				maxZ = t.getZ(); // caso exista uma imagem que não dê para ser vista, ela some

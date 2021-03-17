@@ -178,8 +178,8 @@ public class Ui {
 			for (int i = 0; i < max_sprites_por_pagina && i+(max_sprites_por_pagina*pagina.get(livro)) < tiles.size(); i++) {
 				x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
 				y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x);
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setY(y);
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x-camada*Gerador.quadrado.width);
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setY(y-camada*Gerador.quadrado.height);
 				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).render(g);
 				if (i+(max_sprites_por_pagina*pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
