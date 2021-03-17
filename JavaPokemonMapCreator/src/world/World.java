@@ -69,7 +69,6 @@ public class World {
 	}
 	
 	public static Tile pegar_chao(int mx, int my) {
-		// (mx >> 6) + (my>>6)*WIDTH
 		return pegar_chao(((mx >> 6) + (my>>6)*World.WIDTH)*World.HIGH+Ui.camada); // 6 pq o tamanho que estamos usando é 64 (2^6 = 64)
 	}
 	
@@ -117,12 +116,22 @@ public class World {
 		int xfinal = xstart + (Gerador.WIDTH >> log2(Gerador.TS)) +1;
 		int yfinal = ystart + (Gerador.HEIGHT >> log2(Gerador.TS)) +1;
 		
-		xstart--;
-		ystart--;
+		if ((xstart-=(Ui.camada+1)) < 0) xstart = 0;
+		if ((ystart-=(Ui.camada+1)) < 0) ystart = 0;
+		
+		Tile t;
+		int maxZ = HIGH;
+		for (int i = 0; i < HIGH; i++) {
+			t = pegar_chao(((Gerador.quadrado.x >> 6) + (i+1) + (i+1)*WIDTH + (Gerador.quadrado.y>>6)*WIDTH)*HIGH+Ui.camada+1); // trocar por player.x e player.y
+			if  ( t.existe() ) {
+				maxZ = t.getZ(); // caso exista uma imagem que não dê para ser vista, ela some
+				break;
+			}
+		}
 		
 		for(int xx = xstart; xx <= xfinal; xx++)
 			for(int yy = ystart; yy <= yfinal; yy++)
-				for (int zz = 0; zz < HIGH; zz++){
+				for (int zz = 0; zz < maxZ; zz++){
 					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}

@@ -71,8 +71,8 @@ public class Tile {
 					dx = x - Camera.x;
 					dy = y - Camera.y;
 				}
-				dx -= z*Gerador.quadrado.width;
-				dy -= z*Gerador.quadrado.height;
+				dx -= (z-Ui.camada)*Gerador.quadrado.width;
+				dy -= (z-Ui.camada)*Gerador.quadrado.height;
 				g.drawImage(image, dx, dy, null);
 			}
 		}
@@ -130,6 +130,15 @@ public class Tile {
 			retorno += "-";
 		}
 		return retorno += "\n";
+	}
+
+	public boolean existe() {
+		for (ArrayList<int[]> spr : sprites) {
+			if (spr.size() > 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

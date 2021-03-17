@@ -17,7 +17,7 @@ public class Ui {
 	
 	public static boolean mostrar, colocar_parede;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros;
-	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ";
+	private String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ", altura = "Altura: ";
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -97,7 +97,9 @@ public class Ui {
 		}
 		g.setColor(Color.white);
 		w1 = g.getFontMetrics().stringWidth(tile_nivel+tiles_nivel);
-		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, colocar_paredes.y);
+		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y);
+		w1 = g.getFontMetrics().stringWidth(altura+Ui.camada);
+		g.drawString(altura+Ui.camada, colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y-15);
 	}
 	
 	private void mostrar_nome_livro(Graphics g) {
@@ -306,8 +308,8 @@ public class Ui {
 	public boolean trocar_pagina(int x, int y, int rodinha) {
 		if (mostrar) {
 			int k = 0;
-			if (rodinha < 0) k=-1;
-			else k=1;
+			if (rodinha < 0) k=1;
+			else k=-1;
 			if (caixinha_dos_sprites.contains(x, y)) {
 				pagina.set(livro, pagina.get(livro)+k);
 				if (pagina.get(livro) < 0) {
@@ -331,12 +333,12 @@ public class Ui {
 	}
 	
 	public static void trocar_Nivel(int wheelRotation) {
-		if (wheelRotation > 0) {
+		if (wheelRotation < 0) {
 			tiles_nivel++;
 			if (tiles_nivel > max_tiles_nivel) {
 				tiles_nivel = 0;
 			}
-		}else if (wheelRotation < 0) {
+		}else if (wheelRotation > 0) {
 			tiles_nivel--;
 			if (tiles_nivel < 0) {
 				tiles_nivel = max_tiles_nivel;

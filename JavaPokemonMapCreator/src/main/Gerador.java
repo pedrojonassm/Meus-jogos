@@ -142,7 +142,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		//g.drawRect(((int) (quadrado.x>>6))<<6, ((int) (quadrado.y>>6))<<6, quadrado.width, quadrado.height);
 		//*
 		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
-		g.drawRect(escolhido.getX()-Camera.x-escolhido.getZ()*quadrado.width, escolhido.getY()-Camera.y-escolhido.getZ()*quadrado.height, quadrado.width, quadrado.height);
+		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
 		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar) && !Ui.colocar_parede) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 				sprite_selecionado_animation_time = 0;
@@ -160,8 +160,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				dx = escolhido.getX()-Camera.x;
 				dy = escolhido.getY()-Camera.y;
 			}
-			dx -= escolhido.getZ()*quadrado.width;
-			dy -= escolhido.getZ()*quadrado.height;
+			//dx -= escolhido.getZ()*quadrado.width;
+			//dy -= escolhido.getZ()*quadrado.height;
 			g.drawImage(imagem, dx, dy, null);
 		}
 		//*/
@@ -202,11 +202,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		/*
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT) horizontal = 1;
 		else if (e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = -1;
 		if (e.getKeyCode() == KeyEvent.VK_UP) vertical = -1;
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 1;//*/
+		else if (e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 1;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
@@ -215,25 +214,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		/*
 		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = 0;
-		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 0;//*/
+		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 0;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = false;
-		
-		if (e.getKeyCode() == KeyEvent.VK_UP) {
-			Ui.camada++;
-			if (Ui.camada >= World.HIGH) {
-				Ui.camada = 0;
-			}
-			System.out.println(Ui.camada);
-		}else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-			Ui.camada--;
-			if (Ui.camada < 0) {
-				Ui.camada = World.HIGH-1;
-			}
-			System.out.println(Ui.camada);
-		}
 	}
 
 	@Override
@@ -301,7 +285,22 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (ui.trocar_pagina(e.getX(), e.getY(), e.getWheelRotation())) return;
-		else Ui.trocar_Nivel(e.getWheelRotation());
+		else {
+			if (!control) Ui.trocar_Nivel(e.getWheelRotation());
+			else {
+				if (e.getWheelRotation() < 0) {
+					Ui.camada++;
+					if (Ui.camada >= World.HIGH) {
+						Ui.camada = 0;
+					}
+				}else if (e.getWheelRotation() > 0) {
+					Ui.camada--;
+					if (Ui.camada < 0) {
+						Ui.camada = World.HIGH-1;
+					}
+				}
+			}
+		}
 	}
 
 	
