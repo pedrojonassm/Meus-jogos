@@ -3,6 +3,7 @@ package main;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -32,6 +33,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	private static final long serialVersionUID = 1L;
 	public static JFrame frame;
+	public static FileDialog fd;
 	private Thread thread;
 	private boolean isRunning = true;
 	public static final int WIDTH = 1240, HEIGHT = 720, TS = 64;
@@ -71,6 +73,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		addMouseWheelListener(this);
 		setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		initFrame();
+		fd = new FileDialog(Gerador.frame, "Choose a file", FileDialog.LOAD);
+		fd.setDirectory("C:\\");
+		fd.setFile("*.world"); 
+		
 		image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_RGB);
 		sprite_selecionado_index = sprite_selecionado_animation_time = 0;
 		//Inicializando objetos.
@@ -185,8 +191,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			delta+= (now - lastTime) / ns;
 			lastTime = now;
 			if(delta >= 1) {
-				tick();
-				render();
+				if (World.ready) {
+					tick();
+					render();
+				}
 				frames++;
 				delta--;
 			}
@@ -209,7 +217,11 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
-		if (e.getKeyCode() == KeyEvent.VK_S && control) memoria.salvar_tudo();;
+		if (control) {
+			if (e.getKeyCode() == KeyEvent.VK_S) memoria.salvar_tudo();
+			else if (e.getKeyCode() == KeyEvent.VK_N) World.novo_mundo(null);
+			else if (e.getKeyCode() == KeyEvent.VK_O) World.carregar_mundo();
+		}
 	}
 
 	@Override

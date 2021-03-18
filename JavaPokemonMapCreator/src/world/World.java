@@ -1,12 +1,20 @@
 package world;
 
+import java.awt.FileDialog;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.plaf.FileChooserUI;
 
+import files.salvarCarregar;
 import graficos.Spritesheet;
 import graficos.Ui;
 import main.Gerador;
@@ -21,23 +29,42 @@ public class World {
 	public static int log_ts;
 	
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
+	static File arquivo;
+	public static boolean ready;
 	
-	public World(String path){
+	public World(File file){
+		ready = false;
+		arquivo = file;
 		log_ts = log2(Gerador.TS);
 		//*
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
 		 try {
-			 if (path == null) {
+			 if (file == null) {
 				 WIDTH = 20; HEIGHT = 20; HIGH = 7;
+				 tiles = new Tile[WIDTH * HEIGHT * HIGH];
+					for(int xx = 0; xx < WIDTH; xx++)
+						for(int yy = 0; yy < HEIGHT; yy++)
+							for (int zz = 0; zz < HIGH; zz++)
+								tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
 			 }else {
-				 
+				BufferedReader reader = new BufferedReader(new FileReader(file));
+				String singleLine = null;
+				singleLine = reader.readLine();
+				String[] sla = singleLine.split(";");
+				WIDTH = Integer.parseInt(sla[0]); HEIGHT = Integer.parseInt(sla[1]); HIGH = Integer.parseInt(sla[2]);
+				tiles = new Tile[WIDTH * HEIGHT * HIGH];
+				for(int xx = 0; xx < WIDTH; xx++)
+					for(int yy = 0; yy < HEIGHT; yy++)
+						for (int zz = 0; zz < HIGH; zz++) {
+							Tile t = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
+							tiles[(xx + (yy * WIDTH))*HIGH+zz] = t;
+							String str = reader.readLine();
+							t.carregar_sprites(str);
+						}
 			 }
-			tiles = new Tile[WIDTH * HEIGHT * HIGH];
-			for(int xx = 0; xx < WIDTH; xx++)
-				for(int yy = 0; yy < HEIGHT; yy++)
-					for (int zz = 0; zz < HIGH; zz++)
-						tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
+			ready = true;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -178,7 +205,33 @@ public class World {
 			}
 		
 	}
-
+	
+	public static void salvar() {
+		if (arquivo == null) {
+			try {
+				String nome = null;
+				do {
+					nome = JOptionPane.showInputDialog("Insira um nome válido para esse nome");
+					if (nome == null) {
+						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0) return; 
+					}
+				}while(nome == null || nome.isBlank() || (arquivo = new File(salvarCarregar.arquivo_worlds, nome+salvarCarregar.end_file_world)).exists());
+				arquivo.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String salvar = ""+WIDTH+";"+HEIGHT+";"+HIGH+"\n";
+		for(int xx = 0; xx < WIDTH; xx++)
+			for(int yy = 0; yy < HEIGHT; yy++)
+				for (int zz = 0; zz < HIGH; zz++)
+					salvar+=tiles[(xx + (yy * WIDTH))*HIGH+zz].salvar();
+		
+		salvarCarregar.salvar_mundo(arquivo, salvar);
+		// começar o processo de salvamento
+		
+	}
+	
 	public static void empty(Tile pontoA, Tile pontoB) {
 		int minX, minY, minZ, maxX, maxY, maxZ, aX = pontoA.getX() >> log_ts, aY = pontoA.getY() >> log_ts, aZ = pontoA.getZ(), bX = pontoB.getX() >> log_ts, bY = pontoB.getY() >> log_ts, bZ = pontoB.getZ();
 		if (pontoA.getX() < pontoB.getX()) {
@@ -236,5 +289,17 @@ public class World {
 						tiles[(xx + (yy * WIDTH))*HIGH+zz].adicionar_sprite_selecionado();
 					}
 		}
+	}
+
+	public static void novo_mundo(File file) {
+		if (JOptionPane.showConfirmDialog(null, "Deseja salvar o mundo atual?") == 0) salvar();
+		
+		Gerador.world = new World(file);
+	}
+
+	public static void carregar_mundo() {
+		
+		Gerador.fd.setVisible(true);
+		novo_mundo(Gerador.fd.getFiles()[0]);
 	}
 }

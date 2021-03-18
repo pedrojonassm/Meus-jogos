@@ -11,16 +11,21 @@ import java.util.ArrayList;
 import graficos.Ui;
 import main.Gerador;
 import world.Tile;
+import world.World;
 
 public class salvarCarregar {
-	private static File arquivo;
+	public static File arquivo_books, arquivo_worlds;
 	// carregar e salvar os "livros"
-	private static final String local = "books", end_file = ".sz";
+	public static final String local_books = "books", local_worlds = "worlds", end_file_book = ".book", end_file_world = ".world";
 	
 	public salvarCarregar() {
-		arquivo = new File(local);
-		if (!arquivo.exists()) {
-			arquivo.mkdir();
+		arquivo_books = new File(local_books);
+		if (!arquivo_books.exists()) {
+			arquivo_books.mkdir();
+		}
+		arquivo_worlds = new File(local_worlds);
+		if (!arquivo_worlds.exists()) {
+			arquivo_worlds.mkdir();
 		}
 	}
 	
@@ -39,7 +44,7 @@ public class salvarCarregar {
 	}
 	
 	public void carregar_livros() {
-		ArrayList<String> arquivos = listFilesForFolder(arquivo);
+		ArrayList<String> arquivos = listFilesForFolder(arquivo_books);
 		try {
 			BufferedReader reader;
 			for (String caminho : arquivos) {
@@ -52,7 +57,7 @@ public class salvarCarregar {
 					tiles.add(tile);
 				}
 				caminho = caminho.split("/")[caminho.split("/").length-1];
-				caminho = caminho.substring(0, caminho.length()-end_file.length());
+				caminho = caminho.substring(0, caminho.length()-end_file_book.length());
 				Gerador.ui.adicionar_livro_salvo(caminho, tiles);
 			}
 		} catch (Exception e) {
@@ -63,7 +68,7 @@ public class salvarCarregar {
 	public static void salvar_livro(int index) {
 		ArrayList<Tile> tiles = Ui.pegar_livro(index);
 		String nome = Ui.pegar_nome_livro(index+1);
-		File file = new File(arquivo, nome+end_file);
+		File file = new File(arquivo_books, nome+end_file_book);
 		try {
 			if (!file.exists()) file.createNewFile();
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -80,5 +85,18 @@ public class salvarCarregar {
 
 	public void salvar_tudo() {
 		Ui.salvar();
+		World.salvar();
+	}
+
+	public static void salvar_mundo(File file, String salvar) {
+		try {
+			if (!file.exists()) file.createNewFile();
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(salvar);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
