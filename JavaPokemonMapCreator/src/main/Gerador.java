@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 
 import files.salvarCarregar;
 import graficos.*;
+import player.Player;
 import world.Camera;
 import world.World;
 import world.Tile;
@@ -44,7 +45,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public static World world;
 	public static double amountOfTicks = 60.0;
 	
-	private int horizontal, vertical;
+	public static Player player;
 	salvarCarregar memoria;
 	
 	public static Rectangle quadrado;
@@ -58,6 +59,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	
 	public Gerador(){
+		player = new Player(Gerador.TS*5, Gerador.TS*5, 0);
 		memoria = new salvarCarregar();
 		quadrado = new Rectangle(64, 64);
 		ui = new Ui();
@@ -115,18 +117,23 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	}
 	
 	public void tick(){
-		if (Camera.x + horizontal > 0 && Camera.x + horizontal < World.WIDTH*Gerador.TS - Gerador.WIDTH) Camera.x += horizontal;
-		if (Camera.y + vertical > 0 && Camera.y + vertical < World.HEIGHT*Gerador.TS - Gerador.HEIGHT) Camera.y += vertical;
 		if (clique_no_mapa) {
 			if (!control) {
 				clique_no_mapa = false;
 			}
 			if (shift) escolhido.pegarsprites();
-			else if (Ui.colocar_parede) escolhido.setSolid(solido);
 			else{
-				escolhido.adicionar_sprite_selecionado();
+				if (!Ui.colocar_parede) escolhido.adicionar_sprite_selecionado();
+				else {
+					 escolhido.setSolid(solido);
+					 if (Ui.sprite_selecionado.size() > 0) {
+						 escolhido.adicionar_sprite_selecionado();
+					 }
+				}
+				
 			}
 		}
+		player.tick();
 		world.tick();
 		ui.tick();
 	}
@@ -147,9 +154,9 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		
 		//g.drawRect(((int) (quadrado.x>>6))<<6, ((int) (quadrado.y>>6))<<6, quadrado.width, quadrado.height);
 		//*
-		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y);
+		escolhido = World.pegar_chao(quadrado.x + Camera.x, quadrado.y+Camera.y, player.getZ());
 		g.drawRect(escolhido.getX()-Camera.x, escolhido.getY()-Camera.y, quadrado.width, quadrado.height);
-		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar) && !Ui.colocar_parede) {
+		if (Ui.sprite_selecionado.size() > 0 && (!ui.getCaixinha_dos_sprites().contains(quadrado.x, quadrado.y) || !Ui.mostrar)) {
 			if (++sprite_selecionado_animation_time >= World.max_tiles_animation_time) {
 				sprite_selecionado_animation_time = 0;
 				if (++sprite_selecionado_index >= Ui.sprite_selecionado.size()) {
@@ -166,12 +173,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				dx = escolhido.getX()-Camera.x;
 				dy = escolhido.getY()-Camera.y;
 			}
-			//dx -= escolhido.getZ()*quadrado.width;
-			//dy -= escolhido.getZ()*quadrado.height;
 			g.drawImage(imagem, dx, dy, null);
 		}
 		//*/
-		
+		player.render(g);
 		ui.render(g);
 		g.dispose();
 		g = bs.getDrawGraphics();
@@ -210,10 +215,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) horizontal = 1;
-		else if (e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = -1;
-		if (e.getKeyCode() == KeyEvent.VK_UP) vertical = -1;
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 1;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) player.horizontal = 1;
+		else if (e.getKeyCode() == KeyEvent.VK_LEFT) player.horizontal = -1;
+		if (e.getKeyCode() == KeyEvent.VK_UP) player.vertical = -1;
+		else if (e.getKeyCode() == KeyEvent.VK_DOWN) player.vertical = 1;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
@@ -226,8 +231,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) horizontal = 0;
-		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) vertical = 0;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) player.horizontal = 0;
+		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) player.vertical = 0;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = false;
 	}
@@ -263,7 +268,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			}
 		}else if (e.getButton() == MouseEvent.BUTTON2) {
 			//*
-			int pos = ((quadrado.x >> 6) + (quadrado.y>>6)*World.WIDTH)*World.HIGH+Ui.camada;
+			int pos = ((quadrado.x >> 6) + (quadrado.y>>6)*World.WIDTH)*World.HIGH+player.getZ();
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
 			System.out.println("pos: "+pos);
 			return;
@@ -301,17 +306,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		else {
 			if (!control) Ui.trocar_Nivel(e.getWheelRotation());
 			else {
-				if (e.getWheelRotation() < 0) {
-					Ui.camada++;
-					if (Ui.camada >= World.HIGH) {
-						Ui.camada = 0;
-					}
-				}else if (e.getWheelRotation() > 0) {
-					Ui.camada--;
-					if (Ui.camada < 0) {
-						Ui.camada = World.HIGH-1;
-					}
-				}
+				player.camada(e.getWheelRotation());
 			}
 		}
 	}

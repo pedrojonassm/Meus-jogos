@@ -10,11 +10,14 @@ import main.Gerador;
 
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y, z;
+	private int x, y, z,
+	stairs_type, stairs_mode; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
 	private boolean solid;
 	
 	public Tile(int x,int y,int z){
 		solid = false;
+		stairs_type = 0;
+		stairs_mode = 0;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -32,6 +35,19 @@ public class Tile {
 		this.solid = solid;
 	}
 	
+	public int getStairs_type() {
+		return stairs_type;
+	}
+	public void setStairs_type(int stairs_type) {
+		this.stairs_type = stairs_type;
+	}
+	public int getStairs_mode() {
+		return stairs_mode;
+	}
+	public void setStairs_mode(int stairs_mode) {
+		this.stairs_mode = stairs_mode;
+	}
+	
 	public int getX() {
 		return x;
 	}
@@ -44,7 +60,7 @@ public class Tile {
 	
 	public void carregar_sprites(String linha) {
 		sprites.clear();
-		String[] sla = linha.split(";"), sla2 = sla[1].split("-");
+		String[] sla = linha.split(";"), sla2 = sla[1].split("-"), sla4 = sla[2].split("-");
 		for (int i = 0; i < Integer.parseInt(sla[0]); i++) {
 			ArrayList<int[]> sprite = new ArrayList<int[]>();
 			String[] sla3 = sla2[i].split(":");
@@ -54,6 +70,11 @@ public class Tile {
 				sprite.add(a);
 			}
 			sprites.add(sprite);
+		}
+		stairs_type = Integer.parseInt(sla4[0]);
+		stairs_mode = Integer.parseInt(sla4[1]);
+		if (Integer.parseInt(sla4[2]) == 1) {
+			solid = true;
 		}
 	}
 	
@@ -71,14 +92,14 @@ public class Tile {
 					dx = x - Camera.x;
 					dy = y - Camera.y;
 				}
-				dx -= (z-Ui.camada)*Gerador.quadrado.width;
-				dy -= (z-Ui.camada)*Gerador.quadrado.height;
+				dx -= (z-Gerador.player.getZ())*Gerador.quadrado.width;
+				dy -= (z-Gerador.player.getZ())*Gerador.quadrado.height;
 				g.drawImage(image, dx, dy, null);
 			}
 		}
 		if (Ui.colocar_parede && solid) {
 			g.setColor(new Color(255, 0, 0, 50));
-			g.fillRect(x - Camera.x, y - Camera.y, Gerador.TS, Gerador.TS);
+			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}
 	}
 
@@ -128,6 +149,13 @@ public class Tile {
 				retorno += ":"+a[0] + "a" + a[1];
 			}
 			retorno += "-";
+		}
+		// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
+		retorno += ";"+stairs_type+"-"+stairs_mode+"-";
+		if (solid) {
+			retorno+="1";
+		}else {
+			retorno+="0";
 		}
 		return retorno += "\n";
 	}

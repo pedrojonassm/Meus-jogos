@@ -24,8 +24,7 @@ public class Ui {
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
 	private static ArrayList<String> nome_livros;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
-	public static int tiles_nivel, max_tiles_nivel, // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
-	camada;
+	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
 	private Rectangle preencher_tudo, fazer_caixa, limpar_selecao; // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
 	private boolean substituir; //
@@ -89,13 +88,13 @@ public class Ui {
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
 		if (pontoA != null) {
-			dx = pontoA.getX() - Camera.x - (pontoA.getZ()-Ui.camada)*Gerador.quadrado.width;
-			dy = pontoA.getY() - Camera.y - (pontoA.getZ()-Ui.camada)*Gerador.quadrado.height;
+			dx = pontoA.getX() - Camera.x - (pontoA.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
+			dy = pontoA.getY() - Camera.y - (pontoA.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
 			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 		}
 		if (pontoB != null) {
-			dx = pontoB.getX() - Camera.x - (pontoB.getZ()-Ui.camada)*Gerador.quadrado.width;
-			dy = pontoB.getY() - Camera.y - (pontoB.getZ()-Ui.camada)*Gerador.quadrado.height;
+			dx = pontoB.getX() - Camera.x - (pontoB.getZ()-Gerador.player.getZ())*Gerador.quadrado.width;
+			dy = pontoB.getY() - Camera.y - (pontoB.getZ()-Gerador.player.getZ())*Gerador.quadrado.height;
 			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 		}
 		
@@ -127,8 +126,8 @@ public class Ui {
 		g.setColor(Color.white);
 		w1 = g.getFontMetrics().stringWidth(tile_nivel+tiles_nivel);
 		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y);
-		w1 = g.getFontMetrics().stringWidth(altura+Ui.camada);
-		g.drawString(altura+Ui.camada, colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y-15);
+		w1 = g.getFontMetrics().stringWidth(altura+Gerador.player.getZ());
+		g.drawString(altura+Gerador.player.getZ(), colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y-15);
 	}
 	
 	private void mostrar_nome_livro(Graphics g) {
@@ -207,8 +206,8 @@ public class Ui {
 			for (int i = 0; i < max_sprites_por_pagina && i+(max_sprites_por_pagina*pagina.get(livro)) < tiles.size(); i++) {
 				x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
 				y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x-camada*Gerador.quadrado.width);
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setY(y-camada*Gerador.quadrado.height);
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x-Gerador.player.getZ()*Gerador.quadrado.width);
+				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setY(y-Gerador.player.getZ()*Gerador.quadrado.height);
 				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).render(g);
 				if (i+(max_sprites_por_pagina*pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
@@ -439,7 +438,7 @@ public class Ui {
 	}
 
 	public boolean addponto(int x, int y) {
-		Tile t = World.pegar_chao(x, y);
+		Tile t = World.pegar_chao(x, y, Gerador.player.getZ());
 		if (t == pontoA) {
 			pontoA = null;
 			return true;

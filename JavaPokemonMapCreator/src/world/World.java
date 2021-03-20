@@ -96,8 +96,8 @@ public class World {
 		return tiles[pos];
 	}
 	
-	public static Tile pegar_chao(int mx, int my) {
-		return pegar_chao(((mx >> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+Ui.camada);
+	public static Tile pegar_chao(int mx, int my, int mz) {
+		return pegar_chao(((mx >> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+mz);
 	}
 	
 	public void tick() {
@@ -109,24 +109,37 @@ public class World {
 		}
 	}
 	
-	public static boolean isFree(int xnext,int ynext){
+	public static boolean isFree(int xnext, int ynext, int z){
 		
-		int x1 = xnext / TILE_SIZE;
-		int y1 = ynext / TILE_SIZE;
+		int x1 = xnext;
+		int y1 = ynext;
 		
-		int x2 = (xnext+TILE_SIZE-1) / TILE_SIZE;
-		int y2 = ynext / TILE_SIZE;
+		int x2 = (xnext+TILE_SIZE);
+		int y2 = ynext;
 		
-		int x3 = xnext / TILE_SIZE;
-		int y3 = (ynext+TILE_SIZE-1) / TILE_SIZE;
+		int x3 = xnext;
+		int y3 = (ynext+TILE_SIZE);
 		
-		int x4 = (xnext+TILE_SIZE-1) / TILE_SIZE;
-		int y4 = (ynext+TILE_SIZE-1) / TILE_SIZE;
+		int x4 = (xnext+TILE_SIZE);
+		int y4 = (ynext+TILE_SIZE);
 		
-		return !((tiles[x1 + (y1*World.WIDTH)].getSolid()) ||
-				(tiles[x2 + (y2*World.WIDTH)].getSolid()) ||
-				(tiles[x3 + (y3*World.WIDTH)].getSolid()) ||
-				(tiles[x4 + (y4*World.WIDTH)].getSolid()));
+		return !((pegar_chao(x1, y1, z).getSolid()) ||
+				(pegar_chao(x2, y2, z).getSolid()) ||
+				(pegar_chao(x3, y3, z).getSolid()) ||
+				(pegar_chao(x4, y4, z).getSolid()));
+	}
+	
+	public static Tile[] tiles_ao_redor(int x, int y, int z) {
+		Tile[] retorno = new Tile[8];
+		
+		int[]
+				xs = {x-TILE_SIZE, x, x+TILE_SIZE, x-TILE_SIZE, x+TILE_SIZE, x-TILE_SIZE, x, x+TILE_SIZE},
+				ys = {y-TILE_SIZE, y-TILE_SIZE, y-TILE_SIZE, y, y, y+TILE_SIZE, y+TILE_SIZE, y+TILE_SIZE};
+		for (int i = 0; i < 8; i++) {
+			retorno[i] = pegar_chao(xs[i], ys[i], z);
+		}
+		
+		return retorno;
 	}
 	
 	private int log2(int n) {
@@ -144,13 +157,13 @@ public class World {
 		int xfinal = xstart + (Gerador.WIDTH >> log_ts) + 1;
 		int yfinal = ystart + (Gerador.HEIGHT >> log_ts) + 1;
 		
-		if ((xstart-=(Ui.camada+1)) < 0) xstart = 0;
-		if ((ystart-=(Ui.camada+1)) < 0) ystart = 0;
+		if ((xstart-=(Gerador.player.getZ()+1)) < 0) xstart = 0;
+		if ((ystart-=(Gerador.player.getZ()+1)) < 0) ystart = 0;
 		
 		Tile t;
 		int maxZ = HIGH;
-		for (int i = 0; i < HIGH-Ui.camada-1; i++) {
-			t = pegar_chao(((Gerador.quadrado.x >> log_ts) + (i+1) + (i+1)*WIDTH + (Gerador.quadrado.y>>log_ts)*WIDTH)*HIGH+Ui.camada+1); // trocar por player.x e player.y
+		for (int i = 0; i < HIGH-Gerador.player.getZ()-1; i++) {
+			t = pegar_chao(((Gerador.quadrado.x >> log_ts) + (i+1) + (i+1)*WIDTH + (Gerador.quadrado.y>>log_ts)*WIDTH)*HIGH+Gerador.player.getZ()+1); // trocar por player.x e player.y
 			if  ( t.existe() ) {
 				maxZ = t.getZ(); // caso exista uma imagem que não dê para ser vista, ela some
 				break;
@@ -211,7 +224,7 @@ public class World {
 			try {
 				String nome = null;
 				do {
-					nome = JOptionPane.showInputDialog("Insira um nome válido para esse nome");
+					nome = JOptionPane.showInputDialog("Insira um nome válido para esse mundo");
 					if (nome == null) {
 						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0) return; 
 					}
@@ -228,7 +241,6 @@ public class World {
 					salvar+=tiles[(xx + (yy * WIDTH))*HIGH+zz].salvar();
 		
 		salvarCarregar.salvar_mundo(arquivo, salvar);
-		// começar o processo de salvamento
 		
 	}
 	
