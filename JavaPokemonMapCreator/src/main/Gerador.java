@@ -121,16 +121,18 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			if (!control) {
 				clique_no_mapa = false;
 			}
-			if (shift) escolhido.pegarsprites();
+			if (shift) {
+				escolhido.pegarsprites();
+				clique_no_mapa = false;
+			}
 			else{
-				if (!Ui.colocar_parede) escolhido.adicionar_sprite_selecionado();
-				else {
-					 escolhido.setSolid(solido);
-					 if (Ui.sprite_selecionado.size() > 0) {
-						 escolhido.adicionar_sprite_selecionado();
-					 }
+				if (Ui.colocar_parede) escolhido.setSolid(solido);
+				else if (Ui.colocar_escada) {
+					 
 				}
-				
+				if (Ui.sprite_selecionado.size() > 0) {
+					 escolhido.adicionar_sprite_selecionado();
+				}
 			}
 		}
 		player.tick();

@@ -15,10 +15,13 @@ import world.Tile;
 import world.World;
 
 public class Ui {
-	
-	public static boolean mostrar, colocar_parede;
-	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros;
-	private static final String colocar_as_paredes = "setar paredes", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher";
+	private static BufferedImage[] setas;
+	private int escadas_direction;
+	public static boolean mostrar, colocar_parede, colocar_escada;
+	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
+	preencher_tudo, fazer_caixa, limpar_selecao, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
+	colocar_escadas, direcao_escadas;
+	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher";
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -26,10 +29,10 @@ public class Ui {
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
-	private Rectangle preencher_tudo, fazer_caixa, limpar_selecao; // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
 	private boolean substituir; //
 	
 	public Ui() {
+		carregar_setas_das_escadas();
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
 		pagina = new ArrayList<Integer>();
 		max_pagina = new ArrayList<Integer>();
@@ -45,9 +48,11 @@ public class Ui {
 		nome_livros = new ArrayList<String>();
 		nome_livros.add("todos os sprites");
 		mostrar = true;
-		colocar_parede = false;
+		colocar_parede = colocar_escada = false;
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
+		colocar_escadas = new Rectangle(Gerador.WIDTH-100, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
 		caixinha_dos_sprites = new Rectangle(0, 8, Gerador.quadrado.width*5, Gerador.quadrado.width*11);
+		direcao_escadas = new Rectangle(colocar_escadas.x-32-colocar_escadas.width*2, colocar_escadas.y+32,32, 32);
 		caixinha_dos_livros = new Rectangle(caixinha_dos_sprites.x + caixinha_dos_sprites.width, caixinha_dos_sprites.y, Gerador.quadrado.width/3, caixinha_dos_sprites.height);
 		preencher_tudo = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2, 90, 20);
 		fazer_caixa = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
@@ -62,6 +67,15 @@ public class Ui {
 		max_tiles_nivel = 4;
 	}
 	
+	private void carregar_setas_das_escadas() {
+		Spritesheet seta = new Spritesheet("/setas.png", 32);
+		setas = new BufferedImage[4];
+		for (int i = 0; i < 4; i++) {
+			setas[i] = seta.getAsset(i);
+		}
+		escadas_direction = 0;
+	}
+
 	public static String pegar_nome_livro(int index) {
 		return nome_livros.get(index);
 	}
@@ -112,8 +126,15 @@ public class Ui {
 			g.setColor(Color.white);
 			if (colocar_parede) g.fillRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
 			else g.drawRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
+			if (colocar_escada) {
+				g.fillRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+				g.drawImage(setas[escadas_direction], direcao_escadas.x, direcao_escadas.y, null);
+			}
+			else g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
 			w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
 			g.drawString(colocar_as_paredes, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
+			w1 = g.getFontMetrics().stringWidth(colocar_as_escadas);
+			g.drawString(colocar_as_escadas, colocar_escadas.x-colocar_escadas.width-w1, colocar_escadas.y+colocar_escadas.height);
 			g.setColor(Color.black);
 			g.fillRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y, caixinha_dos_sprites.width, caixinha_dos_sprites.height);
 			g.setColor(Color.white);
@@ -239,7 +260,12 @@ public class Ui {
 
 	public boolean clicou(int x, int y) {
 		if (colocar_paredes.contains(x, y)) {
+			colocar_escada = false;
 			colocar_parede = !colocar_parede;
+			return true;
+		}if (colocar_escadas.contains(x, y)) {
+			colocar_escada = !colocar_escada;
+			colocar_parede = false;
 			return true;
 		}else if (caixinha_dos_sprites.contains(x, y)) {
 			pegar_ou_retirar_sprite_selecionado(x,y);
@@ -247,13 +273,13 @@ public class Ui {
 		}else if (caixinha_dos_livros.contains(x, y)) {
 			trocar_livro(x, y);
 			return true;
-		}else if (preencher_tudo.contains(x, y)) {
+		}else if (((pontoA != null || pontoB != null)) && preencher_tudo.contains(x, y)) {
 			if (pontoA != null && pontoB != null) World.fill(pontoA, pontoB);
 			return true;
-		}else if (fazer_caixa.contains(x, y)) {
+		}else if (((pontoA != null || pontoB != null)) && fazer_caixa.contains(x, y)) {
 			if (pontoA != null && pontoB != null) World.empty(pontoA, pontoB);
 			return true;
-		}else if (limpar_selecao.contains(x, y)) {
+		}else if (((pontoA != null || pontoB != null)) && limpar_selecao.contains(x, y)) {
 			pontoA = null;
 			pontoB = null;
 			return true;
@@ -363,6 +389,14 @@ public class Ui {
 					pagina_livros = max_pagina_livros;
 				}else if  (pagina_livros > max_pagina_livros) {
 					pagina_livros = 0;
+				}
+				return true;
+			}else if (direcao_escadas.contains(x, y)) {
+				escadas_direction += k;
+				if (escadas_direction < 0) {
+					escadas_direction = setas.length-1;
+				}else if (escadas_direction >= setas.length) {
+					escadas_direction = 0;
 				}
 				return true;
 			}
