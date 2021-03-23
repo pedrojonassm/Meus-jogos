@@ -134,10 +134,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					}
 				}
 				else if (Ui.colocar_escada) {
-					if (escolhido.getZ() != 0) {
+					if (escolhido.getZ() < World.HIGH) {
 						escolhido.virar_escada();
 					}else {
-						JOptionPane.showMessageDialog(null, "As escadas sempre descem, não coloque no andar mais baixo, mas sim acima dele");
+						World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()-1).virar_escada();;
 					}
 					 
 					if (Ui.sprite_selecionado.size() > 0) {
@@ -292,7 +292,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			//*
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
 			else if (ui.colocar_escada) {
-				if (escolhido.getZ() != 0) {
+				if (escolhido.getZ() < World.HIGH) {
 					escolhido.desvirar_escada();
 				}
 				return;
