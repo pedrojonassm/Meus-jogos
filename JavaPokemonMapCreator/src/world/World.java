@@ -93,6 +93,9 @@ public class World {
 	}
 	
 	public static Tile pegar_chao(int pos) {
+		if (pos >= tiles.length) {
+			return null;
+		}
 		return tiles[pos];
 	}
 	

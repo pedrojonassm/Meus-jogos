@@ -5,6 +5,7 @@ import java.awt.Graphics;
 
 import main.Gerador;
 import world.Camera;
+import world.Tile;
 import world.World;
 
 public class Player {
@@ -43,9 +44,53 @@ public class Player {
 			}
 		}
 		
+		colidindo_com_escada();
+		
 		updateCamera();
 	}
 	
+	private void colidindo_com_escada() {
+		Tile t = World.pegar_chao(x, y, z+1);
+		if (t.getStairs_type() == 1) {
+			z++;
+			switch (t.getStairs_direction()) {
+			case 0:
+				x=t.getX()+Gerador.quadrado.width;
+				break;
+			case 1:
+				y=t.getY()+Gerador.quadrado.height;
+				break;
+			case 2:
+				x=t.getX()-Gerador.quadrado.width;
+				break;
+			case 3:
+				y=t.getY()-Gerador.quadrado.height;
+				break;
+			}
+			return;
+		}
+		t = World.pegar_chao(x, y, z);
+		if (t.getStairs_type() == 1) {
+			z--;
+			switch (t.getStairs_direction()) {
+			case 0:
+				x=t.getX()-Gerador.quadrado.width;
+				break;
+			case 1:
+				y=t.getY()-Gerador.quadrado.height;
+				break;
+			case 2:
+				x=t.getX()+Gerador.quadrado.width;
+				break;
+			case 3:
+				y=t.getY()+Gerador.quadrado.height;
+				break;
+			}
+			return;
+		}
+		
+	}
+
 	public int getX() {
 		return x;
 	}

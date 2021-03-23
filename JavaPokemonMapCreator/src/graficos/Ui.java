@@ -16,23 +16,25 @@ import world.World;
 
 public class Ui {
 	private static BufferedImage[] setas;
-	private int escadas_direction;
 	public static boolean mostrar, colocar_parede, colocar_escada;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
 	preencher_tudo, fazer_caixa, limpar_selecao, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
 	colocar_escadas, direcao_escadas;
+	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher";
+	private static final String[] escada = {"colisao", "clique direito", "precisa de Rope"};
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
 	private static ArrayList<String> nome_livros;
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
-	public static int tiles_nivel, max_tiles_nivel; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
+	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
 	private boolean substituir; //
 	
 	public Ui() {
 		carregar_setas_das_escadas();
+		modo_escadas = 0;
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
 		pagina = new ArrayList<Integer>();
 		max_pagina = new ArrayList<Integer>();
@@ -50,9 +52,13 @@ public class Ui {
 		mostrar = true;
 		colocar_parede = colocar_escada = false;
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
-		colocar_escadas = new Rectangle(Gerador.WIDTH-100, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
+		colocar_escadas = new Rectangle(colocar_paredes.x, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
+		escadas = new Rectangle[3];
+		escadas[0] = new Rectangle(colocar_escadas.x, colocar_escadas.y+colocar_escadas.height*2, 10, 10);
+		escadas[1] = new Rectangle(escadas[0].x, escadas[0].y+escadas[0].height*2, 10, 10);
+		escadas[2] = new Rectangle(escadas[1].x, escadas[1].y+escadas[1].height*2, 10, 10);
 		caixinha_dos_sprites = new Rectangle(0, 8, Gerador.quadrado.width*5, Gerador.quadrado.width*11);
-		direcao_escadas = new Rectangle(colocar_escadas.x-32-colocar_escadas.width*2, colocar_escadas.y+32,32, 32);
+		direcao_escadas = new Rectangle(colocar_escadas.x+colocar_escadas.width*2, colocar_escadas.y-colocar_escadas.height,32, 32);
 		caixinha_dos_livros = new Rectangle(caixinha_dos_sprites.x + caixinha_dos_sprites.width, caixinha_dos_sprites.y, Gerador.quadrado.width/3, caixinha_dos_sprites.height);
 		preencher_tudo = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2, 90, 20);
 		fazer_caixa = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
@@ -129,6 +135,16 @@ public class Ui {
 			if (colocar_escada) {
 				g.fillRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
 				g.drawImage(setas[escadas_direction], direcao_escadas.x, direcao_escadas.y, null);
+				for (int i = 0; i < escadas.length; i++) {
+					if (i == modo_escadas) {
+						g.fillRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
+					}else {
+						g.drawRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
+					}
+					
+					w1 = g.getFontMetrics().stringWidth(escada[i]);
+					g.drawString(escada[i], escadas[i].x-escadas[i].width-w1, escadas[i].y+escadas[i].height);
+				}
 			}
 			else g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
 			w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
@@ -284,6 +300,13 @@ public class Ui {
 			pontoB = null;
 			return true;
 		}
+		for (int i = 0; i < escadas.length; i++) {
+			if (escadas[i].contains(x, y)) {
+				modo_escadas = i;
+				return true;
+			}
+		}
+			
 		return false;
 	}
 	

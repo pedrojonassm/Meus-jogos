@@ -11,13 +11,13 @@ import main.Gerador;
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
 	private int x, y, z,
-	stairs_type, stairs_mode; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
+	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = precisa de Rope; direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
 	private boolean solid;
 	
 	public Tile(int x,int y,int z){
 		solid = false;
 		stairs_type = 0;
-		stairs_mode = 0;
+		stairs_direction = 0;
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -38,14 +38,8 @@ public class Tile {
 	public int getStairs_type() {
 		return stairs_type;
 	}
-	public void setStairs_type(int stairs_type) {
-		this.stairs_type = stairs_type;
-	}
-	public int getStairs_mode() {
-		return stairs_mode;
-	}
-	public void setStairs_mode(int stairs_mode) {
-		this.stairs_mode = stairs_mode;
+	public int getStairs_direction() {
+		return stairs_direction;
 	}
 	
 	public int getX() {
@@ -72,7 +66,7 @@ public class Tile {
 			sprites.add(sprite);
 		}
 		stairs_type = Integer.parseInt(sla4[0]);
-		stairs_mode = Integer.parseInt(sla4[1]);
+		stairs_direction = Integer.parseInt(sla4[1]);
 		if (Integer.parseInt(sla4[2]) == 1) {
 			solid = true;
 		}
@@ -97,8 +91,14 @@ public class Tile {
 				g.drawImage(image, dx, dy, null);
 			}
 		}
+		
 		if (Ui.colocar_parede && solid) {
 			g.setColor(new Color(255, 0, 0, 50));
+			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
+		}else if (Ui.colocar_escada && stairs_type != 0) {
+			int[] cor = {255, 255, 255};
+			cor[stairs_type-1] = 0;
+			g.setColor(new Color(cor[0], cor[1], cor[2], 50));
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}
 	}
@@ -151,7 +151,7 @@ public class Tile {
 			retorno += "-";
 		}
 		// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
-		retorno += ";"+stairs_type+"-"+stairs_mode+"-";
+		retorno += ";"+stairs_type+"-"+stairs_direction+"-";
 		if (solid) {
 			retorno+="1";
 		}else {
@@ -167,6 +167,16 @@ public class Tile {
 			}
 		}
 		return false;
+	}
+
+	public void virar_escada() {
+		stairs_type = Ui.modo_escadas+1;
+		stairs_direction = Ui.escadas_direction;
+	}
+
+	public void desvirar_escada() {
+		stairs_type = 0;
+		
 	}
 
 }

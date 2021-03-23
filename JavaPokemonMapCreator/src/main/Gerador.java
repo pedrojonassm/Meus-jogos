@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
 import graficos.*;
@@ -126,12 +127,24 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				clique_no_mapa = false;
 			}
 			else{
-				if (Ui.colocar_parede) escolhido.setSolid(solido);
-				else if (Ui.colocar_escada) {
-					 
+				if (Ui.colocar_parede) {
+					escolhido.setSolid(solido);
+					if (Ui.sprite_selecionado.size() > 0) {
+						 escolhido.adicionar_sprite_selecionado();
+					}
 				}
-				if (Ui.sprite_selecionado.size() > 0) {
-					 escolhido.adicionar_sprite_selecionado();
+				else if (Ui.colocar_escada) {
+					if (escolhido.getZ() != 0) {
+						escolhido.virar_escada();
+					}else {
+						JOptionPane.showMessageDialog(null, "As escadas sempre descem, não coloque no andar mais baixo, mas sim acima dele");
+					}
+					 
+					if (Ui.sprite_selecionado.size() > 0) {
+						escolhido.adicionar_sprite_selecionado();
+					}
+				}else {
+					escolhido.adicionar_sprite_selecionado();
 				}
 			}
 		}
@@ -278,6 +291,12 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			//*
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
+			else if (ui.colocar_escada) {
+				if (escolhido.getZ() != 0) {
+					escolhido.desvirar_escada();
+				}
+				return;
+			}
 			else if (ui.addponto(e.getX(), e.getY())) return;
 			//*/
 		}
