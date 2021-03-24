@@ -133,7 +133,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 						World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()+1).virar_escada();
 					}
 					 
-					if (Ui.modo_escadas != 3 && Ui.sprite_selecionado.size() > 0) {
+					if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
 						escolhido.adicionar_sprite_selecionado();
 					}
 				}else {
@@ -266,8 +266,9 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		int mx = e.getX() + Camera.x, my = e.getY() + Camera.y;
 		if (e.getButton() == MouseEvent.BUTTON1) {
-			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
+			if (!Ui.mostrar || !ui.clicou(mx, my)) {
 				clique_no_mapa = true;
 				if (Ui.colocar_parede) {
 					solido = !escolhido.getSolid();
@@ -283,14 +284,14 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			//*/
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			//*
-			if(ui.cliquedireito(e.getX(), e.getY())) return;
+			if(ui.cliquedireito(mx, my)) return;
 			else if (Ui.colocar_escada) {
 				if (escolhido.getZ() < World.HIGH) {
 					escolhido.desvirar_escada();
 				}
 				return;
 			}
-			else if (ui.addponto(e.getX(), e.getY())) return;
+			else if (ui.addponto(mx, my)) return;
 			//*/
 		}
 	}
