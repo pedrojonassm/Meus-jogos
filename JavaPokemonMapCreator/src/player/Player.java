@@ -50,8 +50,8 @@ public class Player {
 	}
 	
 	private void colidindo_com_escada() {
-		Tile t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z);
-		if (t.getStairs_type() == 1) {
+		Tile t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z+1);
+		if (t.getStairs_type() != 0 && t.pode_subir_com_colisao()) {
 			// subir
 			z++;
 			switch (t.getStairs_direction()) {
@@ -70,8 +70,8 @@ public class Player {
 			}
 			return;
 		}
-		t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z-1);
-		if (t.getStairs_type() == 1) {
+		t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z);
+		if (t.getStairs_type() != 0 && t.pode_descer_com_colisao()) {
 			// descer
 			z--;
 			switch (t.getStairs_direction()) {
