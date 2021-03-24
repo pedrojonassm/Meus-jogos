@@ -277,6 +277,10 @@ public class World {
 			minZ = pontoB.getZ();
 			maxZ = pontoA.getZ();
 		}
+		boolean virar_solido = false;
+		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
+			virar_solido = true;
+		}
 		for(int xx = minX; xx <= maxX; xx++)
 			for(int yy = minY; yy <= maxY; yy++)
 				for (int zz = minZ; zz <= maxZ; zz++){
@@ -285,6 +289,8 @@ public class World {
 					}
 					Tile t = tiles[(xx + (yy * WIDTH))*HIGH+zz];
 					if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
+					if (Ui.colocar_escada) t.virar_escada();
+					else if (virar_solido) t.setSolid(true);
 			}
 	}
 	

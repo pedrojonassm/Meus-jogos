@@ -37,8 +37,7 @@ public class Tile {
 	}
 	
 	public void setSolid(boolean solid) {
-		if (stairs_type == 0)
-			this.solid = solid;
+		if (stairs_type == 0) this.solid = solid;
 	}
 	
 	public int getStairs_type() {
