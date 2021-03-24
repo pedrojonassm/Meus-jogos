@@ -4,7 +4,6 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FileDialog;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -16,13 +15,9 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
 import graficos.*;
@@ -134,7 +129,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					}
 				}
 				else if (Ui.colocar_escada) {
-					if (escolhido.getZ() < World.HIGH) {
+					if (escolhido.getZ() < World.HIGH-1) {
 						escolhido.virar_escada();
 					}else {
 						World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()-1).virar_escada();;
@@ -291,7 +286,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			//*
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
-			else if (ui.colocar_escada) {
+			else if (Ui.colocar_escada) {
 				if (escolhido.getZ() < World.HIGH) {
 					escolhido.desvirar_escada();
 				}

@@ -16,12 +16,12 @@ import world.World;
 
 public class Ui {
 	private static BufferedImage[] setas;
-	public static boolean mostrar, colocar_parede, colocar_escada;
+	public static boolean mostrar, colocar_parede, colocar_escada, substituir;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
-	preencher_tudo, fazer_caixa, limpar_selecao, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
+	preencher_tudo, fazer_caixa, limpar_selecao, substitui, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
 	colocar_escadas, direcao_escadas;
 	private Rectangle[] escadas;
-	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher";
+	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?";
 	private static final String[] escada = {"colisao", "clique direito", "precisa de Rope"};
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
@@ -30,7 +30,6 @@ public class Ui {
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
-	private boolean substituir; //
 	
 	public Ui() {
 		carregar_setas_das_escadas();
@@ -49,7 +48,7 @@ public class Ui {
 		tiles_salvos = new ArrayList<ArrayList<Tile>>();
 		nome_livros = new ArrayList<String>();
 		nome_livros.add("todos os sprites");
-		mostrar = true;
+		mostrar = substituir = true;
 		colocar_parede = colocar_escada = false;
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
 		colocar_escadas = new Rectangle(colocar_paredes.x, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
@@ -61,6 +60,7 @@ public class Ui {
 		direcao_escadas = new Rectangle(colocar_escadas.x+colocar_escadas.width*2, colocar_escadas.y-colocar_escadas.height,32, 32);
 		caixinha_dos_livros = new Rectangle(caixinha_dos_sprites.x + caixinha_dos_sprites.width, caixinha_dos_sprites.y, Gerador.quadrado.width/3, caixinha_dos_sprites.height);
 		preencher_tudo = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2, 90, 20);
+		substitui = new Rectangle(preencher_tudo.x+preencher_tudo.width/3, preencher_tudo.y-60, 10, 10);
 		fazer_caixa = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
 		limpar_selecao = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2-preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
 		sprite_selecionado = new ArrayList<Integer>();
@@ -127,6 +127,14 @@ public class Ui {
 				g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
 				g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
 				g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+				w1 = g.getFontMetrics().stringWidth(substituira);
+				g.setColor(Color.white);
+				if (substituir) {
+					g.fillRect(substitui.x, substitui.y, substitui.width, substitui.height);
+				}else {
+					g.drawRect(substitui.x, substitui.y, substitui.width, substitui.height);
+				}
+				g.drawString(substituira, substitui.x-substitui.width-w1, substitui.y+substitui.height);
 			}
 			
 			g.setColor(Color.white);
@@ -289,16 +297,22 @@ public class Ui {
 		}else if (caixinha_dos_livros.contains(x, y)) {
 			trocar_livro(x, y);
 			return true;
-		}else if (((pontoA != null || pontoB != null)) && preencher_tudo.contains(x, y)) {
-			if (pontoA != null && pontoB != null) World.fill(pontoA, pontoB);
-			return true;
-		}else if (((pontoA != null || pontoB != null)) && fazer_caixa.contains(x, y)) {
-			if (pontoA != null && pontoB != null) World.empty(pontoA, pontoB);
-			return true;
-		}else if (((pontoA != null || pontoB != null)) && limpar_selecao.contains(x, y)) {
-			pontoA = null;
-			pontoB = null;
-			return true;
+		}else if (((pontoA != null || pontoB != null))) {
+			if (substitui.contains(x, y)) {
+				substituir = !substituir;
+				return true;
+			}else if  (pontoA != null && pontoB != null) {
+				if (preencher_tudo.contains(x, y)) {
+					World.fill(pontoA, pontoB);
+					return true;
+				}else if  (fazer_caixa.contains(x, y)) {
+					World.empty(pontoA, pontoB);
+					return true;
+				}else if (limpar_selecao.contains(x, y)) {
+					pontoA = pontoB = null;
+					return true;
+				}
+			}
 		}
 		for (int i = 0; i < escadas.length; i++) {
 			if (escadas[i].contains(x, y)) {
@@ -463,7 +477,7 @@ public class Ui {
 	}
 
 	public boolean cliquedireito(int x, int y) {
-		if (caixinha_dos_sprites.contains(x, y)) {
+		if (mostrar && caixinha_dos_sprites.contains(x, y)) {
 			if (sprite_selecionado.size() > 0) {
 				Ui.sprite_selecionado.clear();
 				Ui.array.clear();

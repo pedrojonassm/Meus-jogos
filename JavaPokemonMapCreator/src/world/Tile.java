@@ -179,4 +179,13 @@ public class Tile {
 		
 	}
 
+	public boolean tem_sprites() {
+		for (ArrayList<int[]> spr : sprites) {
+			if (spr.size() > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

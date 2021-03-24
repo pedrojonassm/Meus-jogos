@@ -1,7 +1,8 @@
 package world;
 
-import java.awt.FileDialog;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,10 +10,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.plaf.FileChooserUI;
+import javax.swing.JTextField;
 
 import files.salvarCarregar;
 import graficos.Spritesheet;
@@ -41,13 +40,14 @@ public class World {
 		max_tiles_animation_time = 15;
 		 try {
 			 if (file == null) {
-				 WIDTH = 20; HEIGHT = 20; HIGH = 7;
+				 determinar_tamanho();
 				 tiles = new Tile[WIDTH * HEIGHT * HIGH];
 					for(int xx = 0; xx < WIDTH; xx++)
 						for(int yy = 0; yy < HEIGHT; yy++)
 							for (int zz = 0; zz < HIGH; zz++)
 								tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
 			 }else {
+				@SuppressWarnings("resource")
 				BufferedReader reader = new BufferedReader(new FileReader(file));
 				String singleLine = null;
 				singleLine = reader.readLine();
@@ -71,6 +71,48 @@ public class World {
 		//*/
 	}
 	
+	private void determinar_tamanho() {
+		JTextField width = new JTextField(), height = new JTextField(), high = new JTextField();
+		KeyListener l = new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (!(e.getKeyChar() >= '0' && e.getKeyChar() <= '9')) {
+	               e.consume();
+	            }
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {}
+
+			@Override
+			public void keyReleased(KeyEvent e) {}
+		};
+		width.addKeyListener(l); height.addKeyListener(l); high.addKeyListener(l);
+		Object[] message = {
+		    "Width (>= 20):", width,
+		    "Height (>= 20):", height,
+		    "High:", high
+		};
+
+		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
+		if (option == JOptionPane.OK_OPTION) {
+		    WIDTH = Integer.parseInt(width.getText());
+		    HEIGHT = Integer.parseInt(height.getText());
+		    HIGH = Integer.parseInt(high.getText());
+		    
+		    if (WIDTH <= 20 || HEIGHT <= 20 || HIGH <= 0) {
+		    	JOptionPane.showMessageDialog(null, "alguns dados não foram inseridos ou foram inseridos incorretamente;\n Inserindo valores padrão");
+		    	valores_padrao();
+		    }
+		    
+		} else {
+			valores_padrao();
+		}
+	}
+	
+	private void valores_padrao() { WIDTH = 20; HEIGHT = 20; HIGH = 7;}
+
 	public static void carregar_sprites() {
 		sprites_do_mundo = new ArrayList<BufferedImage[]>();
 		Spritesheet[] sprites = new Spritesheet[8];
@@ -187,7 +229,31 @@ public class World {
 					tiles[(xx + (yy * WIDTH))*HIGH+zz].render(g);
 			}
 	}
-
+	
+	public static void salvar() {
+		if (arquivo == null) {
+			try {
+				String nome = null;
+				do {
+					nome = JOptionPane.showInputDialog("Insira um nome válido para esse mundo");
+					if (nome == null) {
+						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0) return; 
+					}
+				}while(nome == null || nome.isBlank() || (arquivo = new File(salvarCarregar.arquivo_worlds, nome+salvarCarregar.end_file_world)).exists());
+				arquivo.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		String salvar = ""+WIDTH+";"+HEIGHT+";"+HIGH+"\n";
+		for(int xx = 0; xx < WIDTH; xx++)
+			for(int yy = 0; yy < HEIGHT; yy++)
+				for (int zz = 0; zz < HIGH; zz++)
+					salvar+=tiles[(xx + (yy * WIDTH))*HIGH+zz].salvar();
+		
+		salvarCarregar.salvar_mundo(arquivo, salvar);	
+	}
+	
 	public static void fill(Tile pontoA, Tile pontoB) {
 		int minX, minY, minZ, maxX, maxY, maxZ;
 		if (pontoA.getX() < pontoB.getX()) {
@@ -217,34 +283,9 @@ public class World {
 					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
 						continue;
 					}
-					tiles[(xx + (yy * WIDTH))*HIGH+zz].adicionar_sprite_selecionado();
+					Tile t = tiles[(xx + (yy * WIDTH))*HIGH+zz];
+					if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
 			}
-		
-	}
-	
-	public static void salvar() {
-		if (arquivo == null) {
-			try {
-				String nome = null;
-				do {
-					nome = JOptionPane.showInputDialog("Insira um nome válido para esse mundo");
-					if (nome == null) {
-						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0) return; 
-					}
-				}while(nome == null || nome.isBlank() || (arquivo = new File(salvarCarregar.arquivo_worlds, nome+salvarCarregar.end_file_world)).exists());
-				arquivo.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		String salvar = ""+WIDTH+";"+HEIGHT+";"+HIGH+"\n";
-		for(int xx = 0; xx < WIDTH; xx++)
-			for(int yy = 0; yy < HEIGHT; yy++)
-				for (int zz = 0; zz < HIGH; zz++)
-					salvar+=tiles[(xx + (yy * WIDTH))*HIGH+zz].salvar();
-		
-		salvarCarregar.salvar_mundo(arquivo, salvar);
-		
 	}
 	
 	public static void empty(Tile pontoA, Tile pontoB) {
@@ -276,7 +317,8 @@ public class World {
 						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aY != yy && bY != yy))) {
 							continue;
 						}
-						tiles[(xx + (yy * WIDTH))*HIGH+aZ].adicionar_sprite_selecionado();
+						Tile t = tiles[(xx + (yy * WIDTH))*HIGH+aZ];
+						if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
 				}
 		}else if (aY == bY) {
 			for(int xx = minX; xx <= maxX; xx++)
@@ -284,7 +326,8 @@ public class World {
 						if(xx < 0 || xx >= WIDTH || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz))) {
 							continue;
 						}
-						tiles[(xx + (aY * WIDTH))*HIGH+zz].adicionar_sprite_selecionado();
+						Tile t = tiles[(xx + (aY * WIDTH))*HIGH+zz];
+						if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
 				}
 		}else if (aX == bX) {
 			for(int yy = minY; yy <= maxY; yy++)
@@ -292,7 +335,8 @@ public class World {
 					if(yy < 0 || yy >= HEIGHT || ((aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
 						continue;
 					}
-					tiles[(aX + (yy * WIDTH))*HIGH+zz].adicionar_sprite_selecionado();
+					Tile t = tiles[(aX + (yy * WIDTH))*HIGH+zz];
+					if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
 				}
 		}else {
 			for(int xx = minX; xx <= maxX; xx++)
@@ -301,7 +345,8 @@ public class World {
 						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
 							continue;
 						}
-						tiles[(xx + (yy * WIDTH))*HIGH+zz].adicionar_sprite_selecionado();
+						Tile t = tiles[(xx + (yy * WIDTH))*HIGH+zz];
+						if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
 					}
 		}
 	}
