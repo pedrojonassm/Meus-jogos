@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import graficos.Ui;
 import main.Gerador;
 import world.Tile;
-import world.World;
 
 public class salvarCarregar {
 	public static File arquivo_books, arquivo_worlds;
@@ -81,11 +80,6 @@ public class salvarCarregar {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public void salvar_tudo() {
-		Ui.salvar();
-		World.salvar();
 	}
 
 	public static void salvar_mundo(File file, String salvar) {

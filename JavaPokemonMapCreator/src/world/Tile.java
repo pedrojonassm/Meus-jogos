@@ -11,7 +11,7 @@ import main.Gerador;
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
 	private int x, y, z,
-	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = precisa de Rope; direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
+	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
 	private boolean solid;
 	
 	public Tile(int x,int y,int z){
@@ -97,7 +97,7 @@ public class Tile {
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}else if (Ui.colocar_escada && stairs_type != 0) {
 			int[] cor = {255, 255, 255};
-			cor[stairs_type-1] = 0;
+			if (stairs_type != 4) cor[stairs_type-1] = 0;
 			g.setColor(new Color(cor[0], cor[1], cor[2], 50));
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}

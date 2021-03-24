@@ -22,7 +22,7 @@ public class Ui {
 	colocar_escadas, direcao_escadas;
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?";
-	private static final String[] escada = {"colisao", "clique direito", "precisa de Rope"};
+	private static final String[] escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -52,10 +52,11 @@ public class Ui {
 		colocar_parede = colocar_escada = false;
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
 		colocar_escadas = new Rectangle(colocar_paredes.x, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
-		escadas = new Rectangle[3];
+		escadas = new Rectangle[4];
 		escadas[0] = new Rectangle(colocar_escadas.x, colocar_escadas.y+colocar_escadas.height*2, 10, 10);
 		escadas[1] = new Rectangle(escadas[0].x, escadas[0].y+escadas[0].height*2, 10, 10);
 		escadas[2] = new Rectangle(escadas[1].x, escadas[1].y+escadas[1].height*2, 10, 10);
+		escadas[3] = new Rectangle(escadas[2].x, escadas[2].y+escadas[2].height*2, 10, 10);
 		caixinha_dos_sprites = new Rectangle(0, 8, Gerador.quadrado.width*5, Gerador.quadrado.width*11);
 		direcao_escadas = new Rectangle(colocar_escadas.x+colocar_escadas.width*2, colocar_escadas.y-colocar_escadas.height,32, 32);
 		caixinha_dos_livros = new Rectangle(caixinha_dos_sprites.x + caixinha_dos_sprites.width, caixinha_dos_sprites.y, Gerador.quadrado.width/3, caixinha_dos_sprites.height);
@@ -396,7 +397,7 @@ public class Ui {
 				if (tiles_salvos.get(livro-1).size() >= max_sprites_por_pagina) {
 					max_pagina.set(livro, max_pagina.get(livro)+1);
 				}
-				tile.salvar();
+				salvarCarregar.salvar_livro(livro-1);
 			}else if (aux < tiles_salvos.get(livro-1).size()) {
 				livro_tile_pego = livro;
 				index_tile_pego = aux;
@@ -488,18 +489,15 @@ public class Ui {
 				int px = x/Gerador.quadrado.width, py = (y-caixinha_dos_sprites.y)/Gerador.quadrado.height;
 				int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width)+(max_sprites_por_pagina*pagina.get(livro));
 				if (tiles_salvos.get(livro-1).size() > aux) {
-					if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) tiles_salvos.get(livro-1).remove(aux);
+					if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) {
+						tiles_salvos.get(livro-1).remove(aux);
+						salvarCarregar.salvar_livro(livro-1);
+					}
 				}
 			}
 			return true;
 		}
 		return false;
-	}
-
-	public static void salvar() {
-		for (int i = 0; i < tiles_salvos.size(); i++) {
-			salvarCarregar.salvar_livro(i);
-		}
 	}
 
 	public void adicionar_livro_salvo(String nome, ArrayList<Tile> tiles) {
