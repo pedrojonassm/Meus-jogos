@@ -131,8 +131,6 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				else if (Ui.colocar_escada) {
 					if (escolhido.getZ() < World.HIGH-1) {
 						World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()+1).virar_escada();
-					}else {
-						World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()-1).virar_escada();;
 					}
 					 
 					if (Ui.modo_escadas != 3 && Ui.sprite_selecionado.size() > 0) {

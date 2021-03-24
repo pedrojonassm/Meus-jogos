@@ -96,7 +96,7 @@ public class World {
 		};
 
 		int option = JOptionPane.showConfirmDialog(null, message, "Tamanho do mundo", JOptionPane.OK_CANCEL_OPTION);
-		if (option == JOptionPane.OK_OPTION) {
+		if (option == JOptionPane.OK_OPTION && !width.getText().isBlank() && height.getText().isBlank() && high.getText().isBlank()) {
 		    WIDTH = Integer.parseInt(width.getText());
 		    HEIGHT = Integer.parseInt(height.getText());
 		    HIGH = Integer.parseInt(high.getText());

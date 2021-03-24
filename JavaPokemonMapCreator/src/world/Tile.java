@@ -77,7 +77,7 @@ public class Tile {
 		}
 		if (stairs_type == 4) {
 			// 0a2-2a5
-			String[] sprites_buraco = sla[3].split(""), fechado = sprites_buraco[0].split("a"), aberto = sprites_buraco[1].split("a");
+			String[] sprites_buraco = sla[3].split("-"), fechado = sprites_buraco[0].split("a"), aberto = sprites_buraco[1].split("a");
 			buraco_fechado = new int[2];
 			buraco_aberto = new int[2];
 			for (int i = 0; i < 2; i++) {
