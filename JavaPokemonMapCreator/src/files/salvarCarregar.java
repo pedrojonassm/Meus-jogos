@@ -15,7 +15,7 @@ import world.Tile;
 public class salvarCarregar {
 	public static File arquivo_books, arquivo_worlds;
 	// carregar e salvar os "livros"
-	public static final String local_books = "books", local_worlds = "worlds", end_file_book = ".book", end_file_world = ".world";
+	public static final String local_books = "books", local_worlds = "worlds", end_file_book = ".book", name_file_world = "world.world";
 	
 	public salvarCarregar() {
 		arquivo_books = new File(local_books);
@@ -82,10 +82,11 @@ public class salvarCarregar {
 		}
 	}
 
-	public static void salvar_mundo(File file, String salvar) {
+	public static void salvar_mundo(File pasta_do_mundo, String salvar) {
 		try {
-			if (!file.exists()) file.createNewFile();
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			File world = new File(pasta_do_mundo, name_file_world);
+			if (!world.exists()) world.createNewFile();
+			BufferedWriter writer = new BufferedWriter(new FileWriter(world));
 			writer.write(salvar);
 			writer.flush();
 			writer.close();

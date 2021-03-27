@@ -33,13 +33,13 @@ public class World {
 	
 	public World(File file){
 		ready = false;
-		arquivo = file;
 		log_ts = log2(Gerador.TS);
 		//*
 		tiles_index = tiles_animation_time = 0;
 		max_tiles_animation_time = 15;
 		 try {
 			 if (file == null) {
+				 arquivo = null;
 				 determinar_tamanho();
 				 tiles = new Tile[WIDTH * HEIGHT * HIGH];
 					for(int xx = 0; xx < WIDTH; xx++)
@@ -47,6 +47,7 @@ public class World {
 							for (int zz = 0; zz < HIGH; zz++)
 								tiles[(xx + (yy * WIDTH))*HIGH+zz] = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
 			 }else {
+				arquivo = file.getParentFile();
 				@SuppressWarnings("resource")
 				BufferedReader reader = new BufferedReader(new FileReader(file));
 				String singleLine = null;
@@ -232,6 +233,7 @@ public class World {
 	
 	public static void salvar() {
 		if (arquivo == null) {
+			
 			try {
 				String nome = null;
 				do {
@@ -239,11 +241,13 @@ public class World {
 					if (nome == null) {
 						if (JOptionPane.showConfirmDialog(null, "Tem certeza que deseja cancelar?") == 0) return; 
 					}
-				}while(nome == null || nome.isBlank() || (arquivo = new File(salvarCarregar.arquivo_worlds, nome+salvarCarregar.end_file_world)).exists());
-				arquivo.createNewFile();
+				}while(nome == null || nome.isBlank() || (arquivo = new File(salvarCarregar.arquivo_worlds, nome)).exists());
+				arquivo.mkdir();
+				new File(arquivo, salvarCarregar.name_file_world).createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 		}
 		String salvar = ""+WIDTH+";"+HEIGHT+";"+HIGH+"\n";
 		for(int xx = 0; xx < WIDTH; xx++)

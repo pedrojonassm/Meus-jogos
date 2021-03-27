@@ -53,6 +53,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	public static int sprite_selecionado_index;
 	private int sprite_selecionado_animation_time;
 	
+	/*
+	 * Fazer as cidades
+	 * Fazer as casas
+	 */
 	
 	public Gerador(){
 		player = new Player(Gerador.TS*5, Gerador.TS*5, 0);
