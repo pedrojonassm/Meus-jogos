@@ -16,13 +16,13 @@ import world.World;
 
 public class Ui {
 	private static BufferedImage[] setas;
-	public static boolean mostrar, colocar_parede, colocar_escada, substituir;
+	public static boolean mostrar, colocar_parede, sprite_reajivel, colocar_escada, substituir;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
 	preencher_tudo, fazer_caixa, limpar_selecao, substitui, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
-	colocar_escadas, direcao_escadas;
+	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
-	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?";
-	private static final String[] escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
+	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível";
+	private static final String[] opcoes = {"colocar_sprites", "criar_casa"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -30,9 +30,11 @@ public class Ui {
 	public static ArrayList<Integer> sprite_selecionado, array, lista; // esses dois pegam a imagem na lista de imagens estáticas World.sprites.get(array)[lista]
 	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
+	public static String opcao;
 	
 	public Ui() {
 		carregar_setas_das_escadas();
+		opcao = opcoes[0];
 		modo_escadas = 0;
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
 		pagina = new ArrayList<Integer>();
@@ -49,9 +51,11 @@ public class Ui {
 		nome_livros = new ArrayList<String>();
 		nome_livros.add("todos os sprites");
 		mostrar = substituir = true;
-		colocar_parede = colocar_escada = false;
+		colocar_parede = sprite_reajivel = colocar_escada = false;
 		colocar_paredes = new Rectangle(Gerador.WIDTH-100, 20, 10, 10);
-		colocar_escadas = new Rectangle(colocar_paredes.x, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
+		caixa_sprite_reajivel = new Rectangle(colocar_paredes.x, colocar_paredes.y+colocar_paredes.height*2, 10, 10);
+		colocar_escadas = new Rectangle(caixa_sprite_reajivel.x, caixa_sprite_reajivel.y+caixa_sprite_reajivel.height*2, 10, 10);
+		caixa_das_opcoes = new Rectangle(Gerador.WIDTH/2 - (opcoes.length)/2*Gerador.TS, -Gerador.TS, Gerador.TS*opcoes.length, Gerador.TS);
 		escadas = new Rectangle[4];
 		escadas[0] = new Rectangle(colocar_escadas.x, colocar_escadas.y+colocar_escadas.height*2, 10, 10);
 		escadas[1] = new Rectangle(escadas[0].x, escadas[0].y+escadas[0].height*2, 10, 10);
@@ -101,11 +105,22 @@ public class Ui {
 	}
 	
 	public void tick() {
-		
+		if (Gerador.quadrado.y < Gerador.TS && Gerador.quadrado.x > Gerador.WIDTH/2 - Gerador.TS*(opcoes.length/2) && Gerador.quadrado.x < Gerador.WIDTH/2 + Gerador.TS*(opcoes.length/2)) {
+			if (caixa_das_opcoes.y < 0) {
+				caixa_das_opcoes.y++;
+			}
+		}else {
+			if (caixa_das_opcoes.y > -Gerador.TS) {
+				caixa_das_opcoes.y--;
+			}
+		}
 	}
 	
 	public void render(Graphics g) {
 		int w1;
+		
+		g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
+		
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
 		if (pontoA != null) {
@@ -119,63 +134,85 @@ public class Ui {
 			g.fillRect(dx, dy, Gerador.quadrado.width, Gerador.quadrado.height);
 		}
 		
-		if (mostrar) {
-			if (pontoA != null || pontoB != null) {
-				g.setColor(Color.green);
-				g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
-				g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
-				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
-				g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
-				g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
-				g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
-				w1 = g.getFontMetrics().stringWidth(substituira);
-				g.setColor(Color.white);
-				if (substituir) {
-					g.fillRect(substitui.x, substitui.y, substitui.width, substitui.height);
-				}else {
-					g.drawRect(substitui.x, substitui.y, substitui.width, substitui.height);
-				}
-				g.drawString(substituira, substitui.x-substitui.width-w1, substitui.y+substitui.height);
-			}
-			
+		if (pontoA != null || pontoB != null) {
+			g.setColor(Color.green);
+			g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
+			g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
+			g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+			g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
+			g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
+			g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+			w1 = g.getFontMetrics().stringWidth(substituira);
 			g.setColor(Color.white);
-			if (colocar_parede) g.fillRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
-			else g.drawRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
-			if (colocar_escada) {
-				g.fillRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
-				g.drawImage(setas[escadas_direction], direcao_escadas.x, direcao_escadas.y, null);
-				for (int i = 0; i < escadas.length; i++) {
-					if (i == modo_escadas) {
-						g.fillRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
-					}else {
-						g.drawRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
-					}
-					
-					w1 = g.getFontMetrics().stringWidth(escada[i]);
-					g.drawString(escada[i], escadas[i].x-escadas[i].width-w1, escadas[i].y+escadas[i].height);
-				}
+			if (substituir) {
+				g.fillRect(substitui.x, substitui.y, substitui.width, substitui.height);
+			}else {
+				g.drawRect(substitui.x, substitui.y, substitui.width, substitui.height);
 			}
-			else g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
-			w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
-			g.drawString(colocar_as_paredes, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
-			w1 = g.getFontMetrics().stringWidth(colocar_as_escadas);
-			g.drawString(colocar_as_escadas, colocar_escadas.x-colocar_escadas.width-w1, colocar_escadas.y+colocar_escadas.height);
+			g.drawString(substituira, substitui.x-substitui.width-w1, substitui.y+substitui.height);
+		}
+		
+		if (mostrar) {
 			g.setColor(Color.black);
 			g.fillRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y, caixinha_dos_sprites.width, caixinha_dos_sprites.height);
 			g.setColor(Color.white);
 			g.drawRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y, caixinha_dos_sprites.width, caixinha_dos_sprites.height);
-			g.drawRect(caixinha_dos_livros.x, caixinha_dos_livros.y, caixinha_dos_livros.width, caixinha_dos_livros.height);
-			desenhar_livros(g);
-			desenhar_sprites_a_selecionar(g);
-			if (caixinha_dos_livros.contains(Gerador.quadrado.x, Gerador.quadrado.y)) mostrar_nome_livro(g);
+			
+			if  (opcao.equalsIgnoreCase(opcoes[0])) {
+				renderizar_colocar_sprites(g);
+			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
+				renderizar_criar_casas(g);
+			}
 		}
+	}
+	
+	private void renderizar_criar_casas(Graphics g) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void renderizar_colocar_sprites(Graphics g) {
+		int w1;
+		
+		g.setColor(Color.white);
+		if (colocar_parede) g.fillRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
+		else g.drawRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
+		if (sprite_reajivel) g.fillRect(caixa_sprite_reajivel.x, caixa_sprite_reajivel.y, caixa_sprite_reajivel.width, caixa_sprite_reajivel.height);
+		else g.drawRect(caixa_sprite_reajivel.x, caixa_sprite_reajivel.y, caixa_sprite_reajivel.width, caixa_sprite_reajivel.height);
+		if (colocar_escada) {
+			g.fillRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+			g.drawImage(setas[escadas_direction], direcao_escadas.x, direcao_escadas.y, null);
+			for (int i = 0; i < escadas.length; i++) {
+				if (i == modo_escadas) {
+					g.fillRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
+				}else {
+					g.drawRect(escadas[i].x, escadas[i].y, escadas[i].width, escadas[i].height);
+				}
+				
+				w1 = g.getFontMetrics().stringWidth(escada[i]);
+				g.drawString(escada[i], escadas[i].x-escadas[i].width-w1, escadas[i].y+escadas[i].height);
+			}
+		}
+		else g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+		w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
+		g.drawString(colocar_as_paredes, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
+		w1 = g.getFontMetrics().stringWidth(interactive_sprite);
+		g.drawString(interactive_sprite, caixa_sprite_reajivel.x-caixa_sprite_reajivel.width-w1, caixa_sprite_reajivel.y+caixa_sprite_reajivel.height);
+		w1 = g.getFontMetrics().stringWidth(colocar_as_escadas);
+		g.drawString(colocar_as_escadas, colocar_escadas.x-colocar_escadas.width-w1, colocar_escadas.y+colocar_escadas.height);
+		g.drawRect(caixinha_dos_livros.x, caixinha_dos_livros.y, caixinha_dos_livros.width, caixinha_dos_livros.height);
+		desenhar_livros(g);
+		desenhar_sprites_a_selecionar(g);
+		if (caixinha_dos_livros.contains(Gerador.quadrado.x, Gerador.quadrado.y)) mostrar_nome_livro(g);
+		
 		g.setColor(Color.white);
 		w1 = g.getFontMetrics().stringWidth(tile_nivel+tiles_nivel);
 		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y);
 		w1 = g.getFontMetrics().stringWidth(altura+Gerador.player.getZ());
 		g.drawString(altura+Gerador.player.getZ(), colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y-15);
+		
 	}
-	
+
 	private void mostrar_nome_livro(Graphics g) {
 		g.setColor(Color.white);
 		int py = (Gerador.quadrado.y-caixinha_dos_livros.y)/caixinha_dos_livros.width + pagina_livros*max_livros_por_pagina;
@@ -285,12 +322,16 @@ public class Ui {
 
 	public boolean clicou(int x, int y) {
 		if (colocar_paredes.contains(x, y)) {
-			colocar_escada = false;
+			colocar_escada = sprite_reajivel = false;
 			colocar_parede = !colocar_parede;
 			return true;
-		}if (colocar_escadas.contains(x, y)) {
+		}else if(caixa_sprite_reajivel.contains(x, y)){
+			sprite_reajivel = !sprite_reajivel;
+			colocar_escada = colocar_parede = false;
+			return true;
+		}else  if (colocar_escadas.contains(x, y)) {
 			colocar_escada = !colocar_escada;
-			colocar_parede = false;
+			colocar_parede = sprite_reajivel = false;
 			return true;
 		}else if (caixinha_dos_sprites.contains(x, y)) {
 			pegar_ou_retirar_sprite_selecionado(x,y);

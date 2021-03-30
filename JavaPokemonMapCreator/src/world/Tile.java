@@ -14,18 +14,18 @@ public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
 	private int x, y, z,
 	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
-	private boolean solid, buraco; // usado para paredes; usado para verificar se um buraco está aberto
-	private int[] buraco_fechado, buraco_aberto;
+	private boolean solid, aberto_ou_fechado; // usado para paredes; usado em conjunto para ver se esta aberto ou fechado
+	private int[] sprite_fechado, sprite_aberto; // sprites de reações
 	
 	public Tile(int x,int y,int z){
 		solid = false;
-		buraco = true;
+		aberto_ou_fechado = true;
 		stairs_type = 0;
 		stairs_direction = 0;
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		buraco_fechado = buraco_aberto = null;
+		sprite_fechado = sprite_aberto = null;
 		sprites = new ArrayList<ArrayList<int[]>>();
 		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
 			sprites.add(new ArrayList<int[]>());
@@ -77,11 +77,11 @@ public class Tile {
 		}
 		if (stairs_type == 4) {
 			String[] sprites_buraco = sla[3].split("-"), fechado = sprites_buraco[0].split("a"), aberto = sprites_buraco[1].split("a");
-			buraco_fechado = new int[2];
-			buraco_aberto = new int[2];
+			sprite_fechado = new int[2];
+			sprite_aberto = new int[2];
 			for (int i = 0; i < 2; i++) {
-				buraco_fechado[i] = Integer.parseInt(fechado[i]);
-				buraco_aberto[i] = Integer.parseInt(aberto[i]);
+				sprite_fechado[i] = Integer.parseInt(fechado[i]);
+				sprite_aberto[i] = Integer.parseInt(aberto[i]);
 			}
 		}
 	}
@@ -105,13 +105,13 @@ public class Tile {
 				g.drawImage(image, dx, dy, null);
 			}
 		}
-		if (buraco_aberto != null) {
+		if (sprite_aberto != null) {
 			BufferedImage image;
 			int dx = x - Camera.x - (z-Gerador.player.getZ())*Gerador.quadrado.width, dy = y - Camera.y - (z-Gerador.player.getZ())*Gerador.quadrado.height;
-			if (buraco) {
-				image = World.sprites_do_mundo.get(buraco_fechado[0])[buraco_fechado[1]];
+			if (aberto_ou_fechado) {
+				image = World.sprites_do_mundo.get(sprite_fechado[0])[sprite_fechado[1]];
 			}else {
-				image = World.sprites_do_mundo.get(buraco_aberto[0])[buraco_aberto[1]];
+				image = World.sprites_do_mundo.get(sprite_aberto[0])[sprite_aberto[1]];
 			}
 			g.drawImage(image, dx, dy, null);
 		}
@@ -144,9 +144,35 @@ public class Tile {
 		if (sprites.size() > Ui.tiles_nivel || (sprites.size() > Ui.tiles_nivel && sprites.get(Ui.tiles_nivel) == null))	sprites.set(Ui.tiles_nivel, novo);
 		else sprites.add(novo);
 	}
+	
+	public boolean adicionar_sprite_reajível() {
+		if (sprite_fechado != null && Ui.sprite_selecionado.size() == 0) {
+			sprite_aberto = sprite_fechado = null;
+			return true;
+		}
+		if (Ui.sprite_selecionado.size() != 2)	{
+			JOptionPane.showMessageDialog(null, "Necessário ter 2 esprites selecionados, o primeiro representa o fechado, enquanto o segundo aberto");
+			return false;
+		}
+		sprite_fechado = new int[2];
+		sprite_fechado[0] = Ui.array.get(0);
+		sprite_fechado[1] = Ui.lista.get(0);
+		sprite_aberto = new int[2];
+		sprite_aberto[0] = Ui.array.get(1);
+		sprite_aberto[1] = Ui.lista.get(1);
+		aberto_ou_fechado = true;
+		return true;
+	}
 
 	public void pegarsprites() {
-		ArrayList<int[]> sprite = sprites.get(Ui.tiles_nivel);
+		ArrayList<int[]> sprite;
+		if (!Ui.sprite_reajivel) {
+			sprite = sprites.get(Ui.tiles_nivel);
+		}else {
+			sprite = new ArrayList<int[]>();
+			sprite.add(sprite_fechado);
+			sprite.add(sprite_aberto);
+		}
 		if (sprite == null || sprite.size() == 0) {
 			return;
 		}
@@ -181,8 +207,8 @@ public class Tile {
 		}else {
 			retorno+="0";
 		}
-		if (buraco_aberto != null) {
-			retorno += ";"+buraco_fechado[0]+"a"+buraco_fechado[1]+"-"+buraco_aberto[0]+"a"+buraco_aberto[1];
+		if (sprite_aberto != null) {
+			retorno += ";"+sprite_fechado[0]+"a"+sprite_fechado[1]+"-"+sprite_aberto[0]+"a"+sprite_aberto[1];
 		}
 		return retorno += "\n";
 	}
@@ -199,23 +225,9 @@ public class Tile {
 	public void virar_escada() {
 		if (!solid) {
 			if (Ui.modo_escadas == 3) {
-				if (Ui.sprite_selecionado.size() != 2)	{
-					JOptionPane.showMessageDialog(null, "Necessário ter 2 esprites selecionados, o primeiro representa o buraco fechado, enquanto o segundo o buraco aberto");
-					return;
-				}
-				buraco_fechado = new int[2];
-				buraco_fechado[0] = Ui.array.get(0);
-				buraco_fechado[1] = Ui.lista.get(0);
-				buraco_aberto = new int[2];
-				buraco_aberto[0] = Ui.array.get(1);
-				buraco_aberto[1] = Ui.lista.get(1);
-				buraco = true;
-			}else {
-				if (Ui.modo_escadas == 2) {
-					adicionar_sprite_selecionado();
-				}
-				buraco_fechado = buraco_aberto = null;
-				buraco = false;
+				if (!adicionar_sprite_reajível()) return;
+			}else if (Ui.modo_escadas == 2) {
+				adicionar_sprite_selecionado(); // escada de clique direito
 			}
 			stairs_type = Ui.modo_escadas+1;
 			stairs_direction = Ui.escadas_direction;
@@ -224,7 +236,6 @@ public class Tile {
 
 	public void desvirar_escada() {
 		stairs_type = 0;
-		buraco_fechado = buraco_aberto = null;
 	}
 
 	public boolean tem_sprites() {
@@ -237,7 +248,7 @@ public class Tile {
 	}
 
 	public boolean pode_descer_com_colisao() {
-		if (stairs_type == 1 || stairs_type == 2 || stairs_type == 3 || (stairs_type == 4 && !buraco)) {
+		if (stairs_type == 1 || stairs_type == 2 || stairs_type == 3 || (stairs_type == 4 && !aberto_ou_fechado)) {
 			return true;
 		}
 		return false;
@@ -248,6 +259,10 @@ public class Tile {
 			return true;
 		}
 		return false;
+	}
+
+	public void reajir() {
+		aberto_ou_fechado = !aberto_ou_fechado;
 	}
 
 }

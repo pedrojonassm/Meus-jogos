@@ -140,6 +140,8 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
 						escolhido.adicionar_sprite_selecionado();
 					}
+				}else if(Ui.sprite_reajivel){
+					escolhido.adicionar_sprite_reajível();
 				}else {
 					escolhido.adicionar_sprite_selecionado();
 				}
@@ -282,6 +284,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			//*
 			int pos = ((quadrado.x >> 6) + (quadrado.y>>6)*World.WIDTH)*World.HIGH+player.getZ();
 			System.out.println("mx: "+quadrado.x+" my: "+quadrado.y);
+			System.out.println("cx: "+Camera.x+" cy: "+Camera.y);
 			System.out.println("pos: "+pos);
 			return;
 			//*/
@@ -293,8 +296,9 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					escolhido.desvirar_escada();
 				}
 				return;
-			}
-			else if (ui.addponto(e.getX()+Camera.x, e.getY()+Camera.y)) return;
+			}else if (Ui.sprite_reajivel) {
+				escolhido.reajir();
+			}else if (ui.addponto(e.getX()+Camera.x, e.getY()+Camera.y)) return;
 			//*/
 		}
 	}
