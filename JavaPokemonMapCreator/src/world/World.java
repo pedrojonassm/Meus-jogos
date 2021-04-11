@@ -285,17 +285,19 @@ public class World {
 		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
 			virar_solido = true;
 		}
-		for(int xx = minX; xx <= maxX; xx++)
-			for(int yy = minY; yy <= maxY; yy++)
-				for (int zz = minZ; zz <= maxZ; zz++){
-					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
-						continue;
-					}
-					Tile t = tiles[(xx + (yy * WIDTH))*HIGH+zz];
-					if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
-					if (Ui.colocar_escada) t.virar_escada();
-					else if (virar_solido) t.setSolid(true);
-			}
+		
+		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
+			// colocar sprites
+			for(int xx = minX; xx <= maxX; xx++)
+				for(int yy = minY; yy <= maxY; yy++)
+					for (int zz = minZ; zz <= maxZ; zz++){
+						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+							continue;
+						}
+						tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+						
+				}
+		}
 	}
 	
 	public static void empty(Tile pontoA, Tile pontoB) {
@@ -321,43 +323,45 @@ public class World {
 			minZ = bZ;
 			maxZ = aZ;
 		}
-		if (aZ == bZ) {
-			for(int xx = minX; xx <= maxX; xx++)
-				for(int yy = minY; yy <= maxY; yy++){
-						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aY != yy && bY != yy))) {
-							continue;
-						}
-						Tile t = tiles[(xx + (yy * WIDTH))*HIGH+aZ];
-						if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
-				}
-		}else if (aY == bY) {
-			for(int xx = minX; xx <= maxX; xx++)
-				for(int zz = minZ; zz <= maxZ; zz++){
-						if(xx < 0 || xx >= WIDTH || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz))) {
-							continue;
-						}
-						Tile t = tiles[(xx + (aY * WIDTH))*HIGH+zz];
-						if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
-				}
-		}else if (aX == bX) {
-			for(int yy = minY; yy <= maxY; yy++)
-				for(int zz = minZ; zz <= maxZ; zz++){
-					if(yy < 0 || yy >= HEIGHT || ((aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
-						continue;
+		boolean virar_solido = false;
+		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
+			virar_solido = true;
+		}
+		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
+			if (aZ == bZ) {
+				for(int xx = minX; xx <= maxX; xx++)
+					for(int yy = minY; yy <= maxY; yy++){
+							if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aY != yy && bY != yy))) {
+								continue;
+							}
+							tiles[(xx + (yy * WIDTH))*HIGH+aZ].varios(virar_solido);
 					}
-					Tile t = tiles[(aX + (yy * WIDTH))*HIGH+zz];
-					if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
-				}
-		}else {
-			for(int xx = minX; xx <= maxX; xx++)
+			}else if (aY == bY) {
+				for(int xx = minX; xx <= maxX; xx++)
+					for(int zz = minZ; zz <= maxZ; zz++){
+							if(xx < 0 || xx >= WIDTH || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz))) {
+								continue;
+							}
+							tiles[(xx + (aY * WIDTH))*HIGH+zz].varios(virar_solido);
+					}
+			}else if (aX == bX) {
 				for(int yy = minY; yy <= maxY; yy++)
 					for(int zz = minZ; zz <= maxZ; zz++){
-						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
+						if(yy < 0 || yy >= HEIGHT || ((aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
 							continue;
 						}
-						Tile t = tiles[(xx + (yy * WIDTH))*HIGH+zz];
-						if (Ui.substituir || !t.tem_sprites()) t.adicionar_sprite_selecionado();
+						tiles[(aX + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
 					}
+			}else {
+				for(int xx = minX; xx <= maxX; xx++)
+					for(int yy = minY; yy <= maxY; yy++)
+						for(int zz = minZ; zz <= maxZ; zz++){
+							if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT || ((aX != xx && bX != xx) && (aZ != zz && bZ != zz) && (aY != yy && bY != yy))) {
+								continue;
+							}
+							tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+						}
+			}
 		}
 	}
 

@@ -15,14 +15,14 @@ import world.Tile;
 import world.World;
 
 public class Ui {
-	private static BufferedImage[] setas;
+	private static BufferedImage[] setas, sprite_opcoes;
 	public static boolean mostrar, colocar_parede, sprite_reajivel, colocar_escada, substituir;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
 	preencher_tudo, fazer_caixa, limpar_selecao, substitui, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível";
-	private static final String[] opcoes = {"colocar_sprites", "criar_casa"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
+	public static final String[] opcoes = {"colocar sprites", "criar casas", "criar construções"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -31,9 +31,10 @@ public class Ui {
 	public static int tiles_nivel, max_tiles_nivel, modo_escadas, escadas_direction; // corresponde a qual sprite será guardado os sprites nos tiles ex: 0 = chao, 1 = paredes, 2 = decoracoes, etc.
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
 	public static String opcao;
+	private static String a_selecionar;
 	
 	public Ui() {
-		carregar_setas_das_escadas();
+		carregar_sprites();
 		opcao = opcoes[0];
 		modo_escadas = 0;
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
@@ -78,13 +79,19 @@ public class Ui {
 		max_tiles_nivel = 4;
 	}
 	
-	private void carregar_setas_das_escadas() {
-		Spritesheet seta = new Spritesheet("/setas.png", 32);
-		setas = new BufferedImage[4];
-		for (int i = 0; i < 4; i++) {
-			setas[i] = seta.getAsset(i);
+	private void carregar_sprites() {
+		Spritesheet spr = new Spritesheet("/setas.png", 32);
+		setas = new BufferedImage[spr.getQuadradosX()*spr.getQuadradosY()];
+		for (int i = 0; i < setas.length; i++) {
+			setas[i] = spr.getAsset(i);
 		}
 		escadas_direction = 0;
+		
+		spr = new Spritesheet("/opcoes.png", 64);
+		sprite_opcoes = new BufferedImage[spr.getQuadradosX()*spr.getQuadradosY()];
+		for (int i = 0; i < sprite_opcoes.length; i++) {
+			sprite_opcoes[i] = spr.getAsset(i);
+		}
 	}
 
 	public static String pegar_nome_livro(int index) {
@@ -105,11 +112,13 @@ public class Ui {
 	}
 	
 	public void tick() {
-		if (Gerador.quadrado.y < Gerador.TS && Gerador.quadrado.x > Gerador.WIDTH/2 - Gerador.TS*(opcoes.length/2) && Gerador.quadrado.x < Gerador.WIDTH/2 + Gerador.TS*(opcoes.length/2)) {
+		if (caixa_das_opcoes.intersects(new Rectangle(Gerador.quadrado.x, Gerador.quadrado.y-Gerador.TS, Gerador.TS, Gerador.TS))) {
+			a_selecionar = opcoes[(Gerador.quadrado.x-caixa_das_opcoes.x)/Gerador.TS];
 			if (caixa_das_opcoes.y < 0) {
 				caixa_das_opcoes.y++;
 			}
 		}else {
+			a_selecionar = null;
 			if (caixa_das_opcoes.y > -Gerador.TS) {
 				caixa_das_opcoes.y--;
 			}
@@ -119,7 +128,19 @@ public class Ui {
 	public void render(Graphics g) {
 		int w1;
 		
-		g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
+		if (a_selecionar != null) {
+			w1 = g.getFontMetrics().stringWidth(a_selecionar);
+			g.drawString(a_selecionar, caixa_das_opcoes.x + caixa_das_opcoes.width/2 - w1/2, caixa_das_opcoes.y+Gerador.TS+20);
+			g.drawRect(caixa_das_opcoes.x, caixa_das_opcoes.y, caixa_das_opcoes.width, caixa_das_opcoes.height);
+			for (int i = 0; i < opcoes.length; i++) {
+				g.drawImage(sprite_opcoes[i], caixa_das_opcoes.x+i*Gerador.TS, caixa_das_opcoes.y, null);
+				if (opcao.equalsIgnoreCase(opcoes[i])) {
+					g.setColor(new Color(0, 255, 0, 50));
+					g.fillRect(caixa_das_opcoes.x+i*Gerador.TS, caixa_das_opcoes.y, Gerador.TS, Gerador.TS);
+					g.setColor(Color.white);
+				}
+			}
+		}
 		
 		g.setColor(new Color(255, 255, 0, 50));
 		int dx, dy;
@@ -338,6 +359,9 @@ public class Ui {
 			return true;
 		}else if (caixinha_dos_livros.contains(x, y)) {
 			trocar_livro(x, y);
+			return true;
+		}else if(caixa_das_opcoes.contains(x, y)) {
+			opcao = opcoes[(x-caixa_das_opcoes.x)/Gerador.TS];
 			return true;
 		}else if (((pontoA != null || pontoB != null))) {
 			if (substitui.contains(x, y)) {

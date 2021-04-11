@@ -1,4 +1,4 @@
-package player;
+package entities;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -10,43 +10,65 @@ import world.World;
 
 public class Player {
 	private int x, y, z;
-	public int horizontal, vertical, speed;
+	private int horizontal, vertical, speed;
+	public boolean left, right, up, down;
+	Tile sqm_alvo = null;
 	
 	public Player(int x, int y, int z) {
 		this.x = x;
 		this.y = y;
-		this.z = z;
-		speed = 5;
+		this.horizontal = z;
+		
+		left = right = up = down = false;
+		
+		speed = 4;
 		horizontal = vertical = 0;
 	}
 	
 	public void tick() {
-		if (x + horizontal*speed > 0 && x + horizontal*speed < World.WIDTH*Gerador.TS - Gerador.quadrado.width) {
-			if (World.isFree(x + horizontal*speed, y, z)) {
-				x += horizontal*speed;
+		
+		if (sqm_alvo != null && distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed) {
+			x = sqm_alvo.getX();
+			y = sqm_alvo.getY();
+			sqm_alvo = null;
+		}else if (sqm_alvo == null) {
+			boolean mover = false;
+			if (left) {
+				horizontal = -1;
+				mover = true;
+			}else if (right) {
+				horizontal = 1;
+				mover = true;
 			}else {
-				int increase = 0;
-				while (World.isFree(x + horizontal*(increase+1), y, z)) {
-					increase++;
-				}
-				x += horizontal*increase;
+				horizontal = 0;
 			}
-		}
-		if (y + vertical*speed > 0 && y + vertical*speed < World.HEIGHT*Gerador.TS - Gerador.quadrado.height) {
-			if (World.isFree(x, y + vertical*speed, z)) {
-				y += vertical*speed;
+			if (up) {
+				vertical = -1;
+				mover = true;
+			}else if (down) {
+				vertical = 1;
+				mover = true;
 			}else {
-				int increase = 0;
-				while (World.isFree(x, y + vertical*(increase+1),z)) {
-					increase++;
-				}
-				y += vertical*increase;
+				vertical = 0;
 			}
+			if (mover) {
+				sqm_alvo = World.pegar_chao(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z);
+				
+				if (sqm_alvo.getSolid()) {
+					sqm_alvo = null;
+				}
+			}
+		}else {
+			x += speed*horizontal;
+			y += speed*vertical;
 		}
 		
 		colidindo_com_escada();
-		
 		updateCamera();
+	}
+	
+	public static double distancia(int x1, int x2, int y1, int y2) {
+		return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 	}
 	
 	private void colidindo_com_escada() {
@@ -68,6 +90,8 @@ public class Player {
 				y=t.getY()-Gerador.quadrado.height;
 				break;
 			}
+			sqm_alvo = World.pegar_chao(x, y, z);
+			x = sqm_alvo.getX(); y = sqm_alvo.getY();
 			return;
 		}
 		t = World.pegar_chao(x+Gerador.TS/2, y+Gerador.TS/2, z);
@@ -88,6 +112,8 @@ public class Player {
 				y=t.getY()+Gerador.quadrado.height;
 				break;
 			}
+			sqm_alvo = World.pegar_chao(x, y, z);
+			x = sqm_alvo.getX(); y = sqm_alvo.getY();
 			return;
 		}
 		

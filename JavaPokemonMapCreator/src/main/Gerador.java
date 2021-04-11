@@ -19,9 +19,9 @@ import java.util.Random;
 
 import javax.swing.JFrame;
 
+import entities.Player;
 import files.salvarCarregar;
 import graficos.*;
-import player.Player;
 import world.Camera;
 import world.World;
 import world.Tile;
@@ -229,10 +229,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT) player.horizontal = 1;
-		else if (e.getKeyCode() == KeyEvent.VK_LEFT) player.horizontal = -1;
-		if (e.getKeyCode() == KeyEvent.VK_UP) player.vertical = -1;
-		else if (e.getKeyCode() == KeyEvent.VK_DOWN) player.vertical = 1;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) player.right = true;
+		else if (e.getKeyCode() == KeyEvent.VK_LEFT) player.left = true;
+		if (e.getKeyCode() == KeyEvent.VK_UP) player.up = true;
+		else if (e.getKeyCode() == KeyEvent.VK_DOWN) player.down = true;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = true;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = true;
 		if (e.getKeyCode() == KeyEvent.VK_ESCAPE) Ui.mostrar = !Ui.mostrar;
@@ -245,8 +245,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_LEFT) player.horizontal = 0;
-		else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) player.vertical = 0;
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) player.right = false;
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) player.left = false;
+		if (e.getKeyCode() == KeyEvent.VK_UP) player.up = false;
+		if (e.getKeyCode() == KeyEvent.VK_DOWN) player.down = false;
 		if (e.getKeyCode() == KeyEvent.VK_CONTROL) control = false;
 		if (e.getKeyCode() == KeyEvent.VK_SHIFT) shift = false;
 	}

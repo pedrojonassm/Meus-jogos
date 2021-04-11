@@ -265,4 +265,19 @@ public class Tile {
 		aberto_ou_fechado = !aberto_ou_fechado;
 	}
 
+	public void varios(boolean virar_solido) {
+		// Ação realizada no World.fill ou World.empty
+		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
+			// Colocar sprites
+			if (Ui.substituir || !tem_sprites()) adicionar_sprite_selecionado();
+			if (Ui.colocar_escada) virar_escada();
+			else if (virar_solido) setSolid(true);
+		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
+			// criar casa
+		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[2])) {
+			// criar construçoes
+			
+		}
+	}
+
 }
