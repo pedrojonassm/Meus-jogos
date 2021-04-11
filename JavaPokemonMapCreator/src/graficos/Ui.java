@@ -23,6 +23,7 @@ public class Ui {
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível";
 	public static final String[] opcoes = {"colocar sprites", "criar casas", "criar construções"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
+	// adicionar opção para configurar os chãos, podendo modificar a velocidade do player quando ele anda sob ela
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
@@ -363,9 +364,12 @@ public class Ui {
 		}else if(caixa_das_opcoes.contains(x, y)) {
 			opcao = opcoes[(x-caixa_das_opcoes.x)/Gerador.TS];
 			return true;
-		}else if (((pontoA != null || pontoB != null))) {
+		}else if ((pontoA != null || pontoB != null)) {
 			if (substitui.contains(x, y)) {
 				substituir = !substituir;
+				return true;
+			}else if (limpar_selecao.contains(x, y)) {
+				pontoA = pontoB = null;
 				return true;
 			}else if  (pontoA != null && pontoB != null) {
 				if (preencher_tudo.contains(x, y)) {
@@ -373,9 +377,6 @@ public class Ui {
 					return true;
 				}else if  (fazer_caixa.contains(x, y)) {
 					World.empty(pontoA, pontoB);
-					return true;
-				}else if (limpar_selecao.contains(x, y)) {
-					pontoA = pontoB = null;
 					return true;
 				}
 			}
