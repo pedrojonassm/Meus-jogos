@@ -351,6 +351,14 @@ public class World {
 					}
 					tiles[(aX + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
 				}
+		}else {
+			for(int xx = minX; xx <= maxX; xx++)
+				for(int yy = minY; yy <= maxY; yy++)
+					for(int zz = minZ; zz <= maxZ; zz++){
+						if((xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT)) {
+							continue;
+						}else if (xx == aX || xx == bX || yy == aY || yy == bY || zz == aZ || zz == bZ) tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+					}
 		}
 	}
 
