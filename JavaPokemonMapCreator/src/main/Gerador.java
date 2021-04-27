@@ -69,6 +69,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		World.carregar_sprites();
 		ui.atualizar_caixinha();
 		memoria.carregar_livros();
+		memoria.carregar_construcoes();
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -121,30 +122,36 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			if (!control) {
 				clique_no_mapa = false;
 			}
-			if (shift) {
-				escolhido.pegarsprites();
-				clique_no_mapa = false;
-			}
-			else{
-				if (Ui.colocar_parede) {
-					escolhido.setSolid(solido);
-					if (Ui.sprite_selecionado.size() > 0) {
-						 escolhido.adicionar_sprite_selecionado();
-					}
+			if (Ui.opcao == Ui.opcoes[0]) {
+				if (shift) {
+					escolhido.pegarsprites();
+					clique_no_mapa = false;
 				}
-				else if (Ui.colocar_escada) {
-					if (escolhido.getZ() < World.HIGH-1) {
-						World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()+1).virar_escada();
+				else{
+					if (Ui.colocar_parede) {
+						escolhido.setSolid(solido);
+						if (Ui.sprite_selecionado.size() > 0) {
+							 escolhido.adicionar_sprite_selecionado();
+						}
 					}
-					 
-					if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
+					else if (Ui.colocar_escada) {
+						if (escolhido.getZ() < World.HIGH-1) {
+							World.pegar_chao(escolhido.getX(), escolhido.getY(), escolhido.getZ()+1).virar_escada();
+						}
+						 
+						if (Ui.modo_escadas < 2 && Ui.sprite_selecionado.size() > 0) {
+							escolhido.adicionar_sprite_selecionado();
+						}
+					}else if(Ui.sprite_reajivel){
+						escolhido.adicionar_sprite_reajível();
+					}else {
 						escolhido.adicionar_sprite_selecionado();
 					}
-				}else if(Ui.sprite_reajivel){
-					escolhido.adicionar_sprite_reajível();
-				}else {
-					escolhido.adicionar_sprite_selecionado();
 				}
+			}else if (Ui.opcao == Ui.opcoes[1]) {
+				
+			}else if (Ui.opcao == Ui.opcoes[2]) {
+				World.colocar_construção(escolhido, ui.pegar_construcao_selecionada());
 			}
 		}
 		player.tick();

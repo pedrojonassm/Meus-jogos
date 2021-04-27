@@ -26,6 +26,7 @@ public class World {
 	public static int maxDistance = (Gerador.WIDTH/Gerador.TS + 10)/2, posX, posY;
 	public static ArrayList<BufferedImage[]> sprites_do_mundo; // chaos64, chaos128, paredes64, paredes128, itens64, itens128, escadas64, escadas128
 	public static int log_ts;
+	private static int minX, minY, minZ, maxX, maxY, maxZ;
 	
 	public static int tiles_index, tiles_animation_time, max_tiles_animation_time;
 	static File arquivo;
@@ -143,9 +144,13 @@ public class World {
 	}
 	
 	public static Tile pegar_chao(int mx, int my, int mz) {
-		return pegar_chao(((mx >> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+mz);
+		return pegar_chao(calcular_pos(mx, my, mz));
 	}
 	
+	private static int calcular_pos(int mx, int my, int mz) {
+		return ((mx >> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+mz;
+	}
+
 	public void tick() {
 		if (++tiles_animation_time >= max_tiles_animation_time) {
 			tiles_animation_time = 0;
@@ -258,8 +263,8 @@ public class World {
 		salvarCarregar.salvar_mundo(arquivo, salvar);	
 	}
 	
-	public static void fill(Tile pontoA, Tile pontoB) {
-		int minX, minY, minZ, maxX, maxY, maxZ;
+	private static void ordenar_valores(Tile pontoA, Tile pontoB) {
+		// coloca os valores minimos e máximos
 		if (pontoA.getX() < pontoB.getX()) {
 			minX = pontoA.getX() >> log_ts;
 			maxX = pontoB.getX() >> log_ts; 
@@ -281,6 +286,11 @@ public class World {
 			minZ = pontoB.getZ();
 			maxZ = pontoA.getZ();
 		}
+	}
+	
+	public static void fill(Tile pontoA, Tile pontoB) {
+		ordenar_valores(pontoA, pontoB);
+		
 		boolean virar_solido = false;
 		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
 			virar_solido = true;
@@ -300,29 +310,38 @@ public class World {
 		}
 	}
 	
+	public static ArrayList<Tile> pegar_construção(Tile pontoA, Tile pontoB) {
+		ordenar_valores(pontoA, pontoB);
+		ArrayList<Tile> construcao = new ArrayList<Tile>();
+		
+		for(int xx = minX; xx <= maxX; xx++)
+			for(int yy = minY; yy <= maxY; yy++)
+				for (int zz = minZ; zz <= maxZ; zz++){
+					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+						continue;
+					}		
+					construcao.add(tiles[(xx + (yy * WIDTH))*HIGH+zz]);
+			}
+		return construcao;
+	}
+	
+	public static void colocar_construção(Tile inicial, Build construcao) {
+		if (construcao == null) return;
+		ArrayList<Tile> tiles_construcao = salvarCarregar.carregar_construcao(construcao);
+		int i = 0, x_ini = inicial.getX()>>log_ts, y_ini = inicial.getY() >> log_ts, z_ini = inicial.getZ();
+		for (int xx = 0; xx < construcao.getHorizontal(); xx++) 
+			for (int yy = 0; yy < construcao.getVertical(); yy++)
+				for (int zz = 0; zz < construcao.getHigh(); zz++) {
+					int pos = (x_ini+xx + (y_ini + yy)*World.WIDTH)*World.HIGH+zz+z_ini;
+					if (pos < tiles.length)	tiles[pos].setSprites(tiles_construcao.get(i++).getSprites());
+				}
+		
+	}
+	
 	public static void empty(Tile pontoA, Tile pontoB) {
-		int minX, minY, minZ, maxX, maxY, maxZ, aX = pontoA.getX() >> log_ts, aY = pontoA.getY() >> log_ts, aZ = pontoA.getZ(), bX = pontoB.getX() >> log_ts, bY = pontoB.getY() >> log_ts, bZ = pontoB.getZ();
-		if (pontoA.getX() < pontoB.getX()) {
-			minX = aX;
-			maxX = bX; 
-		}else {
-			minX = bX;
-			maxX = aX;
-		}
-		if (pontoA.getY() < pontoB.getY()) {
-			minY = aY;
-			maxY = bY;
-		}else {
-			minY = bY;
-			maxY = aY;
-		}
-		if (pontoA.getZ() < pontoB.getZ()) {
-			minZ = aZ;
-			maxZ = bZ;
-		}else {
-			minZ = bZ;
-			maxZ = aZ;
-		}
+		ordenar_valores(pontoA, pontoB);
+		int aX = pontoA.getX() >> log_ts, aY = pontoA.getY() >> log_ts, aZ = pontoA.getZ(), bX = pontoB.getX() >> log_ts, bY = pontoB.getY() >> log_ts, bZ = pontoB.getZ();
+		
 		boolean virar_solido = false;
 		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
 			virar_solido = true;

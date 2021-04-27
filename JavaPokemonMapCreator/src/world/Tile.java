@@ -279,5 +279,13 @@ public class Tile {
 			
 		}
 	}
+	
+	public void setSprites(ArrayList<ArrayList<int[]>> sprites) {
+		this.sprites = sprites;
+	}
+	
+	public ArrayList<ArrayList<int[]>> getSprites() {
+		return sprites;
+	}
 
 }

@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 
 import files.salvarCarregar;
 import main.Gerador;
+import world.Build;
 import world.Camera;
 import world.Tile;
 import world.World;
@@ -22,7 +23,7 @@ public class Ui {
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível";
-	public static final String[] opcoes = {"colocar sprites", "criar casas", "criar construções"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
+	public static final String[] opcoes = {"colocar sprites", "criar casas", "colocar/salvar construções"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	// adicionar opção para configurar os chãos, podendo modificar a velocidade do player quando ele anda sob ela
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
@@ -33,6 +34,9 @@ public class Ui {
 	public Tile pontoA, pontoB; // selecione 2 pontos para preenche-lo com as opcoes abaixo
 	public static String opcao;
 	private static String a_selecionar;
+	private ArrayList<Build> construcoes;
+	private int index_construcao_selecionada = -1;
+	private static int max_construcoes_por_pagina, pagina_construcoes;
 	
 	public Ui() {
 		carregar_sprites();
@@ -78,6 +82,12 @@ public class Ui {
 		max_livros_por_pagina = caixinha_dos_livros.height/caixinha_dos_livros.width;
 		tiles_nivel = 0;
 		max_tiles_nivel = 4;
+		max_construcoes_por_pagina = 26;
+		pagina_construcoes = 0;
+	}
+	
+	public void adicionar_construcao(Build b) {
+		construcoes.add(b);
 	}
 	
 	private void carregar_sprites() {
@@ -158,12 +168,20 @@ public class Ui {
 		
 		if (pontoA != null || pontoB != null) {
 			g.setColor(Color.green);
-			g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
-			g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
-			g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
-			g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
-			g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
-			g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+			if  (opcao.equalsIgnoreCase(opcoes[0])) {
+				g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
+				g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
+				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+				g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
+				g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
+				g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
+				
+			}else if (opcao.equalsIgnoreCase(opcoes[2])) {
+				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+				g.drawString("salvar", limpar_selecao.x, limpar_selecao.y+10);
+			}
+			
 			w1 = g.getFontMetrics().stringWidth(substituira);
 			g.setColor(Color.white);
 			if (substituir) {
@@ -183,14 +201,36 @@ public class Ui {
 			if  (opcao.equalsIgnoreCase(opcoes[0])) {
 				renderizar_colocar_sprites(g);
 			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
-				renderizar_criar_casas(g);
+				//renderizar_criar_casas(g);
+			}else if (opcao.equalsIgnoreCase(opcoes[2])) {
+				renderizar_construcoes(g);
 			}
 		}
 	}
 	
-	private void renderizar_criar_casas(Graphics g) {
-		// TODO Auto-generated method stub
-		
+	private void renderizar_construcoes(Graphics g) {
+		int w1;
+		for (int i = pagina_construcoes*max_construcoes_por_pagina; i < max_construcoes_por_pagina*(pagina_construcoes+1) && i < construcoes.size(); i++) {
+			//System.out.println(max_construcoes_por_pagina*(pagina_construcoes+1));
+			if (index_construcao_selecionada == i) {
+				g.setColor(Color.blue);
+			}else {
+				g.setColor(Color.red);
+			}
+			g.drawRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y+caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20, caixinha_dos_sprites.width, 20);
+			g.setColor(Color.white);
+			g.drawString(construcoes.get(i).getFile().getName().split(salvarCarregar.end_file_builds)[0], caixinha_dos_sprites.x+20, caixinha_dos_sprites.y+15+caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20);
+		}
+	}
+
+	private void pegar_construcao_salva(int x, int y) {
+		int novo = (y-(caixinha_dos_sprites.y+caixinha_dos_sprites.height/4))/20;
+		System.out.println(novo);
+		if (novo == index_construcao_selecionada) {
+			index_construcao_selecionada = -1;
+		}else if (novo >= 0) {
+			index_construcao_selecionada = novo;
+		}
 	}
 
 	private void renderizar_colocar_sprites(Graphics g) {
@@ -356,7 +396,8 @@ public class Ui {
 			colocar_parede = sprite_reajivel = false;
 			return true;
 		}else if (caixinha_dos_sprites.contains(x, y)) {
-			pegar_ou_retirar_sprite_selecionado(x,y);
+			if (opcao.equalsIgnoreCase(opcoes[0])) pegar_ou_retirar_sprite_selecionado(x,y);
+			else if (opcao.equalsIgnoreCase(opcoes[2])) pegar_construcao_salva(x,y);
 			return true;
 		}else if (caixinha_dos_livros.contains(x, y)) {
 			trocar_livro(x, y);
@@ -369,7 +410,13 @@ public class Ui {
 				substituir = !substituir;
 				return true;
 			}else if (limpar_selecao.contains(x, y)) {
-				pontoA = pontoB = null;
+				if (opcao.equalsIgnoreCase(opcoes[0])) {
+					pontoA = pontoB = null;
+				}else if (opcao.equalsIgnoreCase(opcoes[1])) {
+					
+				}else if (opcao.equalsIgnoreCase(opcoes[2])) {
+					salvarCarregar.salvar_construcao(pontoA, pontoB);
+				}
 				return true;
 			}else if  (pontoA != null && pontoB != null) {
 				if (preencher_tudo.contains(x, y)) {
@@ -390,7 +437,7 @@ public class Ui {
 			
 		return false;
 	}
-	
+
 	private void trocar_livro(int x, int y) {
 		int py = (y-caixinha_dos_livros.y)/caixinha_dos_livros.width + pagina_livros*max_livros_por_pagina;
 		if (py == pagina.size()) {
@@ -402,6 +449,12 @@ public class Ui {
 			adicionar_livro(nome);
 		}else if (py < pagina.size()) {
 			livro = py;
+		}
+	}
+	
+	public void construcao() {
+		if (pontoA != null && pontoB != null && pontoA != pontoB) {
+			salvarCarregar.salvar_construcao(pontoA, pontoB);
 		}
 	}
 
@@ -479,13 +532,25 @@ public class Ui {
 			if (rodinha < 0) k=1;
 			else k=-1;
 			if (caixinha_dos_sprites.contains(x, y)) {
-				pagina.set(livro, pagina.get(livro)+k);
-				if (pagina.get(livro) < 0) {
-					pagina.set(livro, max_pagina.get(livro));
-				}else if (pagina.get(livro) > max_pagina.get(livro)) {
-					pagina.set(livro, 0);
+				if (opcao.equalsIgnoreCase(opcoes[0])) {
+					pagina.set(livro, pagina.get(livro)+k);
+					if (pagina.get(livro) < 0) {
+						pagina.set(livro, max_pagina.get(livro));
+					}else if (pagina.get(livro) > max_pagina.get(livro)) {
+						pagina.set(livro, 0);
+					}
+					atualizar_caixinha();
+				}else if (opcao.equalsIgnoreCase(opcoes[1])) {
+					
+				}else if (opcao.equalsIgnoreCase(opcoes[2])) {
+					pagina_construcoes+=k;
+					//*
+					 if (pagina_construcoes < 0) {
+						pagina_construcoes = construcoes.size()/max_construcoes_por_pagina;
+					}else if (pagina_construcoes > construcoes.size()/max_construcoes_por_pagina) {
+						pagina_construcoes = 0;
+					}//*/
 				}
-				atualizar_caixinha();
 				return true;
 			}else if (caixinha_dos_livros.contains(x, y)) {
 				pagina_livros += k;
@@ -589,5 +654,16 @@ public class Ui {
 			return true;
 		}
 		return false;
+	}
+	
+	public Build pegar_construcao_selecionada() {
+		if (index_construcao_selecionada == -1) {
+			return null;
+		}
+		return construcoes.get(index_construcao_selecionada);
+	}
+
+	public void adicionar_construcoes_salvas(ArrayList<Build> construcoes2) {
+		construcoes = construcoes2;
 	}
 }

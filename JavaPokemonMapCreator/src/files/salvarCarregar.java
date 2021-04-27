@@ -8,14 +8,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import graficos.Ui;
 import main.Gerador;
+import world.Build;
 import world.Tile;
+import world.World;
 
 public class salvarCarregar {
-	public static File arquivo_books, arquivo_worlds;
+	public static File arquivo_books, arquivo_worlds, arquivo_construcoes;
 	// carregar e salvar os "livros"
-	public static final String local_books = "books", local_worlds = "worlds", end_file_book = ".book", name_file_world = "world.world";
+	public static final String local_books = "books", local_worlds = "worlds", local_builds = "construcoes", end_file_builds = ".bld", end_file_book = ".book", name_file_world = "world.world";
 	
 	public salvarCarregar() {
 		arquivo_books = new File(local_books);
@@ -25,6 +29,10 @@ public class salvarCarregar {
 		arquivo_worlds = new File(local_worlds);
 		if (!arquivo_worlds.exists()) {
 			arquivo_worlds.mkdir();
+		}
+		arquivo_construcoes = new File (local_builds);
+		if (!arquivo_construcoes.exists()) {
+			arquivo_construcoes.mkdir();
 		}
 	}
 	
@@ -40,6 +48,62 @@ public class salvarCarregar {
 	        }
 	    }
 	    return retorno;
+	}
+	
+	public static void salvar_construcao(Tile pontoA, Tile pontoB) {
+		try {
+			String nome = null;
+			File file = null;
+			do {
+				nome = JOptionPane.showInputDialog("Insira um nome NOVO para a nova construção");
+				if (nome == null) return;
+				if (!nome.isBlank()) {
+					file = new File(local_builds, nome+end_file_builds);
+					if (file.exists()) {
+						file = null;
+					}else {
+							file.createNewFile();
+					}
+				}
+			} while (nome == null || file == null);
+			ArrayList<Tile> contrucao = World.pegar_construção(pontoA, pontoB);
+			int horizontal = (pontoA.getX() >> World.log_ts) - (pontoB.getX() >> World.log_ts), vertical = (pontoA.getY() >> World.log_ts) - (pontoB.getY() >> World.log_ts), high = pontoA.getZ() - pontoB.getZ();
+			//*
+			System.out.println("horizontal: "+(pontoA.getX() >> World.log_ts) +" "+ (pontoB.getX() >> World.log_ts)); 
+			System.out.println("vertical: "+(pontoA.getY() >> World.log_ts) +" "+ (pontoB.getY() >> World.log_ts));
+			System.out.println("high"+pontoA.getZ() +" "+ pontoB.getZ());//*/
+			if (horizontal < 0) horizontal *= -1; if (vertical < 0) vertical *= -1; if (high < 0) high *= -1; // salvar o tamanho da construção
+			
+			// 9 - 7 = 2, entretanto são as posições 7, 8 e 9, logo o correto seria 3. Logo, se o resoltado for maior que 0, o resultado sempre deve ser somado +1
+			horizontal++; vertical++; high++;
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			writer.write(horizontal+":"+vertical+":"+high+"\n");
+			for (Tile t : contrucao) {
+				writer.write(t.salvar());
+			}
+			writer.flush();
+			writer.close();
+			Gerador.ui.adicionar_construcao(new Build(horizontal, vertical, high, file));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void carregar_construcoes() {
+		ArrayList<String> arquivos = listFilesForFolder(arquivo_construcoes);
+		try {
+			BufferedReader reader;
+			ArrayList<Build> construcoes = new ArrayList<Build>();
+			for (String caminho : arquivos) {
+				File f = new File(caminho);
+				reader = new BufferedReader(new FileReader(f));
+				String[] size = reader.readLine().split(":");
+				construcoes.add(new Build(Integer.parseInt(size[0]), Integer.parseInt(size[1]), Integer.parseInt(size[2]), f));
+			}
+			Gerador.ui.adicionar_construcoes_salvas(construcoes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void carregar_livros() {
@@ -93,5 +157,22 @@ public class salvarCarregar {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static ArrayList<Tile> carregar_construcao(Build construcao) {
+		ArrayList<Tile> retorno = new ArrayList<Tile>();
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(construcao.getFile()));
+			String[] size = reader.readLine().split(":"); // ler as dimensões
+			String singleLine;
+			while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
+				Tile tile = new Tile(0, 0, 0);
+				tile.carregar_sprites(singleLine);
+				retorno.add(tile);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return retorno;
 	}
 }
