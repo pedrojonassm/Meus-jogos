@@ -329,6 +329,10 @@ public class World {
 		if (construcao == null) return;
 		ArrayList<Tile> tiles_construcao = salvarCarregar.carregar_construcao(construcao);
 		int i = 0, x_ini = inicial.getX()>>log_ts, y_ini = inicial.getY() >> log_ts, z_ini = inicial.getZ();
+		if (x_ini+construcao.getHorizontal() >= WIDTH || y_ini+construcao.getVertical() >= HEIGHT) {
+			JOptionPane.showMessageDialog(null, "A construção não poderá ser feita aqui pois sairá do mapa");
+			return;
+		}
 		for (int xx = 0; xx < construcao.getHorizontal(); xx++) 
 			for (int yy = 0; yy < construcao.getVertical(); yy++)
 				for (int zz = 0; zz < construcao.getHigh(); zz++) {

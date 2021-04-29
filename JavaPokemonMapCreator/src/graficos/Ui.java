@@ -19,10 +19,10 @@ public class Ui {
 	private static BufferedImage[] setas, sprite_opcoes;
 	public static boolean mostrar, colocar_parede, sprite_reajivel, colocar_escada, substituir;
 	private Rectangle colocar_paredes, caixinha_dos_sprites, caixinha_dos_livros,
-	preencher_tudo, fazer_caixa, limpar_selecao, substitui, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
+	preencher_tudo, fazer_caixa, limpar_selecao, salvar_construcao, substitui, // preencher coloca em todos os tiles, sem excessão, já a caixa deixa a parte de "dentro" vazia
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
-	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível";
+	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
 	public static final String[] opcoes = {"colocar sprites", "criar casas", "colocar/salvar construções"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	// adicionar opção para configurar os chãos, podendo modificar a velocidade do player quando ele anda sob ela
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
@@ -74,6 +74,7 @@ public class Ui {
 		substitui = new Rectangle(preencher_tudo.x+preencher_tudo.width/3, preencher_tudo.y-60, 10, 10);
 		fazer_caixa = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
 		limpar_selecao = new Rectangle(Gerador.WIDTH-90, Gerador.HEIGHT/2-preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
+		salvar_construcao = new Rectangle(Gerador.WIDTH-90, fazer_caixa.y+preencher_tudo.height, preencher_tudo.width, preencher_tudo.height);
 		sprite_selecionado = new ArrayList<Integer>();
 		array = new ArrayList<Integer>();
 		lista = new ArrayList<Integer>();
@@ -172,14 +173,15 @@ public class Ui {
 				g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
 				g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
 				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+				g.drawRect(salvar_construcao.x, salvar_construcao.y, salvar_construcao.width, salvar_construcao.height);
 				g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
 				g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
 				g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+				g.drawString(salva_construcao, salvar_construcao.x, salvar_construcao.y+10);
 			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
 				
 			}else if (opcao.equalsIgnoreCase(opcoes[2])) {
-				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
-				g.drawString("salvar", limpar_selecao.x, limpar_selecao.y+10);
+				
 			}
 			
 			w1 = g.getFontMetrics().stringWidth(substituira);
@@ -209,7 +211,6 @@ public class Ui {
 	}
 	
 	private void renderizar_construcoes(Graphics g) {
-		int w1;
 		for (int i = pagina_construcoes*max_construcoes_por_pagina; i < max_construcoes_por_pagina*(pagina_construcoes+1) && i < construcoes.size(); i++) {
 			//System.out.println(max_construcoes_por_pagina*(pagina_construcoes+1));
 			if (index_construcao_selecionada == i) {
@@ -410,13 +411,7 @@ public class Ui {
 				substituir = !substituir;
 				return true;
 			}else if (limpar_selecao.contains(x, y)) {
-				if (opcao.equalsIgnoreCase(opcoes[0])) {
-					pontoA = pontoB = null;
-				}else if (opcao.equalsIgnoreCase(opcoes[1])) {
-					
-				}else if (opcao.equalsIgnoreCase(opcoes[2])) {
-					salvarCarregar.salvar_construcao(pontoA, pontoB);
-				}
+				pontoA = pontoB = null;
 				return true;
 			}else if  (pontoA != null && pontoB != null) {
 				if (preencher_tudo.contains(x, y)) {
@@ -425,6 +420,8 @@ public class Ui {
 				}else if  (fazer_caixa.contains(x, y)) {
 					World.empty(pontoA, pontoB);
 					return true;
+				}else if (salvar_construcao.contains(x, y)) {
+					salvarCarregar.salvar_construcao(pontoA, pontoB);
 				}
 			}
 		}

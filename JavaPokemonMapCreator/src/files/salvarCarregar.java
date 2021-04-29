@@ -160,10 +160,12 @@ public class salvarCarregar {
 	}
 
 	public static ArrayList<Tile> carregar_construcao(Build construcao) {
+		if (construcao == null || construcao.getFile() == null) return null;
 		ArrayList<Tile> retorno = new ArrayList<Tile>();
 		try {
+			@SuppressWarnings("resource")
 			BufferedReader reader = new BufferedReader(new FileReader(construcao.getFile()));
-			String[] size = reader.readLine().split(":"); // ler as dimensões
+			reader.readLine(); // pula a linha das dimensões
 			String singleLine;
 			while((singleLine = reader.readLine()) != null && !singleLine.isBlank()) {
 				Tile tile = new Tile(0, 0, 0);
