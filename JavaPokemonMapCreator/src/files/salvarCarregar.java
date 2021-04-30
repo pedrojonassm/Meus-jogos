@@ -110,12 +110,12 @@ public class salvarCarregar {
 			for(int xx = 0; xx < WIDTH; xx++)
 				for(int yy = 0; yy < HEIGHT; yy++)
 					for (int zz = 0; zz < HIGH; zz++) {
-						Tile t = new Tile(xx*Gerador.TS,yy*Gerador.TS, zz);
+						Tile t = new Tile((xx+HIGH)*Gerador.TS,(yy+HIGH)*Gerador.TS, zz);
 						tiles[(xx + (yy * WIDTH))*HIGH+zz] = t;
 						String str = reader.readLine();
 						t.carregar_sprites(str);
 					}
-			BufferedImage image = new BufferedImage(WIDTH*Gerador.TS,HEIGHT*Gerador.TS,BufferedImage.TYPE_INT_RGB);
+			BufferedImage image = new BufferedImage((WIDTH+HIGH)*Gerador.TS,(HEIGHT+HIGH)*Gerador.TS,BufferedImage.TYPE_INT_RGB);
 			Graphics g = image.getGraphics();
 			for (Tile t : tiles) {
 				t.render(g);
