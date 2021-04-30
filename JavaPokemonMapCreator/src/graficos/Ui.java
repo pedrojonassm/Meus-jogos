@@ -300,6 +300,10 @@ public class Ui {
 				g.setColor(Color.red);
 				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
 				g.setColor(Color.blue);
+			}else if (i == salvar_nesse_livro && i != 0) {
+				g.setColor(Color.green);
+				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
+				g.setColor(Color.blue);
 			}else {
 				g.drawRect(caixinha_dos_livros.x, y, caixinha_dos_livros.width, caixinha_dos_livros.width);
 			}
@@ -523,7 +527,7 @@ public class Ui {
 			salvar_nesse_livro = livro;
 			if (salvar_nesse_livro != 0) JOptionPane.showMessageDialog(null, "Você irá salvar as coisas em: "+nome_livros.get(livro));
 			return;
-		}else if  (salvar_nesse_livro != 0){
+		}else{
 			adicionar_novo_tile_ao_livro(salvar_nesse_livro);
 		}
 	}
@@ -531,7 +535,7 @@ public class Ui {
 	private void adicionar_novo_tile_ao_livro(int livro2) {
 		if (Ui.array.size() == 0) return;
 		if (livro2 == 0 && salvar_nesse_livro == 0) {
-			JOptionPane.showMessageDialog(null, "Primeiro você precisa selecionar um livro! Vá até o livro e aperte + nele");
+			JOptionPane.showMessageDialog(null, "Primeiro você precisa selecionar um livro! Vá até o livro e aperte '+'");
 			return;
 		}
 		Tile tile = new Tile(0, 0, 0);
