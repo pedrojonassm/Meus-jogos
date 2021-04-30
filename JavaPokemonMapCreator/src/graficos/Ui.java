@@ -211,17 +211,20 @@ public class Ui {
 	}
 	
 	private void renderizar_construcoes(Graphics g) {
+		g.drawRect(caixinha_dos_sprites.x+50, caixinha_dos_sprites.y+10, caixinha_dos_sprites.width-100, 150);
 		for (int i = pagina_construcoes*max_construcoes_por_pagina; i < max_construcoes_por_pagina*(pagina_construcoes+1) && i < construcoes.size(); i++) {
 			//System.out.println(max_construcoes_por_pagina*(pagina_construcoes+1));
 			if (index_construcao_selecionada == i) {
 				g.setColor(Color.blue);
+				g.drawImage(construcoes.get(i).getImage(), caixinha_dos_sprites.x+50, caixinha_dos_sprites.y+10, caixinha_dos_sprites.width-100+1, 150+1, null);
 			}else {
 				g.setColor(Color.red);
 			}
 			g.drawRect(caixinha_dos_sprites.x, caixinha_dos_sprites.y+caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20, caixinha_dos_sprites.width, 20);
 			g.setColor(Color.white);
-			g.drawString(construcoes.get(i).getFile().getName().split(salvarCarregar.end_file_builds)[0], caixinha_dos_sprites.x+20, caixinha_dos_sprites.y+15+caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20);
+			g.drawString(construcoes.get(i).getFile().getName(), caixinha_dos_sprites.x+20, caixinha_dos_sprites.y+15+caixinha_dos_sprites.height/4+(i%max_construcoes_por_pagina)*20);
 		}
+		
 	}
 
 	private void pegar_construcao_salva(int x, int y) {
@@ -229,7 +232,7 @@ public class Ui {
 		System.out.println(novo);
 		if (novo == index_construcao_selecionada) {
 			index_construcao_selecionada = -1;
-		}else if (novo >= 0) {
+		}else if (novo >= 0 && novo < construcoes.size()) {
 			index_construcao_selecionada = novo;
 		}
 	}
@@ -631,23 +634,29 @@ public class Ui {
 
 	public boolean cliquedireito(int x, int y) {
 		if (mostrar && caixinha_dos_sprites.contains(x, y)) {
-			if (sprite_selecionado.size() > 0) {
-				Ui.sprite_selecionado.clear();
-				Ui.array.clear();
-				Ui.lista.clear();
-				livro_tile_pego = -1;
-				index_tile_pego = -1;
-			}else if (livro > 0) {
-				int px = x/Gerador.quadrado.width, py = (y-caixinha_dos_sprites.y)/Gerador.quadrado.height;
-				int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width)+(max_sprites_por_pagina*pagina.get(livro));
-				if (tiles_salvos.get(livro-1).size() > aux) {
-					if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) {
-						tiles_salvos.get(livro-1).remove(aux);
-						salvarCarregar.salvar_livro(livro-1);
+			if (opcao.equalsIgnoreCase(opcoes[0])) {
+				if (sprite_selecionado.size() > 0) {
+					Ui.sprite_selecionado.clear();
+					Ui.array.clear();
+					Ui.lista.clear();
+					livro_tile_pego = -1;
+					index_tile_pego = -1;
+				}else if (livro > 0) {
+					int px = x/Gerador.quadrado.width, py = (y-caixinha_dos_sprites.y)/Gerador.quadrado.height;
+					int aux = px+py*(caixinha_dos_sprites.width/Gerador.quadrado.width)+(max_sprites_por_pagina*pagina.get(livro));
+					if (tiles_salvos.get(livro-1).size() > aux) {
+						if (JOptionPane.showConfirmDialog(null, "tem certeza que deseja apagar esse sprite?") == 0) {
+							tiles_salvos.get(livro-1).remove(aux);
+							salvarCarregar.salvar_livro(livro-1);
+						}
 					}
 				}
+				return true;
+			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
+				
+			}else if (opcao.equalsIgnoreCase(opcoes[2])) {
+				
 			}
-			return true;
 		}
 		return false;
 	}
