@@ -36,12 +36,12 @@ public class Ui {
 	private static String a_selecionar;
 	private ArrayList<Build> construcoes;
 	private int index_construcao_selecionada = -1;
-	private static int max_construcoes_por_pagina, pagina_construcoes;
+	private static int max_construcoes_por_pagina, pagina_construcoes, salvar_nesse_livro;
 	
 	public Ui() {
 		carregar_sprites();
 		opcao = opcoes[0];
-		modo_escadas = 0;
+		modo_escadas = salvar_nesse_livro = 0;
 		livro = 0; // os livros podem ser adicionados depois, a fim de criar novas páginas para maior facilidade de achar sprites
 		pagina = new ArrayList<Integer>();
 		max_pagina = new ArrayList<Integer>();
@@ -507,13 +507,8 @@ public class Ui {
 			aux = aux+(max_sprites_por_pagina*pagina.get(livro));
 			if (aux == tiles_salvos.get(livro-1).size() && sprite_selecionado.size() > 0) {
 				// clicou no "+"
-				Tile tile = new Tile(0, 0, 0);
-				tile.adicionar_sprite_selecionado();
-				tiles_salvos.get(livro-1).add(tile);
-				if (tiles_salvos.get(livro-1).size() >= max_sprites_por_pagina) {
-					max_pagina.set(livro, max_pagina.get(livro)+1);
-				}
-				salvarCarregar.salvar_livro(livro-1);
+				adicionar_novo_tile_ao_livro(livro);
+				
 			}else if (aux < tiles_salvos.get(livro-1).size()) {
 				livro_tile_pego = livro;
 				index_tile_pego = aux;
@@ -521,6 +516,31 @@ public class Ui {
 			}
 		}
 		Gerador.sprite_selecionado_index = 0;
+	}
+	
+	public void selecionar_livro() {
+		if (salvar_nesse_livro != livro) {
+			salvar_nesse_livro = livro;
+			if (salvar_nesse_livro != 0) JOptionPane.showMessageDialog(null, "Você irá salvar as coisas em: "+nome_livros.get(livro));
+			return;
+		}else if  (salvar_nesse_livro != 0){
+			adicionar_novo_tile_ao_livro(salvar_nesse_livro);
+		}
+	}
+
+	private void adicionar_novo_tile_ao_livro(int livro2) {
+		if (Ui.array.size() == 0) return;
+		if (livro2 == 0 && salvar_nesse_livro == 0) {
+			JOptionPane.showMessageDialog(null, "Primeiro você precisa selecionar um livro! Vá até o livro e aperte + nele");
+			return;
+		}
+		Tile tile = new Tile(0, 0, 0);
+		tile.adicionar_sprite_selecionado();
+		tiles_salvos.get(livro2-1).add(tile);
+		if (tiles_salvos.get(livro2-1).size() >= max_sprites_por_pagina) {
+			max_pagina.set(livro2, max_pagina.get(livro2)+1);
+		}
+		salvarCarregar.salvar_livro(livro-1);
 	}
 
 	public boolean trocar_pagina(int x, int y, int rodinha) {

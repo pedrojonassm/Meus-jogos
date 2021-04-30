@@ -248,6 +248,9 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			else if (e.getKeyCode() == KeyEvent.VK_N) World.novo_mundo(null);
 			else if (e.getKeyCode() == KeyEvent.VK_O) World.carregar_mundo();
 		}
+		if (e.getKeyChar() == '+') {
+			ui.selecionar_livro();
+		}
 	}
 
 	@Override
