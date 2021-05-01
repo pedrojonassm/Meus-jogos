@@ -9,7 +9,7 @@ import world.Tile;
 import world.World;
 
 public class Player {
-	private int x, y, z;
+	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
 	public boolean left, right, up, down;
 	Tile sqm_alvo = null;
@@ -18,7 +18,7 @@ public class Player {
 		this.x = x;
 		this.y = y;
 		this.horizontal = z;
-		
+		tile_speed = 0;
 		left = right = up = down = false;
 		
 		speed = 4;
@@ -27,9 +27,10 @@ public class Player {
 	
 	public void tick() {
 		
-		if (sqm_alvo != null && distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed) {
+		if (sqm_alvo != null && distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed+tile_speed) {
 			x = sqm_alvo.getX();
 			y = sqm_alvo.getY();
+			tile_speed = sqm_alvo.getSpeed_modifier();
 			sqm_alvo = null;
 		}else if (sqm_alvo == null) {
 			boolean mover = false;
@@ -52,15 +53,16 @@ public class Player {
 				vertical = 0;
 			}
 			if (mover) {
-				sqm_alvo = World.pegar_chao(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z);
+				int pos = World.calcular_pos(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z);
+				if (pos >= 0 && pos < World.tiles.length) sqm_alvo = World.pegar_chao(pos);
 				
-				if (sqm_alvo.getSolid()) {
+				if (sqm_alvo != null && sqm_alvo.getSolid()) {
 					sqm_alvo = null;
 				}
 			}
 		}else {
-			x += speed*horizontal;
-			y += speed*vertical;
+			x += (speed+tile_speed)*horizontal;
+			y += (speed+tile_speed)*vertical;
 		}
 		
 		colidindo_com_escada();

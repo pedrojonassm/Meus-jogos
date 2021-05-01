@@ -73,10 +73,6 @@ public class salvarCarregar {
 			} while (nome == null || pasta == null);
 			ArrayList<Tile> contrucao = World.pegar_construção(pontoA, pontoB);
 			int horizontal = (pontoA.getX() >> World.log_ts) - (pontoB.getX() >> World.log_ts), vertical = (pontoA.getY() >> World.log_ts) - (pontoB.getY() >> World.log_ts), high = pontoA.getZ() - pontoB.getZ();
-			//*
-			System.out.println("horizontal: "+(pontoA.getX() >> World.log_ts) +" "+ (pontoB.getX() >> World.log_ts)); 
-			System.out.println("vertical: "+(pontoA.getY() >> World.log_ts) +" "+ (pontoB.getY() >> World.log_ts));
-			System.out.println("high"+pontoA.getZ() +" "+ pontoB.getZ());//*/
 			if (horizontal < 0) horizontal *= -1; if (vertical < 0) vertical *= -1; if (high < 0) high *= -1; // salvar o tamanho da construção
 			
 			// 9 - 7 = 2, entretanto são as posições 7, 8 e 9, logo o correto seria 3. Logo, se o resoltado for maior que 0, o resultado sempre deve ser somado +1

@@ -23,7 +23,7 @@ public class Ui {
 	colocar_escadas, direcao_escadas, caixa_das_opcoes, caixa_sprite_reajivel;
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
-	public static final String[] opcoes = {"colocar sprites", "criar casas", "colocar/salvar construções"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
+	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar/salvar construções", "criar casas"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
 	// adicionar opção para configurar os chãos, podendo modificar a velocidade do player quando ele anda sob ela
 	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
@@ -229,7 +229,6 @@ public class Ui {
 
 	private void pegar_construcao_salva(int x, int y) {
 		int novo = (y-(caixinha_dos_sprites.y+caixinha_dos_sprites.height/4))/20;
-		System.out.println(novo);
 		if (novo == index_construcao_selecionada) {
 			index_construcao_selecionada = -1;
 		}else if (novo >= 0 && novo < construcoes.size()) {

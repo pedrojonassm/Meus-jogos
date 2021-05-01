@@ -12,7 +12,7 @@ import main.Gerador;
 
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y, z,
+	private int x, y, z, speed_modifier,
 	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
 	private boolean solid, aberto_ou_fechado; // usado para paredes; usado em conjunto para ver se esta aberto ou fechado
 	private int[] sprite_fechado, sprite_aberto; // sprites de reações
@@ -30,6 +30,10 @@ public class Tile {
 		for (int i = 0; i < Ui.max_tiles_nivel; i++) {
 			sprites.add(new ArrayList<int[]>());
 		}
+	}
+	
+	public int getSpeed_modifier() {
+		return speed_modifier;
 	}
 	
 	public boolean getSolid(){
@@ -59,6 +63,7 @@ public class Tile {
 	
 	public void carregar_sprites(String linha) {
 		sprites.clear();
+		// total de srpites; lista de sprites; tipo de escada - direcao da escada - solido? - speed_modifier; sprite ajustavel
 		String[] sla = linha.split(";"), sla2 = sla[1].split("-"), sla4 = sla[2].split("-");
 		for (int i = 0; i < Integer.parseInt(sla[0]); i++) {
 			ArrayList<int[]> sprite = new ArrayList<int[]>();
@@ -75,6 +80,7 @@ public class Tile {
 		if (Integer.parseInt(sla4[2]) == 1) {
 			solid = true;
 		}
+		speed_modifier = Integer.parseInt(sla4[3]);
 		if (stairs_type == 4) {
 			String[] sprites_buraco = sla[3].split("-"), fechado = sprites_buraco[0].split("a"), aberto = sprites_buraco[1].split("a");
 			sprite_fechado = new int[2];
@@ -191,7 +197,6 @@ public class Tile {
 	
 	public String salvar() {
 		String retorno = "";
-		
 		retorno += sprites.size()+";";
 		for (ArrayList<int[]> sprite : sprites) {
 			retorno += sprite.size();
@@ -201,7 +206,7 @@ public class Tile {
 			retorno += "-";
 		}
 		// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
-		retorno += ";"+stairs_type+"-"+stairs_direction+"-";
+		retorno += ";"+stairs_type+"-"+stairs_direction+"-"+speed_modifier+"-";
 		if (solid) {
 			retorno+="1";
 		}else {
@@ -210,6 +215,7 @@ public class Tile {
 		if (sprite_aberto != null) {
 			retorno += ";"+sprite_fechado[0]+"a"+sprite_fechado[1]+"-"+sprite_aberto[0]+"a"+sprite_aberto[1];
 		}
+		
 		return retorno += "\n";
 	}
 

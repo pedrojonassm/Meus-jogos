@@ -147,7 +147,7 @@ public class World {
 		return pegar_chao(calcular_pos(mx, my, mz));
 	}
 	
-	private static int calcular_pos(int mx, int my, int mz) {
+	public static int calcular_pos(int mx, int my, int mz) {
 		return ((mx >> log_ts) + (my>>log_ts)*World.WIDTH)*World.HIGH+mz;
 	}
 
