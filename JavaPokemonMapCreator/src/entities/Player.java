@@ -25,12 +25,18 @@ public class Player {
 		horizontal = vertical = 0;
 	}
 	
+	public int getSpeed() {
+		return speed;
+	}
+	
 	public void tick() {
 		
 		if (sqm_alvo != null && distancia(sqm_alvo.getX(), x, sqm_alvo.getY(), y) <= speed+tile_speed) {
 			x = sqm_alvo.getX();
 			y = sqm_alvo.getY();
-			tile_speed = sqm_alvo.getSpeed_modifier();
+			int k = sqm_alvo.getSpeed_modifier();
+			if (k > 0) tile_speed = k*3;
+			else tile_speed = k;
 			sqm_alvo = null;
 		}else if (sqm_alvo == null) {
 			boolean mover = false;

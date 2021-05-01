@@ -220,9 +220,12 @@ public class Ui {
 
 	private void renderizar_configurar(Graphics g) {
 		int w1;
-		String s = "speed: "+new_speed/3;
+		String s = "speed: "+new_speed;
 		w1 = g.getFontMetrics().stringWidth(s);
 		g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+40);
+		s = "pressione \"-\" para torná-la negativo";
+		w1 = g.getFontMetrics().stringWidth(s);
+		g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+60);
 	}
 
 	private void renderizar_construcoes(Graphics g) {

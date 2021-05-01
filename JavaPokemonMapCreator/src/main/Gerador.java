@@ -252,9 +252,15 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}
 		if (e.getKeyChar() == '+') {
 			ui.selecionar_livro();
+		}else if (e.getKeyChar() == '-') {
+			int k = ui.getNew_speed()*-1;
+			if (player.getSpeed() + k <= 0) {
+				k = (player.getSpeed()-1)*-1;
+			}
+			ui.setNew_speed(k);
 		}
 		if (e.getKeyCode() < 58 && e.getKeyCode() > 47) {
-			ui.setNew_speed(Integer.parseInt(e.getKeyChar()+"")*3);
+			ui.setNew_speed(Integer.parseInt(e.getKeyChar()+""));
 		}
 	}
 

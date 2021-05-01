@@ -136,7 +136,7 @@ public class Tile {
 			Font f = g.getFont();
 			g.setFont(new Font(f.getName(), f.getStyle(), 20));
 			g.setColor(Color.white);
-			g.drawString(""+speed_modifier/3, x+Gerador.TS/2-2-Camera.x, y+Gerador.TS/2+7-Camera.y);
+			g.drawString(""+speed_modifier, x+Gerador.TS/2-2-Camera.x, y+Gerador.TS/2+7-Camera.y);
 			g.setFont(f);
 		}
 	}
