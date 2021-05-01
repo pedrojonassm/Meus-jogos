@@ -1,6 +1,7 @@
 package world;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -131,6 +132,17 @@ public class Tile {
 			g.setColor(new Color(cor[0], cor[1], cor[2], 50));
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}
+		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && z == Gerador.player.getZ()) {
+			Font f = g.getFont();
+			g.setFont(new Font(f.getName(), f.getStyle(), 20));
+			g.setColor(Color.white);
+			g.drawString(""+speed_modifier/3, x+Gerador.TS/2-2-Camera.x, y+Gerador.TS/2+7-Camera.y);
+			g.setFont(f);
+		}
+	}
+	
+	public void setSpeed_modifier(int speed_modifier) {
+		this.speed_modifier = speed_modifier;
 	}
 
 	public void trocar_solid() {
@@ -279,10 +291,11 @@ public class Tile {
 			if (Ui.colocar_escada) virar_escada();
 			else if (virar_solido) setSolid(true);
 		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
-			// criar casa
+			setSpeed_modifier(Gerador.ui.getNew_speed());
 		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[2])) {
-			// criar construçoes
 			
+		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[3])) {
+			// criar casa
 		}
 	}
 	

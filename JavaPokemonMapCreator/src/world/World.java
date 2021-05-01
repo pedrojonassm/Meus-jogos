@@ -296,18 +296,16 @@ public class World {
 			virar_solido = true;
 		}
 		
-		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
-			// colocar sprites
-			for(int xx = minX; xx <= maxX; xx++)
-				for(int yy = minY; yy <= maxY; yy++)
-					for (int zz = minZ; zz <= maxZ; zz++){
-						if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
-							continue;
-						}
-						tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
-						
-				}
-		}
+		// colocar sprites
+		for(int xx = minX; xx <= maxX; xx++)
+			for(int yy = minY; yy <= maxY; yy++)
+				for (int zz = minZ; zz <= maxZ; zz++){
+					if(xx < 0 || yy < 0 || xx >= WIDTH || yy >= HEIGHT) {
+						continue;
+					}
+					tiles[(xx + (yy * WIDTH))*HIGH+zz].varios(virar_solido);
+					
+			}
 	}
 	
 	public static ArrayList<Tile> pegar_construção(Tile pontoA, Tile pontoB) {

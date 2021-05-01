@@ -24,8 +24,7 @@ public class Ui {
 	private Rectangle[] escadas;
 	private static final String colocar_as_paredes = "setar paredes", colocar_as_escadas= "setar escadas", tile_nivel = "Nível nos tiles: ", altura = "Altura: ", limpar = "limpar_seleção", caixa = "caixa", preencher = "preencher", substituira = "substituir?", interactive_sprite = "Adicionar sprite reajível", salva_construcao = "salvar construção";
 	public static final String[] opcoes = {"colocar sprites", "configurar", "colocar/salvar construções", "criar casas"}, escada = {"colisao", "clique direito", "Buraco aberto", "Buraco fechado"};
-	// adicionar opção para configurar os chãos, podendo modificar a velocidade do player quando ele anda sob ela
-	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego;
+	private int max_sprites_por_pagina, livro, pagina_livros, max_pagina_livros, max_livros_por_pagina, livro_tile_pego, index_tile_pego, new_speed;
 	private ArrayList<Integer> pagina, max_pagina, comecar_por, atual, sprites;
 	private static ArrayList<ArrayList<Tile>> tiles_salvos;
 	private static ArrayList<String> nome_livros;
@@ -85,6 +84,13 @@ public class Ui {
 		max_tiles_nivel = 4;
 		max_construcoes_por_pagina = 26;
 		pagina_construcoes = 0;
+	}
+	
+	public void setNew_speed(int new_speed) {
+		this.new_speed = new_speed;
+	}
+	public int getNew_speed() {
+		return new_speed;
 	}
 	
 	public void adicionar_construcao(Build b) {
@@ -169,19 +175,8 @@ public class Ui {
 		
 		if (pontoA != null || pontoB != null) {
 			g.setColor(Color.green);
-			if  (opcao.equalsIgnoreCase(opcoes[0])) {
-				g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
-				g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
-				g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
-				g.drawRect(salvar_construcao.x, salvar_construcao.y, salvar_construcao.width, salvar_construcao.height);
-				g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
-				g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
-				g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
-				g.drawString(salva_construcao, salvar_construcao.x, salvar_construcao.y+10);
-			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
-				
-			}else if (opcao.equalsIgnoreCase(opcoes[2])) {
-				
+			if  (opcao.equalsIgnoreCase(opcoes[0]) || opcao.equalsIgnoreCase(opcoes[1])) {
+				desenhar_opcoes(g);
 			}
 			
 			w1 = g.getFontMetrics().stringWidth(substituira);
@@ -203,13 +198,33 @@ public class Ui {
 			if  (opcao.equalsIgnoreCase(opcoes[0])) {
 				renderizar_colocar_sprites(g);
 			}else if (opcao.equalsIgnoreCase(opcoes[1])) {
-				//renderizar_criar_casas(g);
+				renderizar_configurar(g);
 			}else if (opcao.equalsIgnoreCase(opcoes[2])) {
 				renderizar_construcoes(g);
+			}else if (opcao.equalsIgnoreCase(opcoes[3])) {
+				//renderizar_criar_casas(g);
 			}
 		}
 	}
 	
+	private void desenhar_opcoes(Graphics g) {
+		g.drawRect(preencher_tudo.x, preencher_tudo.y, preencher_tudo.width, preencher_tudo.height);
+		g.drawRect(fazer_caixa.x, fazer_caixa.y, fazer_caixa.width, fazer_caixa.height);
+		g.drawRect(limpar_selecao.x, limpar_selecao.y, limpar_selecao.width, limpar_selecao.height);
+		g.drawRect(salvar_construcao.x, salvar_construcao.y, salvar_construcao.width, salvar_construcao.height);
+		g.drawString(preencher, preencher_tudo.x, preencher_tudo.y+10);
+		g.drawString(caixa, fazer_caixa.x, fazer_caixa.y+10);
+		g.drawString(limpar, limpar_selecao.x, limpar_selecao.y+10);
+		g.drawString(salva_construcao, salvar_construcao.x, salvar_construcao.y+10);
+	}
+
+	private void renderizar_configurar(Graphics g) {
+		int w1;
+		String s = "speed: "+new_speed/3;
+		w1 = g.getFontMetrics().stringWidth(s);
+		g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+40);
+	}
+
 	private void renderizar_construcoes(Graphics g) {
 		g.drawRect(caixinha_dos_sprites.x+50, caixinha_dos_sprites.y+10, caixinha_dos_sprites.width-100, 150);
 		for (int i = pagina_construcoes*max_construcoes_por_pagina; i < max_construcoes_por_pagina*(pagina_construcoes+1) && i < construcoes.size(); i++) {

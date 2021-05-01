@@ -149,9 +149,11 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					}
 				}
 			}else if (Ui.opcao == Ui.opcoes[1]) {
-				
+				escolhido.setSpeed_modifier(ui.getNew_speed());
 			}else if (Ui.opcao == Ui.opcoes[2]) {
 				World.colocar_construção(escolhido, ui.pegar_construcao_selecionada());
+			}else if (Ui.opcao == Ui.opcoes[3]) {
+				
 			}
 		}
 		player.tick();
@@ -250,6 +252,9 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}
 		if (e.getKeyChar() == '+') {
 			ui.selecionar_livro();
+		}
+		if (e.getKeyCode() < 58 && e.getKeyCode() > 47) {
+			ui.setNew_speed(Integer.parseInt(e.getKeyChar()+"")*3);
 		}
 	}
 
