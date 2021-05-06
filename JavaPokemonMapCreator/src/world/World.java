@@ -174,10 +174,10 @@ public class World {
 		int x4 = (xnext+TILE_SIZE);
 		int y4 = (ynext+TILE_SIZE);
 		
-		return !((pegar_chao(x1, y1, z).getSolid()) ||
-				(pegar_chao(x2, y2, z).getSolid()) ||
-				(pegar_chao(x3, y3, z).getSolid()) ||
-				(pegar_chao(x4, y4, z).getSolid()));
+		return !((pegar_chao(x1, y1, z).getSolid() == 1) ||
+				(pegar_chao(x2, y2, z).getSolid() == 1) ||
+				(pegar_chao(x3, y3, z).getSolid() == 1) ||
+				(pegar_chao(x4, y4, z).getSolid() == 1));
 	}
 	
 	public static Tile[] tiles_ao_redor(int x, int y, int z) {
@@ -291,9 +291,9 @@ public class World {
 	public static void fill(Tile pontoA, Tile pontoB) {
 		ordenar_valores(pontoA, pontoB);
 		
-		boolean virar_solido = false;
-		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
-			virar_solido = true;
+		int virar_solido = 0;
+		if (Ui.colocar_parede == true && pontoA.getSolid() == pontoB.getSolid()) {
+			virar_solido = pontoA.getSolid();
 		}
 		
 		// colocar sprites
@@ -344,9 +344,9 @@ public class World {
 		ordenar_valores(pontoA, pontoB);
 		int aX = pontoA.getX() >> log_ts, aY = pontoA.getY() >> log_ts, aZ = pontoA.getZ(), bX = pontoB.getX() >> log_ts, bY = pontoB.getY() >> log_ts, bZ = pontoB.getZ();
 		
-		boolean virar_solido = false;
-		if (Ui.colocar_parede == pontoA.getSolid() == pontoB.getSolid() == true) {
-			virar_solido = true;
+		int virar_solido = 0;
+		if (Ui.colocar_parede == true && pontoA.getSolid() == pontoB.getSolid()) {
+			virar_solido = pontoA.getSolid();
 		}
 		if (aZ == bZ) {
 			for(int xx = minX; xx <= maxX; xx++)

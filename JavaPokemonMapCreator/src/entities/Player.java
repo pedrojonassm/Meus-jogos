@@ -11,7 +11,7 @@ import world.World;
 public class Player {
 	private int x, y, z, tile_speed;
 	private int horizontal, vertical, speed;
-	public boolean left, right, up, down;
+	public boolean left, right, up, down, can_surf, can_walk_on_lava, vip;
 	Tile sqm_alvo = null;
 	
 	public Player(int x, int y, int z) {
@@ -19,7 +19,7 @@ public class Player {
 		this.y = y;
 		this.horizontal = z;
 		tile_speed = 0;
-		left = right = up = down = false;
+		left = right = up = down = can_surf = can_walk_on_lava = vip = false;
 		
 		speed = 4;
 		horizontal = vertical = 0;
@@ -62,7 +62,7 @@ public class Player {
 				int pos = World.calcular_pos(x+Gerador.TS*horizontal, y+Gerador.TS*vertical, z);
 				if (pos >= 0 && pos < World.tiles.length) sqm_alvo = World.pegar_chao(pos);
 				
-				if (sqm_alvo != null && sqm_alvo.getSolid()) {
+				if (sqm_alvo != null && (sqm_alvo.getSolid() == 1 || (sqm_alvo.getSolid() == 2 && !can_surf) || (sqm_alvo.getSolid() == 3 && !can_walk_on_lava) || (sqm_alvo.getSolid() == 4 && !vip))) {
 					sqm_alvo = null;
 				}
 			}

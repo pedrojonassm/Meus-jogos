@@ -220,12 +220,33 @@ public class Ui {
 
 	private void renderizar_configurar(Graphics g) {
 		int w1;
-		String s = "speed: "+new_speed;
+		String s = "";
+		if (colocar_parede)	g.fillRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
+		else g.drawRect(colocar_paredes.x, colocar_paredes.y, colocar_paredes.width, colocar_paredes.height);
+		if (sprite_reajivel) g.fillRect(caixa_sprite_reajivel.x, caixa_sprite_reajivel.y, caixa_sprite_reajivel.width, caixa_sprite_reajivel.height);
+		else g.drawRect(caixa_sprite_reajivel.x, caixa_sprite_reajivel.y, caixa_sprite_reajivel.width, caixa_sprite_reajivel.height);
+		if (colocar_escada) {
+			g.fillRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+		}
+		else g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+		if (!(colocar_escada || sprite_reajivel || colocar_parede)) {
+			s = "speed: "+new_speed;
+			w1 = g.getFontMetrics().stringWidth(s);
+			g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+40);
+			s = "pressione \"-\" para torná-la negativo";
+			w1 = g.getFontMetrics().stringWidth(s);
+			g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+60);
+		}
+		s = "Água";
 		w1 = g.getFontMetrics().stringWidth(s);
-		g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+40);
-		s = "pressione \"-\" para torná-la negativo";
+		g.drawString(s, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
+		s = "Lava";
 		w1 = g.getFontMetrics().stringWidth(s);
-		g.drawString(s, caixinha_dos_sprites.x+caixinha_dos_sprites.width/2-w1/2, caixinha_dos_sprites.y+60);
+		g.drawString(s, caixa_sprite_reajivel.x-caixa_sprite_reajivel.width-w1, caixa_sprite_reajivel.y+caixa_sprite_reajivel.height);
+		s = "Vip";
+		w1 = g.getFontMetrics().stringWidth(s);
+		g.drawString(s, colocar_escadas.x-colocar_escadas.width-w1, colocar_escadas.y+colocar_escadas.height);
+		
 	}
 
 	private void renderizar_construcoes(Graphics g) {

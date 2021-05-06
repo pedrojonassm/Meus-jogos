@@ -13,13 +13,14 @@ import main.Gerador;
 
 public class Tile {
 	private ArrayList<ArrayList<int[]>> sprites;
-	private int x, y, z, speed_modifier,
+	private int x, y, z, speed_modifier, house_door, solid, // solid: 0 = chao normal; 1 = parede; 2 = água; 3 = lava; 4 = vip
 	stairs_type, stairs_direction; // stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito, 3 = buraco sempre aberto, 4 = Buraco fechado (usar picareta ou cavar para abrí-lo); direction 0 = direita, 1 = baixo, 2 = esquerda, 3 = cima
-	private boolean solid, aberto_ou_fechado; // usado para paredes; usado em conjunto para ver se esta aberto ou fechado
+	private boolean aberto_ou_fechado; // usado para paredes; usado em conjunto para ver se esta aberto ou fechado
 	private int[] sprite_fechado, sprite_aberto; // sprites de reações
 	
 	public Tile(int x,int y,int z){
-		solid = false;
+		house_door = -1; // ao criar a casa essa váriavel recebe a posicao nos tiles da porta
+		solid = 0;
 		aberto_ou_fechado = true;
 		stairs_type = 0;
 		stairs_direction = 0;
@@ -37,12 +38,14 @@ public class Tile {
 		return speed_modifier;
 	}
 	
-	public boolean getSolid(){
+	public int getSolid(){
 		return solid;
 	}
 	
-	public void setSolid(boolean solid) {
-		if (stairs_type == 0) this.solid = solid;
+	public void setSolid(int solid) {
+		System.out.println("s: "+solid);
+		if (stairs_type != 0 && solid == 1) return;
+		this.solid = solid;
 	}
 	
 	public int getStairs_type() {
@@ -78,9 +81,7 @@ public class Tile {
 		}
 		stairs_type = Integer.parseInt(sla4[0]);
 		stairs_direction = Integer.parseInt(sla4[1]);
-		if (Integer.parseInt(sla4[2]) == 1) {
-			solid = true;
-		}
+		solid = Integer.parseInt(sla4[2]);
 		speed_modifier = Integer.parseInt(sla4[3]);
 		if (stairs_type == 4) {
 			String[] sprites_buraco = sla[3].split("-"), fechado = sprites_buraco[0].split("a"), aberto = sprites_buraco[1].split("a");
@@ -123,7 +124,7 @@ public class Tile {
 			g.drawImage(image, dx, dy, null);
 		}
 		
-		if (Ui.colocar_parede && solid) {
+		if (Ui.colocar_parede && solid == 1) {
 			g.setColor(new Color(255, 0, 0, 50));
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}else if (Ui.colocar_escada && stairs_type != 0) {
@@ -133,11 +134,24 @@ public class Tile {
 			g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
 		}
 		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1]) && z == Gerador.player.getZ()) {
-			Font f = g.getFont();
-			g.setFont(new Font(f.getName(), f.getStyle(), 20));
-			g.setColor(Color.white);
-			g.drawString(""+speed_modifier, x+Gerador.TS/2-2-Camera.x, y+Gerador.TS/2+7-Camera.y);
-			g.setFont(f);
+			if (solid == 2) {
+				g.setColor(new Color(0, 255, 255, 50));
+				g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
+			}else if (solid == 3) {
+				g.setColor(new Color(255, 97, 0, 50));
+				g.fillRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
+			}else if (solid == 4) {
+				g.setColor(Color.white);
+				g.drawRect(x - Camera.x-(z-Gerador.player.getZ())*Gerador.quadrado.width, y - Camera.y-(z-Gerador.player.getZ())*Gerador.quadrado.height, Gerador.TS, Gerador.TS);
+			}
+				
+			if (!(Ui.colocar_escada || Ui.sprite_reajivel || Ui.colocar_parede)) {
+				Font f = g.getFont();
+				g.setFont(new Font(f.getName(), f.getStyle(), 20));
+				g.setColor(Color.white);
+				g.drawString(""+speed_modifier, x+Gerador.TS/2-2-Camera.x, y+Gerador.TS/2+7-Camera.y);
+				g.setFont(f);
+			}
 		}
 	}
 	
@@ -146,7 +160,10 @@ public class Tile {
 	}
 
 	public void trocar_solid() {
-		if (stairs_type == 0) solid = !solid;
+		if (stairs_type == 0) {
+			if (solid == 0) solid = 1;
+			else if (solid == 1) solid = 0;
+		}
 	}
 
 	public void adicionar_sprite_selecionado() {
@@ -218,12 +235,7 @@ public class Tile {
 			retorno += "-";
 		}
 		// stairs_type 0 = não tem, 1 = escada "normal", 2 = escada de clique direito; mode 1 = subir, -1 = descer
-		retorno += ";"+stairs_type+"-"+stairs_direction+"-"+speed_modifier+"-";
-		if (solid) {
-			retorno+="1";
-		}else {
-			retorno+="0";
-		}
+		retorno += ";"+stairs_type+"-"+stairs_direction+"-"+speed_modifier+"-"+solid;
 		if (sprite_aberto != null) {
 			retorno += ";"+sprite_fechado[0]+"a"+sprite_fechado[1]+"-"+sprite_aberto[0]+"a"+sprite_aberto[1];
 		}
@@ -241,7 +253,7 @@ public class Tile {
 	}
 
 	public void virar_escada() {
-		if (!solid) {
+		if (solid != 1) {
 			if (Ui.modo_escadas == 3) {
 				if (!adicionar_sprite_reajível()) return;
 			}else if (Ui.modo_escadas == 2) {
@@ -283,15 +295,18 @@ public class Tile {
 		aberto_ou_fechado = !aberto_ou_fechado;
 	}
 
-	public void varios(boolean virar_solido) {
+	public void varios(int virar_solido) {
 		// Ação realizada no World.fill ou World.empty
 		if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[0])) {
 			// Colocar sprites
 			if (Ui.substituir || !tem_sprites()) adicionar_sprite_selecionado();
 			if (Ui.colocar_escada) virar_escada();
-			else if (virar_solido) setSolid(true);
+			else setSolid(virar_solido);
 		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[1])) {
-			setSpeed_modifier(Gerador.ui.getNew_speed());
+			if (Ui.colocar_parede) mar();
+			else if (Ui.sprite_reajivel) lava();
+			else if (Ui.colocar_escada) vip();
+			else setSpeed_modifier(Gerador.ui.getNew_speed());
 		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[2])) {
 			
 		}else if (Ui.opcao.equalsIgnoreCase(Ui.opcoes[3])) {
@@ -305,6 +320,31 @@ public class Tile {
 	
 	public ArrayList<ArrayList<int[]>> getSprites() {
 		return sprites;
+	}
+
+	public void mar() {
+		if (solid == 2) {
+			solid = 0;
+			return;
+		}
+		solid = 2;
+		
+	}
+
+	public void lava() {
+		if (solid == 3) {
+			solid = 0;
+			return;
+		}
+		solid = 3;
+	}
+
+	public void vip() {
+		if (solid == 4) {
+			solid = 0;
+			return;
+		}
+		solid = 4;
 	}
 
 }

@@ -46,12 +46,12 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 	
 	public static Rectangle quadrado;
 	public Tile escolhido;
-	private boolean clique_no_mapa, solido;
+	private boolean clique_no_mapa;
 	public static boolean control, shift;
 	public static Random random;
 	public static Ui ui;
 	public static int sprite_selecionado_index;
-	private int sprite_selecionado_animation_time;
+	private int sprite_selecionado_animation_time, solido;
 	
 	/*
 	 * Fazer as cidades
@@ -149,7 +149,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 					}
 				}
 			}else if (Ui.opcao == Ui.opcoes[1]) {
-				escolhido.setSpeed_modifier(ui.getNew_speed());
+				if (Ui.colocar_parede) escolhido.mar();
+				else if (Ui.sprite_reajivel) escolhido.lava();
+				else if (Ui.colocar_escada) escolhido.vip();
+				else escolhido.setSpeed_modifier(Gerador.ui.getNew_speed());
 			}else if (Ui.opcao == Ui.opcoes[2]) {
 				World.colocar_construção(escolhido, ui.pegar_construcao_selecionada());
 			}else if (Ui.opcao == Ui.opcoes[3]) {
@@ -299,7 +302,10 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 			if (!Ui.mostrar || !ui.clicou(e.getX(), e.getY())) {
 				clique_no_mapa = true;
 				if (Ui.colocar_parede) {
-					solido = !escolhido.getSolid();
+					solido = escolhido.getSolid();
+					if (solido == 1) {
+						solido = 0;
+					}else solido = 1;
 				}
 				return;
 			}
@@ -314,7 +320,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 		}else if (e.getButton() == MouseEvent.BUTTON3) {
 			//*
 			if(ui.cliquedireito(e.getX(), e.getY())) return;
-			else if (Ui.colocar_escada) {
+			else if (Ui.colocar_escada && Ui.opcao == Ui.opcoes[0]) {
 				if (escolhido.getZ() < World.HIGH) {
 					escolhido.desvirar_escada();
 				}
