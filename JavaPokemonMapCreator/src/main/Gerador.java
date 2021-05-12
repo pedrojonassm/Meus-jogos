@@ -327,6 +327,7 @@ public class Gerador extends Canvas implements Runnable, KeyListener, MouseListe
 				return;
 			}else if (Ui.sprite_reajivel) {
 				escolhido.reajir();
+				return;
 			}else if (ui.addponto(e.getX()+Camera.x, e.getY()+Camera.y)) return;
 			//*/
 		}
