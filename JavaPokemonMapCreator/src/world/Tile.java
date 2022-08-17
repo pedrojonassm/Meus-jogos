@@ -96,6 +96,20 @@ public class Tile {
 		}
 	}
 	
+	public ArrayList<BufferedImage> getSprite_atual() {
+		ArrayList<BufferedImage> lDesenhoAtual = new ArrayList<BufferedImage>();
+		for (ArrayList<int[]> imagens : sprites) {
+			if (imagens != null && imagens.size() > 0) {
+				int[] sprite = imagens.get(World.tiles_index%imagens.size());
+				lDesenhoAtual.add(World.sprites_do_mundo.get(sprite[0])[sprite[1]]);
+			}
+		}
+		if (sprite_aberto != null) {
+			lDesenhoAtual.add((aberto_ou_fechado) ? World.sprites_do_mundo.get(sprite_fechado[0])[sprite_fechado[1]] : World.sprites_do_mundo.get(sprite_aberto[0])[sprite_aberto[1]]);
+		}
+		return lDesenhoAtual;
+	}
+	
 	public void render(Graphics g){
 		for (ArrayList<int[]> imagens : sprites) {
 			if (imagens != null && imagens.size() > 0) {

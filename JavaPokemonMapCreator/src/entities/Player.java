@@ -159,7 +159,7 @@ public class Player {
 
 	public void camada(int acao) {
 		int fz;
-		if (acao < 0) {
+		if (acao > 0) {
 			fz = z+1;
 			if (fz >= World.HIGH) {
 				fz = 0;
@@ -167,7 +167,7 @@ public class Player {
 			if (World.isFree(x, y, fz)) {
 				z = fz;
 			}
-		}else if (acao > 0) {
+		}else if (acao < 0) {
 			fz = z-1;
 			if (fz < 0) {
 				fz = World.HIGH-1;

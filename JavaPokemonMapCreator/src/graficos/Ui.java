@@ -336,7 +336,9 @@ public class Ui {
 				g.drawString(escada[i], escadas[i].x-escadas[i].width-w1, escadas[i].y+escadas[i].height);
 			}
 		}
-		else g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+		else
+			g.drawRect(colocar_escadas.x, colocar_escadas.y, colocar_escadas.width, colocar_escadas.height);
+		
 		w1 = g.getFontMetrics().stringWidth(colocar_as_paredes);
 		g.drawString(colocar_as_paredes, colocar_paredes.x-colocar_paredes.width-w1, colocar_paredes.y+colocar_paredes.height);
 		w1 = g.getFontMetrics().stringWidth(interactive_sprite);
@@ -434,15 +436,17 @@ public class Ui {
 			ArrayList<Tile> tiles = tiles_salvos.get(livro-1);
 			int x, y;
 			for (int i = 0; i < max_sprites_por_pagina && i+(max_sprites_por_pagina*pagina.get(livro)) < tiles.size(); i++) {
-				x = (desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.x;
-				y = (desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width))*Gerador.quadrado.width+caixinha_dos_sprites.y;
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setX(x-Gerador.player.getZ()*Gerador.quadrado.width);
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).setY(y-Gerador.player.getZ()*Gerador.quadrado.height);
-				tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).render(g);
+				x = desenhando%(caixinha_dos_sprites.width/Gerador.quadrado.width);
+				y = desenhando/(caixinha_dos_sprites.width/Gerador.quadrado.width);
+				ArrayList<BufferedImage> lDesenhoAtual = tiles.get(i+(max_sprites_por_pagina*pagina.get(livro))).getSprite_atual();
+				for (BufferedImage iBufferedImage : lDesenhoAtual)
+					g.drawImage(iBufferedImage, x*Gerador.quadrado.width+caixinha_dos_sprites.x, y*Gerador.quadrado.width+caixinha_dos_sprites.y, Gerador.quadrado.width, Gerador.quadrado.height, null);
+				
 				if (i+(max_sprites_por_pagina*pagina.get(livro)) == index_tile_pego && livro == livro_tile_pego) {
 					g.setColor(new Color(0, 255, 0, 50));
-					g.fillRect(x, y, Gerador.quadrado.width, Gerador.quadrado.height);
+					g.fillRect(x*Gerador.quadrado.width+caixinha_dos_sprites.x, y*Gerador.quadrado.width+caixinha_dos_sprites.y, Gerador.quadrado.width, Gerador.quadrado.height);
 				}
+				
 				k++;
 				desenhando++;
 			}
@@ -634,7 +638,7 @@ public class Ui {
 	public boolean trocar_pagina(int x, int y, int rodinha) {
 		if (mostrar) {
 			int k = 0;
-			if (rodinha < 0) k=1;
+			if (rodinha > 0) k=1;
 			else k=-1;
 			if (caixinha_dos_sprites.contains(x, y)) {
 				if (opcao.equalsIgnoreCase(opcoes[0])) {
@@ -679,12 +683,12 @@ public class Ui {
 	}
 	
 	public static void trocar_Nivel(int wheelRotation) {
-		if (wheelRotation < 0) {
+		if (wheelRotation > 0) {
 			tiles_nivel++;
 			if (tiles_nivel > max_tiles_nivel) {
 				tiles_nivel = 0;
 			}
-		}else if (wheelRotation > 0) {
+		}else if (wheelRotation < 0) {
 			tiles_nivel--;
 			if (tiles_nivel < 0) {
 				tiles_nivel = max_tiles_nivel;
