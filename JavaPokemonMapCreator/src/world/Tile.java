@@ -218,7 +218,7 @@ public class Tile {
 	public void pegarsprites() {
 		ArrayList<int[]> sprite;
 		if (!Ui.sprite_reajivel) {
-			sprite = sprites.get(Ui.tiles_nivel);
+			sprite = (sprites.size() > Ui.tiles_nivel) ? sprites.get(Ui.tiles_nivel) : null;
 		}else {
 			sprite = new ArrayList<int[]>();
 			sprite.add(sprite_fechado);

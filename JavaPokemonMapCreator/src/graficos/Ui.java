@@ -87,7 +87,7 @@ public class Ui {
 		pagina_livros = 0;
 		max_livros_por_pagina = caixinha_dos_livros.height/caixinha_dos_livros.width;
 		tiles_nivel = 0;
-		max_tiles_nivel = 5;
+		max_tiles_nivel = 4;
 		max_construcoes_por_pagina = 26;
 		pagina_construcoes = 0;
 		cidades.add(new Cidade(5, "teste1"));
@@ -685,13 +685,13 @@ public class Ui {
 	public static void trocar_Nivel(int wheelRotation) {
 		if (wheelRotation > 0) {
 			tiles_nivel++;
-			if (tiles_nivel >= max_tiles_nivel) {
+			if (tiles_nivel > max_tiles_nivel) {
 				tiles_nivel = 0;
 			}
 		}else if (wheelRotation < 0) {
 			tiles_nivel--;
 			if (tiles_nivel < 0) {
-				tiles_nivel = max_tiles_nivel-1;
+				tiles_nivel = max_tiles_nivel;
 			}
 		}
 	}
