@@ -87,7 +87,7 @@ public class Ui {
 		pagina_livros = 0;
 		max_livros_por_pagina = caixinha_dos_livros.height/caixinha_dos_livros.width;
 		tiles_nivel = 0;
-		max_tiles_nivel = 4;
+		max_tiles_nivel = 5;
 		max_construcoes_por_pagina = 26;
 		pagina_construcoes = 0;
 		cidades.add(new Cidade(5, "teste1"));
@@ -351,10 +351,10 @@ public class Ui {
 		if (caixinha_dos_livros.contains(Gerador.quadrado.x, Gerador.quadrado.y)) mostrar_nome_livro(g);
 		
 		g.setColor(Color.white);
-		w1 = g.getFontMetrics().stringWidth(tile_nivel+tiles_nivel);
-		g.drawString(tile_nivel+tiles_nivel, colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y);
-		w1 = g.getFontMetrics().stringWidth(altura+Gerador.player.getZ());
-		g.drawString(altura+Gerador.player.getZ(), colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y-15);
+		w1 = g.getFontMetrics().stringWidth(tile_nivel+(tiles_nivel+1));
+		g.drawString(tile_nivel+(tiles_nivel+1), colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y);
+		w1 = g.getFontMetrics().stringWidth(altura+(Gerador.player.getZ()+1));
+		g.drawString(altura+(Gerador.player.getZ()+1), colocar_paredes.x-w1 + colocar_paredes.width, Gerador.HEIGHT-colocar_paredes.y-15);
 		
 	}
 
@@ -685,13 +685,13 @@ public class Ui {
 	public static void trocar_Nivel(int wheelRotation) {
 		if (wheelRotation > 0) {
 			tiles_nivel++;
-			if (tiles_nivel > max_tiles_nivel) {
+			if (tiles_nivel >= max_tiles_nivel) {
 				tiles_nivel = 0;
 			}
 		}else if (wheelRotation < 0) {
 			tiles_nivel--;
 			if (tiles_nivel < 0) {
-				tiles_nivel = max_tiles_nivel;
+				tiles_nivel = max_tiles_nivel-1;
 			}
 		}
 	}
